@@ -601,4 +601,15 @@
       display: none;
     }
   }
+
+  @media screen and (max-width: 749px) {
+    .predictive-search-results__products,
+    .predictive-search-results__wrapper-products,
+    .search-modal .predictive-search-results__list,
+    .recently-viewed-wrapper {
+      display: grid !important;
+      grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+      width: 100% !important;
+    }
+  }
 {% endstylesheet %}
