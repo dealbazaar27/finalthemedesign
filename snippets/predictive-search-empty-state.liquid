@@ -1,5 +1,5 @@
 {% doc %}
-  Renders the predictive search empty state with Top Tag Pills and 8 Featured Collection Products (Fully Mobile Responsive)
+  Renders the predictive search empty state with Top Tag Pills and 8 Featured Collection Products
 {% enddoc %}
 
 <div
@@ -8,12 +8,12 @@
   role="listbox"
   aria-expanded="true"
 >
-  <div class="boat-search-modal-container">
+  <div class="boat-search-modal-container" style="padding: 12px 16px;">
     
     {% comment %} --- Top Search Tag Pills --- {% endcomment %}
     {% assign text_tags = section.settings.search_tags | default: settings.search_tags %}
 
-    <div class="boat-search-tags-carousel" id="BoatSearchTagsCarousel">
+    <div class="boat-search-tags-carousel" id="BoatSearchTagsCarousel" style="margin-bottom: 16px;">
       {% if text_tags != blank %}
         {% assign tags = text_tags | split: ',' %}
         {% for tag in tags %}
@@ -35,9 +35,9 @@
     </div>
 
     {% comment %} --- Dynamic Section Title --- {% endcomment %}
-    <h3 class="boat-search-modal-title">
+    <h4 class="predictive-search-results__title">
       {{ section.settings.search_modal_heading | default: settings.search_modal_heading | default: 'Trending Products' }}
-    </h3>
+    </h4>
 
     {% comment %} --- Selected Collection Products --- {% endcomment %}
     {% assign selected_col = section.settings.search_featured_collection | default: settings.search_featured_collection %}
@@ -45,50 +45,10 @@
       {% assign selected_col = collections.all %}
     {% endif %}
 
-    <div class="boat-search-products-grid">
+    <div class="predictive-search-results__wrapper-products">
       {% if selected_col != blank and selected_col.products.size > 0 %}
         {% for product in selected_col.products limit: 8 %}
-          <a href="{{ product.url }}" class="boat-search-product-card">
-            <div class="boat-search-product-thumb">
-              {% if product.featured_media != blank %}
-                <img src="{{ product.featured_media | image_url: width: 120 }}" alt="{{ product.title | escape }}" loading="lazy" width="48" height="48">
-              {% else %}
-                <span>🛍️</span>
-              {% endif %}
-            </div>
-
-            <div class="boat-search-product-info">
-              <span class="boat-search-product-title">
-                {{ product.title }}
-              </span>
-              
-              <div class="boat-search-product-price-row">
-                <span>{{ product.price | money }}</span>
-                {% if product.compare_at_price > product.price %}
-                  <span class="boat-search-product-compare">
-                    {{ product.compare_at_price | money }}
-                  </span>
-                {% endif %}
-              </div>
-            </div>
-          </a>
-        {% endfor %}
-      {% else %}
-        {% comment %} Fallback Product Cards when collection has no products yet {% endcomment %}
-        {% for i in (1..8) %}
-          <a href="/collections/all" class="boat-search-product-card">
-            <div class="boat-search-product-thumb">
-              📦
-            </div>
-            <div class="boat-search-product-info">
-              <span class="boat-search-product-title">
-                Sample Product {{ i }}
-              </span>
-              <span class="boat-search-product-price-row">
-                Rs. 1,499.00
-              </span>
-            </div>
-          </a>
+          {% render 'predictive-search-product-card-item', product: product %}
         {% endfor %}
       {% endif %}
     </div>
