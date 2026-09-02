@@ -1,0 +1,1213 @@
+{% liquid
+  assign selected_variant = product.selected_or_first_available_variant
+  assign price = selected_variant.price
+  assign compare_price = selected_variant.compare_at_price
+  
+  if compare_price > price
+    assign discount_percent = compare_price | minus: price | times: 100.0 | divided_by: compare_price | round
+  else
+    assign discount_percent = 0
+  endif
+
+  assign form_id = 'BoatProductPageForm-' | append: product.id
+%}
+
+<div class="boat-pdp-container">
+  
+  {% comment %} --- Top Breadcrumb Navigation --- {% endcomment %}
+  <nav class="boat-pdp-breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ routes.root_url }}">Home</a>
+    <span class="boat-pdp-breadcrumb__sep">›</span>
+    {% if collection != blank %}
+      <a href="{{ collection.url }}">{{ collection.title | escape }}</a>
+      <span class="boat-pdp-breadcrumb__sep">›</span>
+    {% elsif product.collections.size > 0 %}
+      <a href="{{ product.collections.first.url }}">{{ product.collections.first.title | escape }}</a>
+      <span class="boat-pdp-breadcrumb__sep">›</span>
+    {% endif %}
+    {% if product.type != blank %}
+      <span>{{ product.type | escape }}</span>
+      <span class="boat-pdp-breadcrumb__sep">›</span>
+    {% endif %}
+    <span class="boat-pdp-breadcrumb__current">{{ product.title | escape }}</span>
+  </nav>
+
+  {% comment %} --- Main Product 2-Column Grid --- {% endcomment %}
+  <div class="boat-pdp-layout">
+    
+    {% comment %} === Left Column: Media Gallery === {% endcomment %}
+    <div class="boat-pdp-gallery-col">
+      <div class="boat-pdp-gallery-inner">
+        
+        {% comment %} Left Vertical Thumbnails {% endcomment %}
+        {% if product.media.size > 1 %}
+          <div class="boat-pdp-thumbs" id="BoatPdpThumbs">
+            {% for media in product.media %}
+              <button 
+                type="button" 
+                class="boat-pdp-thumb-btn{% if forloop.first %} active{% endif %}"
+                data-media-id="{{ media.id }}"
+                data-image-src="{{ media | image_url: width: 1000 }}"
+                onclick="switchBoatPdpImage(this, '{{ media | image_url: width: 1000 }}')"
+                aria-label="Thumbnail {{ forloop.index }}"
+              >
+                <img 
+                  src="{{ media | image_url: width: 140, height: 140 }}" 
+                  alt="{{ media.alt | default: product.title | escape }}"
+                  loading="lazy"
+                  width="64"
+                  height="64"
+                >
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% comment %} Main Featured Image Display {% endcomment %}
+        <div class="boat-pdp-main-image-wrapper">
+          <div class="boat-pdp-main-image-box">
+            {% assign initial_img = selected_variant.featured_image | default: product.featured_image %}
+            <img 
+              id="BoatPdpMainImage"
+              src="{{ initial_img | image_url: width: 1000 }}" 
+              alt="{{ product.title | escape }}"
+              class="boat-pdp-main-image"
+              width="600"
+              height="600"
+            >
+
+            {% if product.media.size > 1 %}
+              <button type="button" class="boat-pdp-arrow-btn boat-pdp-arrow-btn--prev" onclick="prevBoatPdpImage()" aria-label="Previous image">‹</button>
+              <button type="button" class="boat-pdp-arrow-btn boat-pdp-arrow-btn--next" onclick="nextBoatPdpImage()" aria-label="Next image">›</button>
+            {% endif %}
+
+            <div class="boat-pdp-view-similar">
+              <span>👁️</span>
+              <span>View Similar</span>
+            </div>
+          </div>
+
+          {% comment %} Countdown Flash Sale Timer Bar {% endcomment %}
+          <div class="boat-pdp-timer-bar">
+            <span class="boat-pdp-timer-icon">⏳</span>
+            <span class="boat-pdp-timer-label">Flash Sale Ends In:</span>
+            <span class="boat-pdp-timer-digits" id="boatPdpCountdown">04h : 02m : 19s</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% comment %} === Right Column: Product Information & Offers === {% endcomment %}
+    <div class="boat-pdp-info-col">
+      
+      {% comment %} 1. Review Rating Badge {% endcomment %}
+      <div class="boat-pdp-rating-row">
+        <span class="boat-pdp-star">★</span>
+        <span class="boat-pdp-score">4.8</span>
+        <span class="boat-pdp-count">(528)</span>
+        <span class="boat-pdp-verified-icon">✔</span>
+      </div>
+
+      {% comment %} 2. Product Title & Subtitle {% endcomment %}
+      <h1 class="boat-pdp-title">{{ product.title }}</h1>
+      
+      <div class="boat-pdp-subtitle">
+        {% if product.metafields.custom.subtitle != blank %}
+          {{ product.metafields.custom.subtitle }}
+        {% elsif product.description != blank %}
+          {{ product.description | strip_html | truncatewords: 22 }}
+        {% else %}
+          Wireless Earbuds with Massive Playback of upto 40 Hours, IPX5 Water & Sweat Resistance, IWP Technology Interface
+        {% endif %}
+      </div>
+
+      {% comment %} 3. Price Row & Silicone Case Offer Badge {% endcomment %}
+      <div class="boat-pdp-price-offer-box">
+        <div class="boat-pdp-price-group">
+          <div class="boat-pdp-price-main">
+            <span class="boat-pdp-price" id="BoatPdpPrice">{{ price | money_without_trailing_zeros }}</span>
+            <span class="boat-pdp-compare-price" id="BoatPdpCompare" style="{% unless compare_price > price %}display: none;{% endunless %}">
+              {{ compare_price | money_without_trailing_zeros }}
+            </span>
+            <span class="boat-pdp-discount" id="BoatPdpDiscount" style="{% unless compare_price > price %}display: none;{% endunless %}">
+              {{ discount_percent }}% Off
+            </span>
+          </div>
+          <div class="boat-pdp-tax-text">MRP (Inclusive of all taxes)</div>
+        </div>
+
+        <div class="boat-pdp-addon-badge">
+          <div class="boat-pdp-addon-text">Get a silicone case @ ₹29</div>
+          <div class="boat-pdp-addon-link">Check Availability</div>
+        </div>
+      </div>
+
+      {% comment %} --- Form for Cart Add --- {% endcomment %}
+      <form action="/cart/add" method="post" id="{{ form_id }}" onsubmit="handleBoatPdpAddToCart(event, this)">
+        <input type="hidden" name="id" id="BoatPdpSelectedVariantId" value="{{ selected_variant.id }}">
+        
+        {% comment %} 4. Color / Variant Swatches {% endcomment %}
+        {% if product.variants.size > 1 %}
+          {% for option in product.options_with_values %}
+            {% assign is_color = false %}
+            {% assign opt_name_lower = option.name | downcase %}
+            {% if opt_name_lower contains 'color' or opt_name_lower contains 'colour' or opt_name_lower contains 'shade' %}
+              {% assign is_color = true %}
+            {% endif %}
+
+            <div class="boat-pdp-variant-section">
+              <div class="boat-pdp-variant-label">
+                Choose your {{ option.name | downcase }} : 
+                <span class="boat-pdp-variant-val" id="BoatPdpColorVal">{{ selected_variant.title }}</span>
+              </div>
+
+              <div class="boat-pdp-swatches-grid">
+                {% for value in option.values %}
+                  {% assign variant_for_val = null %}
+                  {% for variant in product.variants %}
+                    {% if variant.options contains value %}
+                      {% assign variant_for_val = variant %}
+                      {% break %}
+                    {% endif %}
+                  {% endfor %}
+
+                  <button 
+                    type="button" 
+                    class="boat-pdp-swatch-box{% if selected_variant.options contains value %} active{% endif %}"
+                    data-variant-id="{{ variant_for_val.id }}"
+                    data-variant-title="{{ value | escape }}"
+                    data-variant-price="{{ variant_for_val.price | money_without_trailing_zeros }}"
+                    data-variant-compare="{{ variant_for_val.compare_at_price | money_without_trailing_zeros }}"
+                    data-variant-image="{% if variant_for_val.featured_image != blank %}{{ variant_for_val.featured_image | image_url: width: 1000 }}{% endif %}"
+                    data-variant-discount="{% if variant_for_val.compare_at_price > variant_for_val.price %}{{ variant_for_val.compare_at_price | minus: variant_for_val.price | times: 100.0 | divided_by: variant_for_val.compare_at_price | round }}% Off{% endif %}"
+                    data-variant-available="{{ variant_for_val.available }}"
+                    onclick="selectBoatPdpVariant(this)"
+                  >
+                    {% if variant_for_val.featured_image != blank %}
+                      <img src="{{ variant_for_val.featured_image | image_url: width: 120, height: 120 }}" alt="{{ value | escape }}" loading="lazy">
+                    {% else %}
+                      <span>{{ value }}</span>
+                    {% endif %}
+                  </button>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        {% comment %} 5. Action Buttons (Add to Cart + Buy Now) {% endcomment %}
+        <div class="boat-pdp-cta-group">
+          <button 
+            type="submit" 
+            class="boat-pdp-btn boat-pdp-btn--atc" 
+            id="BoatPdpAtcBtn"
+            {% unless selected_variant.available %}disabled{% endunless %}
+          >
+            {% if selected_variant.available %}
+              <span>Add to Cart</span>
+            {% else %}
+              <span>Sold Out</span>
+            {% endif %}
+          </button>
+          
+          <button 
+            type="button" 
+            class="boat-pdp-btn boat-pdp-btn--buy" 
+            id="BoatPdpBuyBtn"
+            onclick="buyNowBoatPdp('{{ form_id }}')"
+            {% unless selected_variant.available %}disabled{% endunless %}
+          >
+            <span>Buy Now</span>
+          </button>
+        </div>
+      </form>
+
+      {% comment %} 6. Make Your Product Personalised Banner {% endcomment %}
+      <div class="boat-pdp-personalised-banner">
+        <div class="boat-pdp-personalised-text">
+          <div class="boat-pdp-personalised-title">Make Your Product Personalised</div>
+          <div class="boat-pdp-personalised-sub">Get A Customized Engraving And Make It Unmistakably Yours.</div>
+        </div>
+        <div class="boat-pdp-personalised-icon">✒️</div>
+      </div>
+
+      {% comment %} 7. Check Delivery Box {% endcomment %}
+      <div class="boat-pdp-delivery-card">
+        <div class="boat-pdp-card-title">Check Delivery</div>
+        <div class="boat-pdp-pincode-row">
+          <input type="text" class="boat-pdp-pincode-input" id="BoatPdpPincodeInput" value="122008" placeholder="Enter Pincode">
+          <button type="button" class="boat-pdp-pincode-btn" onclick="checkBoatDelivery()">Change</button>
+        </div>
+        <div class="boat-pdp-delivery-status" id="BoatPdpDeliveryStatus">
+          <span class="boat-pdp-truck-icon">🚚</span>
+          <span class="boat-pdp-delivery-text"><strong>Free delivery</strong> | By <strong>Sunday, 6 Sept</strong></span>
+        </div>
+      </div>
+
+      {% comment %} 8. Users' Love Trust Card (Yellow Flipkart Style) {% endcomment %}
+      <div class="boat-pdp-users-love-card">
+        <div class="boat-pdp-users-love-header">Users' Love</div>
+        <div class="boat-pdp-users-love-body">
+          <div class="boat-pdp-users-love-stats">
+            <div class="boat-pdp-love-stat-item">25 Lacs+ units sold on Flipkart</div>
+            <div class="boat-pdp-love-stat-divider"></div>
+            <div class="boat-pdp-love-stat-item">3 Lacs+ 5 ⭐ reviews</div>
+          </div>
+          <div class="boat-pdp-love-brand-badge">🛍️</div>
+        </div>
+      </div>
+
+      {% comment %} 9. Rewards and Payment Offers Card {% endcomment %}
+      <div class="boat-pdp-rewards-card">
+        <div class="boat-pdp-card-title">Rewards and Payment Offers</div>
+        <div class="boat-pdp-rewards-content">
+          <span class="boat-pdp-rewards-text">Earn upto 44 boAt reward points on this product</span>
+          <span class="boat-pdp-rewards-icon">🎁</span>
+        </div>
+      </div>
+
+      {% comment %} 10. Active Offers 3-Tier Grid {% endcomment %}
+      <div class="boat-pdp-offers-section">
+        <div class="boat-pdp-card-title">Active Offers</div>
+        <div class="boat-pdp-offers-grid">
+          
+          <div class="boat-pdp-offer-card">
+            <div class="boat-pdp-offer-badge">MOST POPULAR</div>
+            <div class="boat-pdp-offer-inner">
+              <div class="boat-pdp-offer-qty">Buy 2 or more</div>
+              <div class="boat-pdp-offer-disc">Get 6% Off</div>
+              <div class="boat-pdp-offer-code" onclick="copyBoatCoupon('BOAT6', this)">Code: <strong>BOAT6</strong></div>
+            </div>
+          </div>
+
+          <div class="boat-pdp-offer-card">
+            <div class="boat-pdp-offer-badge">BEST VALUE</div>
+            <div class="boat-pdp-offer-inner">
+              <div class="boat-pdp-offer-qty">Buy 5 or more</div>
+              <div class="boat-pdp-offer-disc">Get 7% Off</div>
+              <div class="boat-pdp-offer-code" onclick="copyBoatCoupon('BOAT7', this)">Code: <strong>BOAT7</strong></div>
+            </div>
+          </div>
+
+          <div class="boat-pdp-offer-card">
+            <div class="boat-pdp-offer-badge">MOST SAVINGS</div>
+            <div class="boat-pdp-offer-inner">
+              <div class="boat-pdp-offer-qty">Buy 10 or more</div>
+              <div class="boat-pdp-offer-disc">Get 10% Off</div>
+              <div class="boat-pdp-offer-code" onclick="copyBoatCoupon('BOAT10', this)">Code: <strong>BOAT10</strong></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<style>
+  /* ------------------------------------------------------------- */
+  /* boAt Authentic Product Page Styling (100% Matching Reference) */
+  /* ------------------------------------------------------------- */
+
+  .boat-pdp-container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 16px 20px 48px 20px;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #0f172a;
+    box-sizing: border-box;
+  }
+
+  /* Breadcrumb */
+  .boat-pdp-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .boat-pdp-breadcrumb a {
+    color: #64748b;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .boat-pdp-breadcrumb a:hover {
+    color: #0f172a;
+    text-decoration: underline;
+  }
+
+  .boat-pdp-breadcrumb__sep {
+    color: #94a3b8;
+    font-size: 0.85rem;
+  }
+
+  .boat-pdp-breadcrumb__current {
+    color: #0f172a;
+    font-weight: 700;
+  }
+
+  /* 2-Column Layout */
+  .boat-pdp-layout {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  @media screen and (max-width: 989px) {
+    .boat-pdp-layout {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+  }
+
+  /* Gallery Inner Layout */
+  .boat-pdp-gallery-inner {
+    display: flex;
+    gap: 16px;
+    position: sticky;
+    top: 90px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .boat-pdp-gallery-inner {
+      flex-direction: column-reverse;
+      position: relative;
+      top: 0;
+      gap: 12px;
+    }
+  }
+
+  /* Vertical Thumbnails */
+  .boat-pdp-thumbs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 68px;
+    flex-shrink: 0;
+    max-height: 520px;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .boat-pdp-thumbs::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .boat-pdp-thumbs {
+      flex-direction: row;
+      width: 100%;
+      max-height: none;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+  }
+
+  .boat-pdp-thumb-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    padding: 2px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .boat-pdp-thumb-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .boat-pdp-thumb-btn:hover,
+  .boat-pdp-thumb-btn.active {
+    border-color: #0f172a;
+    box-shadow: 0 0 0 1px #0f172a;
+  }
+
+  /* Main Featured Image Box */
+  .boat-pdp-main-image-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .boat-pdp-main-image-box {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #f1f5f9;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  }
+
+  .boat-pdp-main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+  }
+
+  .boat-pdp-arrow-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #0f172a;
+    color: #ffffff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: all 0.2s ease;
+    z-index: 5;
+  }
+
+  .boat-pdp-arrow-btn:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.08);
+  }
+
+  .boat-pdp-arrow-btn--prev { left: 12px; }
+  .boat-pdp-arrow-btn--next { right: 12px; }
+
+  .boat-pdp-view-similar {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Flash Sale Countdown Timer Bar */
+  .boat-pdp-timer-bar {
+    background: #fff9db;
+    border: 1px solid #ffe066;
+    border-radius: 12px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .boat-pdp-timer-digits {
+    color: #d8232a;
+    font-size: 0.95rem;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+  }
+
+  /* Right Information Column */
+  .boat-pdp-info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Rating Row */
+  .boat-pdp-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .boat-pdp-star { color: #f59e0b; font-size: 1rem; }
+  .boat-pdp-count { color: #64748b; font-weight: 600; font-size: 0.8rem; }
+  .boat-pdp-verified-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #10b981;
+    color: #ffffff;
+    font-size: 9px;
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    margin-left: 2px;
+  }
+
+  /* Title & Subtitle */
+  .boat-pdp-title {
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: #0f172a;
+    margin: 0;
+    line-height: 1.25;
+    letter-spacing: -0.5px;
+  }
+
+  .boat-pdp-subtitle {
+    font-size: 0.88rem;
+    color: #475569;
+    line-height: 1.45;
+    font-weight: 500;
+  }
+
+  /* Price & Addon Offer Box */
+  .boat-pdp-price-offer-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+  }
+
+  .boat-pdp-price-main {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .boat-pdp-price {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #0f172a;
+  }
+
+  .boat-pdp-compare-price {
+    font-size: 0.95rem;
+    text-decoration: line-through;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+
+  .boat-pdp-discount {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #00b853;
+  }
+
+  .boat-pdp-tax-text {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    margin-top: 2px;
+  }
+
+  .boat-pdp-addon-badge {
+    background: #fff9db;
+    border: 1.5px solid #ffd43b;
+    border-radius: 20px;
+    padding: 8px 14px;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .boat-pdp-addon-text {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .boat-pdp-addon-link {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #64748b;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* Color / Variant Swatches */
+  .boat-pdp-variant-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .boat-pdp-variant-label {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .boat-pdp-variant-val {
+    font-weight: 700;
+    color: #475569;
+  }
+
+  .boat-pdp-swatches-grid {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .boat-pdp-swatch-box {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    background: #ffffff;
+    padding: 2px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .boat-pdp-swatch-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .boat-pdp-swatch-box.active {
+    border-color: #0f172a;
+    box-shadow: 0 0 0 2px #38bdf8;
+    transform: scale(1.04);
+  }
+
+  /* Action CTA Buttons */
+  .boat-pdp-cta-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0 16px 0;
+  }
+
+  .boat-pdp-btn {
+    flex: 1;
+    height: 48px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+  .boat-pdp-btn--atc {
+    background: #0f172a;
+    color: #ffffff;
+  }
+
+  .boat-pdp-btn--atc:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+  }
+
+  .boat-pdp-btn--buy {
+    background: #00b853;
+    color: #ffffff;
+  }
+
+  .boat-pdp-btn--buy:hover {
+    background: #009944;
+    transform: translateY(-1px);
+  }
+
+  /* Personalised Banner */
+  .boat-pdp-personalised-banner {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .boat-pdp-personalised-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .boat-pdp-personalised-sub {
+    font-size: 0.76rem;
+    color: #64748b;
+    margin-top: 2px;
+  }
+
+  .boat-pdp-personalised-icon {
+    font-size: 1.4rem;
+  }
+
+  /* Check Delivery Card */
+  .boat-pdp-delivery-card {
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+
+  .boat-pdp-card-title {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 8px;
+  }
+
+  .boat-pdp-pincode-row {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    height: 40px;
+    overflow: hidden;
+    max-width: 320px;
+  }
+
+  .boat-pdp-pincode-input {
+    flex: 1;
+    border: none;
+    padding: 0 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    outline: none;
+    color: #0f172a;
+  }
+
+  .boat-pdp-pincode-btn {
+    background: #0f172a;
+    color: #ffffff;
+    border: none;
+    padding: 0 16px;
+    height: 100%;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .boat-pdp-delivery-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: #00b853;
+  }
+
+  /* Users' Love Card (Yellow Flipkart Style) */
+  .boat-pdp-users-love-card {
+    background: #fffde7;
+    border: 1.5px solid #fff59d;
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+
+  .boat-pdp-users-love-header {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 8px;
+  }
+
+  .boat-pdp-users-love-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .boat-pdp-users-love-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .boat-pdp-love-stat-item {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  .boat-pdp-love-stat-divider {
+    height: 1px;
+    background: #fff59d;
+    width: 85%;
+  }
+
+  .boat-pdp-love-brand-badge {
+    font-size: 1.8rem;
+  }
+
+  /* Rewards Card */
+  .boat-pdp-rewards-card {
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+
+  .boat-pdp-rewards-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .boat-pdp-rewards-text {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #334155;
+  }
+
+  .boat-pdp-rewards-icon {
+    font-size: 1.4rem;
+  }
+
+  /* Active Offers 3-Tier Grid */
+  .boat-pdp-offers-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .boat-pdp-offers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  @media screen and (max-width: 600px) {
+    .boat-pdp-offers-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .boat-pdp-offer-card {
+    background: #e6fcf5;
+    border: 1.5px solid #a3e635;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .boat-pdp-offer-badge {
+    background: #00a651;
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 3px 6px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .boat-pdp-offer-inner {
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .boat-pdp-offer-qty {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .boat-pdp-offer-disc {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #00875a;
+  }
+
+  .boat-pdp-offer-code {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px dashed #00a651;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #0f172a;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 4px;
+    transition: all 0.2s ease;
+  }
+
+  .boat-pdp-offer-code:hover {
+    background: #ffffff;
+    border-style: solid;
+  }
+</style>
+
+<script>
+  // Image Thumbnail Switcher
+  function switchBoatPdpImage(btn, imgSrc) {
+    const mainImg = document.getElementById('BoatPdpMainImage');
+    if (mainImg && imgSrc) {
+      mainImg.src = imgSrc;
+    }
+
+    const allThumbs = document.querySelectorAll('.boat-pdp-thumb-btn');
+    allThumbs.forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // Previous & Next Arrow Handlers
+  function prevBoatPdpImage() {
+    const activeThumb = document.querySelector('.boat-pdp-thumb-btn.active');
+    if (activeThumb && activeThumb.previousElementSibling) {
+      activeThumb.previousElementSibling.click();
+      activeThumb.previousElementSibling.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+
+  function nextBoatPdpImage() {
+    const activeThumb = document.querySelector('.boat-pdp-thumb-btn.active');
+    if (activeThumb && activeThumb.nextElementSibling) {
+      activeThumb.nextElementSibling.click();
+      activeThumb.nextElementSibling.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+
+  // Live Flash Sale Countdown Timer
+  (function() {
+    let totalSeconds = 4 * 3600 + 2 * 60 + 19;
+    const timerElem = document.getElementById('boatPdpCountdown');
+    if (!timerElem) return;
+
+    setInterval(() => {
+      if (totalSeconds > 0) totalSeconds--;
+      const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      timerElem.textContent = `${hours}h : ${minutes}m : ${seconds}s`;
+    }, 1000);
+  })();
+
+  // Variant Swatch Selection
+  function selectBoatPdpVariant(boxBtn) {
+    const allBoxes = document.querySelectorAll('.boat-pdp-swatch-box');
+    allBoxes.forEach(b => b.classList.remove('active'));
+    boxBtn.classList.add('active');
+
+    const variantId = boxBtn.dataset.variantId;
+    const title = boxBtn.dataset.variantTitle;
+    const price = boxBtn.dataset.variantPrice;
+    const compare = boxBtn.dataset.variantCompare;
+    const discount = boxBtn.dataset.variantDiscount;
+    const img = boxBtn.dataset.variantImage;
+    const available = boxBtn.dataset.variantAvailable === 'true';
+
+    // Update Input
+    const input = document.getElementById('BoatPdpSelectedVariantId');
+    if (input && variantId) input.value = variantId;
+
+    // Update Label
+    const label = document.getElementById('BoatPdpColorVal');
+    if (label && title) label.textContent = title;
+
+    // Update Prices
+    const priceElem = document.getElementById('BoatPdpPrice');
+    if (priceElem && price) priceElem.textContent = price;
+
+    const compElem = document.getElementById('BoatPdpCompare');
+    if (compElem) {
+      if (compare) {
+        compElem.textContent = compare;
+        compElem.style.display = 'inline';
+      } else {
+        compElem.style.display = 'none';
+      }
+    }
+
+    const discElem = document.getElementById('BoatPdpDiscount');
+    if (discElem) {
+      if (discount) {
+        discElem.textContent = discount;
+        discElem.style.display = 'inline';
+      } else {
+        discElem.style.display = 'none';
+      }
+    }
+
+    // Update Main Image
+    if (img) {
+      const mainImg = document.getElementById('BoatPdpMainImage');
+      if (mainImg) mainImg.src = img;
+    }
+
+    // Update CTA Buttons
+    const atcBtn = document.getElementById('BoatPdpAtcBtn');
+    const buyBtn = document.getElementById('BoatPdpBuyBtn');
+    if (atcBtn) {
+      atcBtn.disabled = !available;
+      atcBtn.innerHTML = available ? '<span>Add to Cart</span>' : '<span>Sold Out</span>';
+    }
+    if (buyBtn) buyBtn.disabled = !available;
+  }
+
+  // Real-Time Ajax Add To Cart
+  async function handleBoatPdpAddToCart(event, form) {
+    event.preventDefault();
+    const btn = form.querySelector('.boat-pdp-btn--atc');
+    if (!btn || btn.disabled) return;
+
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span>Adding...</span>';
+
+    const formData = new FormData(form);
+    formData.append('sections', 'cart-drawer-section');
+
+    try {
+      const res = await fetch('/cart/add.js', {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+      const data = await res.json();
+
+      if (res.ok && !data.status) {
+        btn.innerHTML = '<span>✓ Added!</span>';
+        btn.style.background = '#00b853';
+
+        // Update Cart Drawer DOM
+        const drawerHtml = data.sections ? data.sections['cart-drawer-section'] : null;
+        if (drawerHtml) {
+          const liveSection = document.getElementById('shopify-section-cart-drawer-section');
+          if (liveSection) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(drawerHtml, 'text/html');
+            const newSection = doc.getElementById('shopify-section-cart-drawer-section');
+            if (newSection) liveSection.replaceWith(newSection);
+          }
+        }
+
+        // Open Drawer
+        const cartDrawer = document.getElementById('cart-drawer');
+        if (cartDrawer && typeof cartDrawer.showDialog === 'function') {
+          cartDrawer.showDialog();
+        } else if (cartDrawer && cartDrawer.querySelector('dialog')) {
+          cartDrawer.querySelector('dialog').showModal();
+        }
+
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.style.background = '';
+          btn.innerHTML = originalText;
+        }, 2000);
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        alert(data.description || 'Could not add to cart.');
+      }
+    } catch (e) {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  }
+
+  // Instant Direct Checkout (Buy Now)
+  async function buyNowBoatPdp(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    const variantId = document.getElementById('BoatPdpSelectedVariantId').value;
+    if (!variantId) return;
+
+    const formData = new FormData();
+    formData.append('id', variantId);
+    formData.append('quantity', 1);
+
+    try {
+      const res = await fetch('/cart/add.js', {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        window.location.href = '/checkout';
+      }
+    } catch(e) {
+      window.location.href = '/checkout';
+    }
+  }
+
+  // Pincode Delivery Checker
+  function checkBoatDelivery() {
+    const pincode = document.getElementById('BoatPdpPincodeInput').value.trim();
+    const status = document.getElementById('BoatPdpDeliveryStatus');
+    if (!pincode) return;
+
+    status.innerHTML = '<span class="boat-pdp-truck-icon">🚚</span> <span class="boat-pdp-delivery-text">Checking delivery for ' + pincode + '...</span>';
+    setTimeout(() => {
+      status.innerHTML = '<span class="boat-pdp-truck-icon">🚚</span> <span class="boat-pdp-delivery-text"><strong>Free delivery</strong> to ' + pincode + ' | By <strong>Sunday, 6 Sept</strong></span>';
+    }, 600);
+  }
+
+  // Copy Coupon Code
+  function copyBoatCoupon(code, elem) {
+    navigator.clipboard.writeText(code);
+    const originalText = elem.innerHTML;
+    elem.innerHTML = '✓ Copied ' + code;
+    setTimeout(() => {
+      elem.innerHTML = originalText;
+    }, 1500);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "boAt Product Page",
+  "settings": [],
+  "presets": [
+    {
+      "name": "boAt Product Page"
+    }
+  ]
+}
+{% endschema %}
