@@ -2472,7 +2472,7 @@ main > .shopify-section:first-child .section:not(.disable-section-top-offset) {
   }
 }
 
-/* Mobile Collection 2-Column Responsive Grid Fix */
+/* FORCE 2 PRODUCTS PER ROW ON ALL MOBILE & TABLET SCREENS */
 @media screen and (max-width: 989px) {
   .collection-wrapper,
   .main-collection-grid,
@@ -2493,22 +2493,30 @@ main > .shopify-section:first-child .section:not(.disable-section-top-offset) {
   .template-collection .product-grid,
   .template-search .product-grid,
   .main-collection-grid .product-grid,
+  .collection-wrapper .product-grid,
+  .predictive-search-results__wrapper-products,
+  .boat-search-products-grid,
   [product-grid-view='mobile-single'],
-  [product-grid-view='default'] {
+  [product-grid-view='default'],
+  [product-grid-view='zoom-out'] {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
     width: 100% !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     padding: 0 !important;
   }
 
-  .product-grid__item {
+  .product-grid__item,
+  .predictive-search-results__card--product {
     width: 100% !important;
+    max-width: 100% !important;
+    grid-column: span 1 !important;
     border: none !important;
     margin: 0 !important;
   }
 }
+
 
 
 
