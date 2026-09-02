@@ -109,4 +109,47 @@
       z-index: var(--facets-open-z-index);
     }
   }
+
+  @media screen and (max-width: 749px) {
+    .collection-wrapper,
+    .main-collection-grid,
+    .product-grid-container {
+      display: block !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding-inline: 8px !important;
+      grid-column: 1 / -1 !important;
+    }
+
+    .product-grid,
+    .product-grid--grid,
+    .product-grid-mobile--large,
+    [product-grid-view='mobile-single'],
+    [product-grid-view='default'] {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 10px !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .product-grid__item {
+      width: 100% !important;
+      border: none !important;
+      margin: 0 !important;
+    }
+
+    .boat-pick-card__details {
+      padding: 8px 8px 10px 8px !important;
+    }
+
+    .boat-pick-card__title {
+      font-size: 0.82rem !important;
+    }
+
+    .boat-pick-card__price {
+      font-size: 0.88rem !important;
+    }
+  }
 {% endstylesheet %}
