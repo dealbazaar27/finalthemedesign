@@ -44,6 +44,10 @@
   >
     {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
 
+    {% if collection != blank and collection.title != blank %}
+      {% render 'collection-header', collection: collection %}
+    {% endif %}
+
     <div
       class="collection-wrapper grid gap-style{% if section.settings.product_grid_width == 'full-width' %} collection-wrapper--grid-full-width{% endif %}"
     >
