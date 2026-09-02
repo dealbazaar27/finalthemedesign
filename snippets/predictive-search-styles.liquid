@@ -470,8 +470,9 @@
   }
 
   .recently-viewed-wrapper {
-    display: grid;
-    grid-template-rows: auto auto;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     max-height: 1000px;
     opacity: 1;
     overflow: visible;
@@ -579,16 +580,12 @@
   }
 
   .predictive-search-results__wrapper-products {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
     padding-block-end: var(--padding-sm);
-    gap: 10px;
     transition: height var(--animation-speed-medium) var(--animation-easing);
-
-    @media screen and (max-width: 480px) {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
   }
 
   .predictive-search-results__wrapper-products:last-child {
