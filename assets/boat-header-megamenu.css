@@ -2034,7 +2034,7 @@ a.boat-megamenu-card,
   .predictive-search-results__list,
   .predictive-search-results__wrapper-products,
   .search-modal .predictive-search-results__list {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
   }
 }
 
@@ -2124,7 +2124,7 @@ a.boat-megamenu-card,
   .main-collection-grid .product-grid,
   .collection-wrapper .product-grid {
     display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(1, 1fr) !important;
     gap: 10px 6px !important;
     padding-left: 5px !important;
     padding-right: 5px !important;
