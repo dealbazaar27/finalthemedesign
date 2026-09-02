@@ -122,7 +122,7 @@
         {% endif %}
       </div>
 
-      {% comment %} 3. Price Row & Silicone Case Offer Badge {% endcomment %}
+      {% comment %} 3. Price Row {% endcomment %}
       <div class="boat-pdp-price-offer-box">
         <div class="boat-pdp-price-group">
           <div class="boat-pdp-price-main">
@@ -136,26 +136,15 @@
           </div>
           <div class="boat-pdp-tax-text">MRP (Inclusive of all taxes)</div>
         </div>
-
-        <div class="boat-pdp-addon-badge">
-          <div class="boat-pdp-addon-text">Get a silicone case @ ₹29</div>
-          <div class="boat-pdp-addon-link">Check Availability</div>
-        </div>
       </div>
 
-      {% comment %} --- Form for Cart Add --- {% endcomment %}
+      {% comment %} --- Form for Cart Add & Variant Selection --- {% endcomment %}
       <form action="/cart/add" method="post" id="{{ form_id }}" onsubmit="handleBoatPdpAddToCart(event, this)">
         <input type="hidden" name="id" id="BoatPdpSelectedVariantId" value="{{ selected_variant.id }}">
         
         {% comment %} 4. Color / Variant Swatches {% endcomment %}
         {% if product.variants.size > 1 %}
           {% for option in product.options_with_values %}
-            {% assign is_color = false %}
-            {% assign opt_name_lower = option.name | downcase %}
-            {% if opt_name_lower contains 'color' or opt_name_lower contains 'colour' or opt_name_lower contains 'shade' %}
-              {% assign is_color = true %}
-            {% endif %}
-
             <div class="boat-pdp-variant-section">
               <div class="boat-pdp-variant-label">
                 Choose your {{ option.name | downcase }} : 
@@ -196,7 +185,42 @@
           {% endfor %}
         {% endif %}
 
-        {% comment %} 5. Action Buttons (Add to Cart + Buy Now) {% endcomment %}
+        {% comment %} 5. DEAL Section (Moved Above Buttons) {% endcomment %}
+        <div class="boat-pdp-offers-section">
+          <div class="boat-pdp-card-title">🔥 DEAL</div>
+          <div class="boat-pdp-offers-grid">
+            
+            <div class="boat-pdp-offer-card">
+              <div class="boat-pdp-offer-badge">MOST POPULAR</div>
+              <div class="boat-pdp-offer-inner">
+                <div class="boat-pdp-offer-qty">Buy 2 or more</div>
+                <div class="boat-pdp-offer-disc">Get 6% Off</div>
+                <div class="boat-pdp-offer-code" onclick="copyBoatCoupon('BOAT6', this)">Code: <strong>BOAT6</strong></div>
+              </div>
+            </div>
+
+            <div class="boat-pdp-offer-card">
+              <div class="boat-pdp-offer-badge">BEST VALUE</div>
+              <div class="boat-pdp-offer-inner">
+                <div class="boat-pdp-offer-qty">Buy 5 or more</div>
+                <div class="boat-pdp-offer-disc">Get 7% Off</div>
+                <div class="boat-pdp-offer-code" onclick="copyBoatCoupon('BOAT7', this)">Code: <strong>BOAT7</strong></div>
+              </div>
+            </div>
+
+            <div class="boat-pdp-offer-card">
+              <div class="boat-pdp-offer-badge">MOST SAVINGS</div>
+              <div class="boat-pdp-offer-inner">
+                <div class="boat-pdp-offer-qty">Buy 10 or more</div>
+                <div class="boat-pdp-offer-disc">Get 10% Off</div>
+                <div class="boat-pdp-offer-code" onclick="copyBoatCoupon('BOAT10', this)">Code: <strong>BOAT10</strong></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {% comment %} 6. Action Buttons (Add to Cart + Buy Now to Checkout) {% endcomment %}
         <div class="boat-pdp-cta-group">
           <button 
             type="submit" 
@@ -221,86 +245,12 @@
             <span>Buy Now</span>
           </button>
         </div>
+
+        {% comment %} Non-intrusive Add-To-Cart Success Alert Toast {% endcomment %}
+        <div id="BoatPdpToast" class="boat-pdp-toast">
+          ✓ Item added to your cart!
+        </div>
       </form>
-
-      {% comment %} 6. Make Your Product Personalised Banner {% endcomment %}
-      <div class="boat-pdp-personalised-banner">
-        <div class="boat-pdp-personalised-text">
-          <div class="boat-pdp-personalised-title">Make Your Product Personalised</div>
-          <div class="boat-pdp-personalised-sub">Get A Customized Engraving And Make It Unmistakably Yours.</div>
-        </div>
-        <div class="boat-pdp-personalised-icon">✒️</div>
-      </div>
-
-      {% comment %} 7. Check Delivery Box {% endcomment %}
-      <div class="boat-pdp-delivery-card">
-        <div class="boat-pdp-card-title">Check Delivery</div>
-        <div class="boat-pdp-pincode-row">
-          <input type="text" class="boat-pdp-pincode-input" id="BoatPdpPincodeInput" value="122008" placeholder="Enter Pincode">
-          <button type="button" class="boat-pdp-pincode-btn" onclick="checkBoatDelivery()">Change</button>
-        </div>
-        <div class="boat-pdp-delivery-status" id="BoatPdpDeliveryStatus">
-          <span class="boat-pdp-truck-icon">🚚</span>
-          <span class="boat-pdp-delivery-text"><strong>Free delivery</strong> | By <strong>Sunday, 6 Sept</strong></span>
-        </div>
-      </div>
-
-      {% comment %} 8. Users' Love Trust Card (Yellow Flipkart Style) {% endcomment %}
-      <div class="boat-pdp-users-love-card">
-        <div class="boat-pdp-users-love-header">Users' Love</div>
-        <div class="boat-pdp-users-love-body">
-          <div class="boat-pdp-users-love-stats">
-            <div class="boat-pdp-love-stat-item">25 Lacs+ units sold on Flipkart</div>
-            <div class="boat-pdp-love-stat-divider"></div>
-            <div class="boat-pdp-love-stat-item">3 Lacs+ 5 ⭐ reviews</div>
-          </div>
-          <div class="boat-pdp-love-brand-badge">🛍️</div>
-        </div>
-      </div>
-
-      {% comment %} 9. Rewards and Payment Offers Card {% endcomment %}
-      <div class="boat-pdp-rewards-card">
-        <div class="boat-pdp-card-title">Rewards and Payment Offers</div>
-        <div class="boat-pdp-rewards-content">
-          <span class="boat-pdp-rewards-text">Earn upto 44 boAt reward points on this product</span>
-          <span class="boat-pdp-rewards-icon">🎁</span>
-        </div>
-      </div>
-
-      {% comment %} 10. Active Offers 3-Tier Grid {% endcomment %}
-      <div class="boat-pdp-offers-section">
-        <div class="boat-pdp-card-title">Active Offers</div>
-        <div class="boat-pdp-offers-grid">
-          
-          <div class="boat-pdp-offer-card">
-            <div class="boat-pdp-offer-badge">MOST POPULAR</div>
-            <div class="boat-pdp-offer-inner">
-              <div class="boat-pdp-offer-qty">Buy 2 or more</div>
-              <div class="boat-pdp-offer-disc">Get 6% Off</div>
-              <div class="boat-pdp-offer-code" onclick="copyBoatCoupon('BOAT6', this)">Code: <strong>BOAT6</strong></div>
-            </div>
-          </div>
-
-          <div class="boat-pdp-offer-card">
-            <div class="boat-pdp-offer-badge">BEST VALUE</div>
-            <div class="boat-pdp-offer-inner">
-              <div class="boat-pdp-offer-qty">Buy 5 or more</div>
-              <div class="boat-pdp-offer-disc">Get 7% Off</div>
-              <div class="boat-pdp-offer-code" onclick="copyBoatCoupon('BOAT7', this)">Code: <strong>BOAT7</strong></div>
-            </div>
-          </div>
-
-          <div class="boat-pdp-offer-card">
-            <div class="boat-pdp-offer-badge">MOST SAVINGS</div>
-            <div class="boat-pdp-offer-inner">
-              <div class="boat-pdp-offer-qty">Buy 10 or more</div>
-              <div class="boat-pdp-offer-disc">Get 10% Off</div>
-              <div class="boat-pdp-offer-code" onclick="copyBoatCoupon('BOAT10', this)">Code: <strong>BOAT10</strong></div>
-            </div>
-          </div>
-
-        </div>
-      </div>
 
     </div>
 
@@ -310,7 +260,7 @@
 
 <style>
   /* ------------------------------------------------------------- */
-  /* boAt Authentic Product Page Styling (100% Matching Reference) */
+  /* boAt Authentic Product Page Styling (Clean & Modern)          */
   /* ------------------------------------------------------------- */
 
   .boat-pdp-container {
@@ -541,7 +491,7 @@
   .boat-pdp-info-col {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
   }
 
   /* Rating Row */
@@ -586,15 +536,13 @@
     font-weight: 500;
   }
 
-  /* Price & Addon Offer Box */
+  /* Price Row */
   .boat-pdp-price-offer-box {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding-bottom: 16px;
+    justify-content: flex-start;
+    padding-bottom: 12px;
     border-bottom: 1px solid #f1f5f9;
-    flex-wrap: wrap;
   }
 
   .boat-pdp-price-main {
@@ -629,36 +577,12 @@
     margin-top: 2px;
   }
 
-  .boat-pdp-addon-badge {
-    background: #fff9db;
-    border: 1.5px solid #ffd43b;
-    border-radius: 20px;
-    padding: 8px 14px;
-    text-align: right;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .boat-pdp-addon-text {
-    font-size: 0.78rem;
-    font-weight: 800;
-    color: #0f172a;
-  }
-
-  .boat-pdp-addon-link {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: #64748b;
-    text-decoration: underline;
-    cursor: pointer;
-  }
-
   /* Color / Variant Swatches */
   .boat-pdp-variant-section {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-top: 4px;
   }
 
   .boat-pdp-variant-label {
@@ -707,214 +631,25 @@
     transform: scale(1.04);
   }
 
-  /* Action CTA Buttons */
-  .boat-pdp-cta-group {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 8px 0 16px 0;
-  }
-
-  .boat-pdp-btn {
-    flex: 1;
-    height: 48px;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    font-weight: 800;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    font-family: inherit;
-  }
-
-  .boat-pdp-btn--atc {
-    background: #0f172a;
-    color: #ffffff;
-  }
-
-  .boat-pdp-btn--atc:hover {
-    background: #1e293b;
-    transform: translateY(-1px);
-  }
-
-  .boat-pdp-btn--buy {
-    background: #00b853;
-    color: #ffffff;
-  }
-
-  .boat-pdp-btn--buy:hover {
-    background: #009944;
-    transform: translateY(-1px);
-  }
-
-  /* Personalised Banner */
-  .boat-pdp-personalised-banner {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .boat-pdp-personalised-title {
-    font-size: 0.85rem;
-    font-weight: 800;
-    color: #0f172a;
-  }
-
-  .boat-pdp-personalised-sub {
-    font-size: 0.76rem;
-    color: #64748b;
-    margin-top: 2px;
-  }
-
-  .boat-pdp-personalised-icon {
-    font-size: 1.4rem;
-  }
-
-  /* Check Delivery Card */
-  .boat-pdp-delivery-card {
-    background: #f8fafc;
-    border: 1px solid #f1f5f9;
-    border-radius: 14px;
-    padding: 14px 16px;
-  }
-
-  .boat-pdp-card-title {
-    font-size: 0.88rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin-bottom: 8px;
-  }
-
-  .boat-pdp-pincode-row {
-    display: flex;
-    align-items: center;
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    height: 40px;
-    overflow: hidden;
-    max-width: 320px;
-  }
-
-  .boat-pdp-pincode-input {
-    flex: 1;
-    border: none;
-    padding: 0 12px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    outline: none;
-    color: #0f172a;
-  }
-
-  .boat-pdp-pincode-btn {
-    background: #0f172a;
-    color: #ffffff;
-    border: none;
-    padding: 0 16px;
-    height: 100%;
-    font-size: 0.8rem;
-    font-weight: 800;
-    cursor: pointer;
-  }
-
-  .boat-pdp-delivery-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-    font-size: 0.82rem;
-    color: #00b853;
-  }
-
-  /* Users' Love Card (Yellow Flipkart Style) */
-  .boat-pdp-users-love-card {
-    background: #fffde7;
-    border: 1.5px solid #fff59d;
-    border-radius: 14px;
-    padding: 14px 16px;
-  }
-
-  .boat-pdp-users-love-header {
-    font-size: 0.88rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin-bottom: 8px;
-  }
-
-  .boat-pdp-users-love-body {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .boat-pdp-users-love-stats {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    flex: 1;
-  }
-
-  .boat-pdp-love-stat-item {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #1e293b;
-  }
-
-  .boat-pdp-love-stat-divider {
-    height: 1px;
-    background: #fff59d;
-    width: 85%;
-  }
-
-  .boat-pdp-love-brand-badge {
-    font-size: 1.8rem;
-  }
-
-  /* Rewards Card */
-  .boat-pdp-rewards-card {
-    background: #f8fafc;
-    border: 1px solid #f1f5f9;
-    border-radius: 14px;
-    padding: 14px 16px;
-  }
-
-  .boat-pdp-rewards-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .boat-pdp-rewards-text {
-    font-size: 0.84rem;
-    font-weight: 700;
-    color: #334155;
-  }
-
-  .boat-pdp-rewards-icon {
-    font-size: 1.4rem;
-  }
-
-  /* Active Offers 3-Tier Grid */
+  /* DEAL Section (Above Buttons) */
   .boat-pdp-offers-section {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin-top: 6px;
+  }
+
+  .boat-pdp-card-title {
+    font-size: 0.92rem;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -0.2px;
   }
 
   .boat-pdp-offers-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 10px;
   }
 
   @media screen and (max-width: 600px) {
@@ -981,6 +716,68 @@
     background: #ffffff;
     border-style: solid;
   }
+
+  /* Action CTA Buttons */
+  .boat-pdp-cta-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 14px 0 8px 0;
+  }
+
+  .boat-pdp-btn {
+    flex: 1;
+    height: 48px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+  .boat-pdp-btn--atc {
+    background: #0f172a;
+    color: #ffffff;
+  }
+
+  .boat-pdp-btn--atc:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+  }
+
+  .boat-pdp-btn--buy {
+    background: #00b853;
+    color: #ffffff;
+  }
+
+  .boat-pdp-btn--buy:hover {
+    background: #009944;
+    transform: translateY(-1px);
+  }
+
+  /* Toast Notification */
+  .boat-pdp-toast {
+    display: none;
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 10px 16px;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 8px;
+    animation: fadeInToast 0.3s ease;
+  }
+
+  @keyframes fadeInToast {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 </style>
 
 <script>
@@ -1042,7 +839,7 @@
     const img = boxBtn.dataset.variantImage;
     const available = boxBtn.dataset.variantAvailable === 'true';
 
-    // Update Input
+    // Update Hidden Input
     const input = document.getElementById('BoatPdpSelectedVariantId');
     if (input && variantId) input.value = variantId;
 
@@ -1090,7 +887,7 @@
     if (buyBtn) buyBtn.disabled = !available;
   }
 
-  // Real-Time Ajax Add To Cart
+  // Smooth Ajax Add To Cart (No annoying popup / clean toast feedback)
   async function handleBoatPdpAddToCart(event, form) {
     event.preventDefault();
     const btn = form.querySelector('.boat-pdp-btn--atc');
@@ -1101,7 +898,6 @@
     btn.innerHTML = '<span>Adding...</span>';
 
     const formData = new FormData(form);
-    formData.append('sections', 'cart-drawer-section');
 
     try {
       const res = await fetch('/cart/add.js', {
@@ -1112,34 +908,32 @@
       const data = await res.json();
 
       if (res.ok && !data.status) {
-        btn.innerHTML = '<span>✓ Added!</span>';
+        btn.innerHTML = '<span>✓ Added to Cart!</span>';
         btn.style.background = '#00b853';
 
-        // Update Cart Drawer DOM
-        const drawerHtml = data.sections ? data.sections['cart-drawer-section'] : null;
-        if (drawerHtml) {
-          const liveSection = document.getElementById('shopify-section-cart-drawer-section');
-          if (liveSection) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(drawerHtml, 'text/html');
-            const newSection = doc.getElementById('shopify-section-cart-drawer-section');
-            if (newSection) liveSection.replaceWith(newSection);
-          }
+        // Show Toast Notification
+        const toast = document.getElementById('BoatPdpToast');
+        if (toast) {
+          toast.style.display = 'block';
+          setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
 
-        // Open Drawer
-        const cartDrawer = document.getElementById('cart-drawer');
-        if (cartDrawer && typeof cartDrawer.showDialog === 'function') {
-          cartDrawer.showDialog();
-        } else if (cartDrawer && cartDrawer.querySelector('dialog')) {
-          cartDrawer.querySelector('dialog').showModal();
-        }
+        // Update Header Cart Count dynamically
+        try {
+          const cartRes = await fetch('/cart.js');
+          const cartData = await cartRes.json();
+          const bubbles = document.querySelectorAll('.cart-count-bubble, [data-cart-count], .cart-bubble');
+          bubbles.forEach(b => {
+            b.textContent = cartData.item_count;
+            b.style.display = 'inline-flex';
+          });
+        } catch(e) {}
 
         setTimeout(() => {
           btn.disabled = false;
           btn.style.background = '';
           btn.innerHTML = originalText;
-        }, 2000);
+        }, 2200);
       } else {
         btn.disabled = false;
         btn.innerHTML = originalText;
@@ -1151,42 +945,27 @@
     }
   }
 
-  // Instant Direct Checkout (Buy Now)
+  // Direct Checkout Redirect for Buy Now Button
   async function buyNowBoatPdp(formId) {
-    const form = document.getElementById(formId);
-    if (!form) return;
-
     const variantId = document.getElementById('BoatPdpSelectedVariantId').value;
     if (!variantId) return;
 
-    const formData = new FormData();
-    formData.append('id', variantId);
-    formData.append('quantity', 1);
+    const buyBtn = document.getElementById('BoatPdpBuyBtn');
+    if (buyBtn) {
+      buyBtn.disabled = true;
+      buyBtn.innerHTML = '<span>Processing...</span>';
+    }
 
     try {
-      const res = await fetch('/cart/add.js', {
+      await fetch('/cart/add.js', {
         method: 'POST',
-        body: formData,
-        headers: { 'Accept': 'application/json' }
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ id: variantId, quantity: 1 })
       });
-      if (res.ok) {
-        window.location.href = '/checkout';
-      }
+      window.location.href = '/checkout';
     } catch(e) {
       window.location.href = '/checkout';
     }
-  }
-
-  // Pincode Delivery Checker
-  function checkBoatDelivery() {
-    const pincode = document.getElementById('BoatPdpPincodeInput').value.trim();
-    const status = document.getElementById('BoatPdpDeliveryStatus');
-    if (!pincode) return;
-
-    status.innerHTML = '<span class="boat-pdp-truck-icon">🚚</span> <span class="boat-pdp-delivery-text">Checking delivery for ' + pincode + '...</span>';
-    setTimeout(() => {
-      status.innerHTML = '<span class="boat-pdp-truck-icon">🚚</span> <span class="boat-pdp-delivery-text"><strong>Free delivery</strong> to ' + pincode + ' | By <strong>Sunday, 6 Sept</strong></span>';
-    }, 600);
   }
 
   // Copy Coupon Code
