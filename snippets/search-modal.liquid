@@ -236,23 +236,11 @@
 
   .predictive-search-form__footer {
     display: none;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    @media screen and (min-width: 750px) {
-      --to-top-gradient-background: linear-gradient(
-        to top,
-        rgb(var(--color-background-rgb) / var(--opacity-90)),
-        rgb(var(--color-background-rgb) / var(--opacity-80)),
-        rgb(var(--color-background-rgb) / var(--opacity-40)),
-        transparent
-      );
-
-      padding-block: var(--padding-xs) var(--padding-lg);
-      background-image: var(--to-top-gradient-background);
-    }
+    position: relative;
+    padding: 12px;
+    background-color: var(--color-background);
+    border-top: 1px solid var(--color-border);
+    text-align: center;
   }
 
   predictive-search-component:has([data-search-results]):not(:has(.predictive-search-results__no-results))
@@ -305,7 +293,7 @@
   /* Add new rule to apply bottom padding only when search button exists */
   .predictive-search-form__content-wrapper:has([data-search-results]):not(:has(.predictive-search-results__no-results))
     > .predictive-search-form__content {
-    padding-block-end: var(--padding-6xl);
+    padding-block-end: var(--padding-md);
   }
 
   .predictive-search-form__header-inner {

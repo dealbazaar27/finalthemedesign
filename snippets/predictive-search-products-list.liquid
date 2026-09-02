@@ -45,7 +45,7 @@
               class="predictive-search-results__card predictive-search-results__card--product"
               ref="recentlyViewedItems[]"
             >
-              {% render 'boat-product-card-item', product: product %}
+              {% render 'predictive-search-product-card-item', product: product %}
             </li>
           {% endfor %}
         {% else %}
@@ -54,7 +54,7 @@
               class="predictive-search-results__card predictive-search-results__card--product"
               ref="recentlyViewedItems[]"
             >
-              {% render 'boat-product-card-item', product: product %}
+              {% render 'predictive-search-product-card-item', product: product %}
             </li>
           {% endfor %}
         {% endif %}
@@ -75,7 +75,7 @@
           class="predictive-search-results__card predictive-search-results__card--product"
           ref="resultsItems[]"
         >
-          {% render 'boat-product-card-item', product: product %}
+          {% render 'predictive-search-product-card-item', product: product %}
         </li>
       {% endfor %}
     </ul>
