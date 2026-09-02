@@ -2034,7 +2034,7 @@ a.boat-megamenu-card,
   .predictive-search-results__list,
   .predictive-search-results__wrapper-products,
   .search-modal .predictive-search-results__list {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
   }
 }
 
