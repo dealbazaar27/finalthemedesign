@@ -126,9 +126,9 @@
   <div class="predictive-search-product-card__content">
     <span class="predictive-search-product-card__title">{{ product.title }}</span>
     <div class="predictive-search-product-card__price-row">
-      <span class="predictive-search-product-card__price">{{ price | money }}</span>
+      <span class="predictive-search-product-card__price">{{ price | money_without_trailing_zeros }}</span>
       {% if compare_price > price %}
-        <span class="predictive-search-product-card__compare-price">{{ compare_price | money }}</span>
+        <span class="predictive-search-product-card__compare-price">{{ compare_price | money_without_trailing_zeros }}</span>
       {% endif %}
     </div>
   </div>
