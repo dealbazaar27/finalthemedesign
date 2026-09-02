@@ -2028,7 +2028,7 @@ a.boat-megamenu-card,
   width: 100% !important;
   box-sizing: border-box !important;
 }
-
+/* 2 */
 @media screen and (max-width: 749px) {
   .predictive-search-results__products,
   .predictive-search-results__list,
