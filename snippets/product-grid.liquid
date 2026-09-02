@@ -25,13 +25,22 @@
     .product-grid--{{ section.id }},
     .product-grid--{{ section.id }}:is(.product-grid--grid),
     .product-grid--{{ section.id }}:is(.product-grid--organic),
-    .product-grid--{{ section.id }}[product-grid-view],
+    .product-grid--{{ section.id }}:not([product-grid-view='mobile-single']),
     .product-grid--{{ section.id }}[product-grid-view='default'],
-    .product-grid--{{ section.id }}[product-grid-view='mobile-single'],
     .product-grid--{{ section.id }}[product-grid-view='zoom-out'] {
       display: grid !important;
       grid-template-columns: repeat(2, 1fr) !important;
       gap: 10px !important;
+      width: 100% !important;
+      list-style: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    .product-grid--{{ section.id }}[product-grid-view='mobile-single'] {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 12px !important;
       width: 100% !important;
       list-style: none !important;
       padding: 0 !important;

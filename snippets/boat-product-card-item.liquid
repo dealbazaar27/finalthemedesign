@@ -234,38 +234,58 @@
   .boat-pick-card__price-row {
     display: flex !important;
     align-items: center !important;
-    justify-content: space-between !important;
-    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    flex-wrap: nowrap !important;
     gap: 4px !important;
+    width: 100% !important;
+    overflow: hidden !important;
   }
 
   .boat-pick-card__price-values {
     display: flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-    flex-wrap: wrap !important;
+    align-items: baseline !important;
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
   }
 
   .boat-pick-card__price {
-    font-size: 0.96rem !important;
+    font-size: 0.84rem !important;
     font-weight: 800 !important;
     color: #000000 !important;
     font-family: 'Plus Jakarta Sans', sans-serif !important;
+    white-space: nowrap !important;
   }
 
   .boat-pick-card__compare-price {
-    font-size: 0.78rem !important;
+    font-size: 0.68rem !important;
     text-decoration: line-through !important;
     color: #94a3b8 !important;
     font-weight: 500 !important;
     font-family: 'Plus Jakarta Sans', sans-serif !important;
+    white-space: nowrap !important;
   }
 
   .boat-pick-card__discount {
-    font-size: 0.8rem !important;
+    font-size: 0.7rem !important;
     font-weight: 800 !important;
     color: #00b853 !important;
     font-family: 'Plus Jakarta Sans', sans-serif !important;
+    white-space: nowrap !important;
+    margin-left: auto !important;
+  }
+
+  @media screen and (max-width: 480px) {
+    .boat-pick-card__price {
+      font-size: 0.78rem !important;
+    }
+    .boat-pick-card__compare-price {
+      font-size: 0.64rem !important;
+    }
+    .boat-pick-card__discount {
+      font-size: 0.65rem !important;
+    }
   }
 </style>
 
