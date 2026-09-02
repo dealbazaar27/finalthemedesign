@@ -13,42 +13,31 @@
   .predictive-search-product-card {
     display: flex !important;
     align-items: center !important;
-    justify-content: space-between !important;
-    gap: 14px !important;
-    padding: 12px 16px !important;
-    background: #ffffff !important;
-    border-radius: 16px !important;
-    border: 1px solid #e2e8f0 !important;
+    gap: 8px !important;
+    padding: 8px 10px !important;
+    background: #f8fafc !important;
+    border-radius: 12px !important;
+    border: 1px solid #f1f5f9 !important;
     text-decoration: none !important;
     transition: all 0.2s ease !important;
     box-sizing: border-box !important;
     width: 100% !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
-    margin-bottom: 12px !important;
+    height: 100% !important;
   }
 
   .predictive-search-product-card:hover {
-    background: #f8fafc !important;
-    border-color: #cbd5e1 !important;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06) !important;
+    background: #f1f5f9 !important;
+    border-color: #e2e8f0 !important;
     transform: translateY(-1px) !important;
   }
 
-  .predictive-search-product-card__left {
-    display: flex !important;
-    align-items: center !important;
-    gap: 14px !important;
-    flex: 1 !important;
-    min-width: 0 !important;
-  }
-
   .predictive-search-product-card__image-wrapper {
-    width: 60px !important;
-    height: 60px !important;
-    min-width: 60px !important;
-    border-radius: 12px !important;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    border-radius: 8px !important;
     overflow: hidden !important;
-    background: #f8fafc !important;
+    background: #ffffff !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -63,24 +52,24 @@
   }
 
   .predictive-search-product-card__placeholder {
-    font-size: 1.5rem !important;
+    font-size: 1.2rem !important;
   }
 
   .predictive-search-product-card__content {
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    gap: 4px !important;
+    gap: 2px !important;
     overflow: hidden !important;
     flex: 1 !important;
     min-width: 0 !important;
   }
 
   .predictive-search-product-card__title {
-    font-size: 0.92rem !important;
+    font-size: 0.78rem !important;
     font-weight: 700 !important;
     color: #0f172a !important;
-    line-height: 1.35 !important;
+    line-height: 1.25 !important;
     display: -webkit-box !important;
     -webkit-line-clamp: 2 !important;
     -webkit-box-orient: vertical !important;
@@ -93,87 +82,54 @@
     color: #d8232a !important;
   }
 
-  .predictive-search-product-card__price-col {
+  .predictive-search-product-card__price-row {
     display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-end !important;
-    justify-content: center !important;
-    flex-shrink: 0 !important;
-    gap: 2px !important;
-    text-align: right !important;
+    align-items: center !important;
+    gap: 5px !important;
+    flex-wrap: wrap !important;
   }
 
   .predictive-search-product-card__price {
-    font-size: 0.94rem !important;
-    font-weight: 800 !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
     color: #d8232a !important;
     white-space: nowrap !important;
     font-family: 'Plus Jakarta Sans', sans-serif !important;
   }
 
   .predictive-search-product-card__compare-price {
-    font-size: 0.8rem !important;
+    font-size: 0.72rem !important;
     text-decoration: line-through !important;
     color: #94a3b8 !important;
-    font-weight: 500 !important;
+    font-weight: 400 !important;
     white-space: nowrap !important;
     font-family: 'Plus Jakarta Sans', sans-serif !important;
-  }
-
-  @media screen and (max-width: 480px) {
-    .predictive-search-product-card {
-      padding: 10px 12px !important;
-      gap: 10px !important;
-      border-radius: 14px !important;
-      margin-bottom: 10px !important;
-    }
-    .predictive-search-product-card__left {
-      gap: 10px !important;
-    }
-    .predictive-search-product-card__image-wrapper {
-      width: 52px !important;
-      height: 52px !important;
-      min-width: 52px !important;
-      border-radius: 10px !important;
-    }
-    .predictive-search-product-card__title {
-      font-size: 0.85rem !important;
-    }
-    .predictive-search-product-card__price {
-      font-size: 0.88rem !important;
-    }
-    .predictive-search-product-card__compare-price {
-      font-size: 0.75rem !important;
-    }
   }
 </style>
 
 <a href="{{ product.url }}" class="predictive-search-product-card">
-  <div class="predictive-search-product-card__left">
-    <div class="predictive-search-product-card__image-wrapper">
-      {% if featured_img != blank %}
-        <img
-          src="{{ featured_img | image_url: width: 180 }}"
-          alt="{{ product.title | escape }}"
-          class="predictive-search-product-card__image"
-          loading="lazy"
-          width="60"
-          height="60"
-        >
-      {% else %}
-        <div class="predictive-search-product-card__placeholder">📦</div>
-      {% endif %}
-    </div>
-
-    <div class="predictive-search-product-card__content">
-      <span class="predictive-search-product-card__title">{{ product.title }}</span>
-    </div>
+  <div class="predictive-search-product-card__image-wrapper">
+    {% if featured_img != blank %}
+      <img
+        src="{{ featured_img | image_url: width: 140 }}"
+        alt="{{ product.title | escape }}"
+        class="predictive-search-product-card__image"
+        loading="lazy"
+        width="48"
+        height="48"
+      >
+    {% else %}
+      <div class="predictive-search-product-card__placeholder">📦</div>
+    {% endif %}
   </div>
 
-  <div class="predictive-search-product-card__price-col">
-    <span class="predictive-search-product-card__price">{{ price | money }}</span>
-    {% if compare_price > price %}
-      <span class="predictive-search-product-card__compare-price">{{ compare_price | money }}</span>
-    {% endif %}
+  <div class="predictive-search-product-card__content">
+    <span class="predictive-search-product-card__title">{{ product.title }}</span>
+    <div class="predictive-search-product-card__price-row">
+      <span class="predictive-search-product-card__price">{{ price | money }}</span>
+      {% if compare_price > price %}
+        <span class="predictive-search-product-card__compare-price">{{ compare_price | money }}</span>
+      {% endif %}
+    </div>
   </div>
 </a>
