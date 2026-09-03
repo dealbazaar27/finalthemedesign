@@ -138,54 +138,79 @@
         </div>
       </div>
 
-      {% comment %} --- Form for Cart Add & Variant Selection --- {% endcomment %}
+      {% comment %} --- Form for Cart Add & Dynamic Variant Selection --- {% endcomment %}
       <form action="/cart/add" method="post" id="{{ form_id }}" onsubmit="handleBoatPdpAddToCart(event, this)">
         <input type="hidden" name="id" id="BoatPdpSelectedVariantId" value="{{ selected_variant.id }}">
         
-        {% comment %} 4. Color / Variant Swatches {% endcomment %}
+        {% comment %} 4. Multi-Option Variant Selectors (Color, Quantity, Size, Pack, etc.) {% endcomment %}
         {% if product.variants.size > 1 %}
           {% for option in product.options_with_values %}
+            {% assign option_index = forloop.index0 %}
+            {% assign opt_name_lower = option.name | downcase %}
+            {% assign is_color = false %}
+            {% if opt_name_lower contains 'color' or opt_name_lower contains 'colour' or opt_name_lower contains 'shade' %}
+              {% assign is_color = true %}
+            {% endif %}
+
             <div class="boat-pdp-variant-section">
               <div class="boat-pdp-variant-label">
-                Choose your {{ option.name | downcase }} : 
-                <span class="boat-pdp-variant-val" id="BoatPdpColorVal">{{ selected_variant.title }}</span>
+                Choose your {{ option.name }} : 
+                <span class="boat-pdp-variant-val" id="BoatPdpOptVal-{{ option_index }}">{{ option.selected_value }}</span>
               </div>
 
               <div class="boat-pdp-swatches-grid">
                 {% for value in option.values %}
-                  {% assign variant_for_val = null %}
+                  {% assign swatch_variant = null %}
                   {% for variant in product.variants %}
-                    {% if variant.options contains value %}
-                      {% assign variant_for_val = variant %}
+                    {% if variant.options[option_index] == value %}
+                      {% assign swatch_variant = variant %}
                       {% break %}
                     {% endif %}
                   {% endfor %}
 
-                  <button 
-                    type="button" 
-                    class="boat-pdp-swatch-box{% if selected_variant.options contains value %} active{% endif %}"
-                    data-variant-id="{{ variant_for_val.id }}"
-                    data-variant-title="{{ value | escape }}"
-                    data-variant-price="{{ variant_for_val.price | money_without_trailing_zeros }}"
-                    data-variant-compare="{{ variant_for_val.compare_at_price | money_without_trailing_zeros }}"
-                    data-variant-image="{% if variant_for_val.featured_image != blank %}{{ variant_for_val.featured_image | image_url: width: 1000 }}{% endif %}"
-                    data-variant-discount="{% if variant_for_val.compare_at_price > variant_for_val.price %}{{ variant_for_val.compare_at_price | minus: variant_for_val.price | times: 100.0 | divided_by: variant_for_val.compare_at_price | round }}% Off{% endif %}"
-                    data-variant-available="{{ variant_for_val.available }}"
-                    onclick="selectBoatPdpVariant(this)"
-                  >
-                    {% if variant_for_val.featured_image != blank %}
-                      <img src="{{ variant_for_val.featured_image | image_url: width: 120, height: 120 }}" alt="{{ value | escape }}" loading="lazy">
-                    {% else %}
+                  {% if is_color %}
+                    <button 
+                      type="button" 
+                      class="boat-pdp-opt-btn boat-pdp-swatch-box{% if option.selected_value == value %} active{% endif %}"
+                      data-option-index="{{ option_index }}"
+                      data-option-value="{{ value | escape }}"
+                      onclick="handleOptionSelect(this)"
+                      aria-label="{{ value | escape }}"
+                    >
+                      {% if swatch_variant.featured_image != blank %}
+                        <img src="{{ swatch_variant.featured_image | image_url: width: 120, height: 120 }}" alt="{{ value | escape }}" loading="lazy">
+                      {% else %}
+                        <span>{{ value }}</span>
+                      {% endif %}
+                    </button>
+                  {% else %}
+                    <button 
+                      type="button" 
+                      class="boat-pdp-opt-btn boat-pdp-pill-btn{% if option.selected_value == value %} active{% endif %}"
+                      data-option-index="{{ option_index }}"
+                      data-option-value="{{ value | escape }}"
+                      onclick="handleOptionSelect(this)"
+                    >
                       <span>{{ value }}</span>
-                    {% endif %}
-                  </button>
+                    </button>
+                  {% endif %}
                 {% endfor %}
               </div>
             </div>
           {% endfor %}
         {% endif %}
 
-        {% comment %} 5. DEAL Section (Moved Above Buttons) {% endcomment %}
+        {% comment %} Quantity Stepper Selector {% endcomment %}
+        <div class="boat-pdp-qty-wrapper">
+          <span class="boat-pdp-qty-label">Quantity :</span>
+          <div class="boat-pdp-qty-stepper">
+            <button type="button" class="boat-pdp-qty-btn" onclick="changePdpQty(-1)" aria-label="Decrease quantity">−</button>
+            <input type="number" id="BoatPdpQuantity" name="quantity" value="1" min="1" class="boat-pdp-qty-input" readonly>
+            <button type="button" class="boat-pdp-qty-btn" onclick="changePdpQty(1)" aria-label="Increase quantity">+</button>
+          </div>
+        </div>
+
+        {% comment %} 5. DEAL Section (Above Buttons) {% endcomment %}
         <div class="boat-pdp-offers-section">
           <div class="boat-pdp-card-title">🔥 DEAL</div>
           <div class="boat-pdp-offers-grid">
@@ -246,10 +271,6 @@
           </button>
         </div>
 
-        {% comment %} Non-intrusive Add-To-Cart Success Alert Toast {% endcomment %}
-        <div id="BoatPdpToast" class="boat-pdp-toast">
-          ✓ Item added to your cart!
-        </div>
       </form>
 
     </div>
@@ -258,9 +279,28 @@
 
 </div>
 
+{% comment %} Output Master Product Variants JSON {% endcomment %}
+<script type="application/json" id="BoatPdpVariantsData">
+  [
+    {% for v in product.variants %}
+      {
+        "id": {{ v.id }},
+        "title": {{ v.title | json }},
+        "option1": {{ v.option1 | json }},
+        "option2": {{ v.option2 | json }},
+        "option3": {{ v.option3 | json }},
+        "price": {{ v.price }},
+        "compare_at_price": {{ v.compare_at_price | default: 0 }},
+        "available": {{ v.available }},
+        "featured_image": {% if v.featured_image != blank %}{{ v.featured_image | image_url: width: 1000 | json }}{% else %}null{% endif %}
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ]
+</script>
+
 <style>
   /* ------------------------------------------------------------- */
-  /* boAt Authentic Product Page Styling (Clean & Modern)          */
+  /* boAt Authentic Product Page Styling                           */
   /* ------------------------------------------------------------- */
 
   .boat-pdp-container {
@@ -577,12 +617,12 @@
     margin-top: 2px;
   }
 
-  /* Color / Variant Swatches */
+  /* Option / Swatch / Pill Selectors */
   .boat-pdp-variant-section {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 4px;
+    gap: 8px;
+    margin-top: 6px;
   }
 
   .boat-pdp-variant-label {
@@ -599,7 +639,7 @@
   .boat-pdp-swatches-grid {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
   }
 
@@ -631,12 +671,101 @@
     transform: scale(1.04);
   }
 
+  .boat-pdp-pill-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1.5px solid #cbd5e1;
+    background: #f8fafc;
+    color: #1e293b;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+  .boat-pdp-pill-btn:hover {
+    border-color: #0f172a;
+    background: #ffffff;
+  }
+
+  .boat-pdp-pill-btn.active {
+    border-color: #0f172a;
+    background: #0f172a;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2);
+  }
+
+  /* Quantity Stepper */
+  .boat-pdp-qty-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .boat-pdp-qty-label {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .boat-pdp-qty-stepper {
+    display: flex;
+    align-items: center;
+    background: #f1f5f9;
+    border-radius: 24px;
+    padding: 3px 6px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .boat-pdp-qty-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
+    font-size: 1.1rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0;
+  }
+
+  .boat-pdp-qty-btn:hover {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+  }
+
+  .boat-pdp-qty-input {
+    width: 38px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #0f172a;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+
+  .boat-pdp-qty-input::-webkit-outer-spin-button,
+  .boat-pdp-qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
   /* DEAL Section (Above Buttons) */
   .boat-pdp-offers-section {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 6px;
+    margin-top: 10px;
   }
 
   .boat-pdp-card-title {
@@ -759,25 +888,6 @@
     background: #009944;
     transform: translateY(-1px);
   }
-
-  /* Toast Notification */
-  .boat-pdp-toast {
-    display: none;
-    background: #0f172a;
-    color: #ffffff;
-    font-size: 0.85rem;
-    font-weight: 700;
-    padding: 10px 16px;
-    border-radius: 8px;
-    text-align: center;
-    margin-top: 8px;
-    animation: fadeInToast 0.3s ease;
-  }
-
-  @keyframes fadeInToast {
-    from { opacity: 0; transform: translateY(-6px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
 </style>
 
 <script>
@@ -825,69 +935,107 @@
     }, 1000);
   })();
 
-  // Variant Swatch Selection
-  function selectBoatPdpVariant(boxBtn) {
-    const allBoxes = document.querySelectorAll('.boat-pdp-swatch-box');
-    allBoxes.forEach(b => b.classList.remove('active'));
-    boxBtn.classList.add('active');
-
-    const variantId = boxBtn.dataset.variantId;
-    const title = boxBtn.dataset.variantTitle;
-    const price = boxBtn.dataset.variantPrice;
-    const compare = boxBtn.dataset.variantCompare;
-    const discount = boxBtn.dataset.variantDiscount;
-    const img = boxBtn.dataset.variantImage;
-    const available = boxBtn.dataset.variantAvailable === 'true';
-
-    // Update Hidden Input
-    const input = document.getElementById('BoatPdpSelectedVariantId');
-    if (input && variantId) input.value = variantId;
-
-    // Update Label
-    const label = document.getElementById('BoatPdpColorVal');
-    if (label && title) label.textContent = title;
-
-    // Update Prices
-    const priceElem = document.getElementById('BoatPdpPrice');
-    if (priceElem && price) priceElem.textContent = price;
-
-    const compElem = document.getElementById('BoatPdpCompare');
-    if (compElem) {
-      if (compare) {
-        compElem.textContent = compare;
-        compElem.style.display = 'inline';
-      } else {
-        compElem.style.display = 'none';
-      }
-    }
-
-    const discElem = document.getElementById('BoatPdpDiscount');
-    if (discElem) {
-      if (discount) {
-        discElem.textContent = discount;
-        discElem.style.display = 'inline';
-      } else {
-        discElem.style.display = 'none';
-      }
-    }
-
-    // Update Main Image
-    if (img) {
-      const mainImg = document.getElementById('BoatPdpMainImage');
-      if (mainImg) mainImg.src = img;
-    }
-
-    // Update CTA Buttons
-    const atcBtn = document.getElementById('BoatPdpAtcBtn');
-    const buyBtn = document.getElementById('BoatPdpBuyBtn');
-    if (atcBtn) {
-      atcBtn.disabled = !available;
-      atcBtn.innerHTML = available ? '<span>Add to Cart</span>' : '<span>Sold Out</span>';
-    }
-    if (buyBtn) buyBtn.disabled = !available;
+  // Quantity Stepper Handler
+  function changePdpQty(delta) {
+    const input = document.getElementById('BoatPdpQuantity');
+    if (!input) return;
+    let val = parseInt(input.value, 10) || 1;
+    val = Math.max(1, val + delta);
+    input.value = val;
   }
 
-  // Smooth Ajax Add To Cart (No annoying popup / clean toast feedback)
+  // Master Variant Resolver & Multi-Option Matching
+  const variantsData = JSON.parse(document.getElementById('BoatPdpVariantsData').textContent);
+  let selectedOptions = [
+    {% for option in product.options_with_values %}
+      {{ option.selected_value | json }}{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ];
+
+  function formatMoneyWithoutDecimals(cents) {
+    const amount = Math.floor(cents / 100);
+    return 'Rs.' + amount.toLocaleString();
+  }
+
+  function handleOptionSelect(btn) {
+    const optIndex = parseInt(btn.dataset.optionIndex, 10);
+    const optValue = btn.dataset.optionValue;
+
+    selectedOptions[optIndex] = optValue;
+
+    // Update active class
+    const parentGrid = btn.closest('.boat-pdp-swatches-grid');
+    if (parentGrid) {
+      parentGrid.querySelectorAll('.boat-pdp-opt-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    // Update option title label
+    const labelElem = document.getElementById('BoatPdpOptVal-' + optIndex);
+    if (labelElem) labelElem.textContent = optValue;
+
+    // Find matching variant from master variantsData
+    const matchedVariant = variantsData.find(v => {
+      if (selectedOptions.length === 1) return v.option1 === selectedOptions[0];
+      if (selectedOptions.length === 2) return v.option1 === selectedOptions[0] && v.option2 === selectedOptions[1];
+      if (selectedOptions.length === 3) return v.option1 === selectedOptions[0] && v.option2 === selectedOptions[1] && v.option3 === selectedOptions[2];
+      return false;
+    });
+
+    if (matchedVariant) {
+      // Update hidden input
+      const idInput = document.getElementById('BoatPdpSelectedVariantId');
+      if (idInput) idInput.value = matchedVariant.id;
+
+      // Update Price
+      const priceElem = document.getElementById('BoatPdpPrice');
+      if (priceElem) priceElem.textContent = formatMoneyWithoutDecimals(matchedVariant.price);
+
+      // Update Compare Price & Discount
+      const compElem = document.getElementById('BoatPdpCompare');
+      const discElem = document.getElementById('BoatPdpDiscount');
+      if (matchedVariant.compare_at_price > matchedVariant.price) {
+        const discPercent = Math.round(((matchedVariant.compare_at_price - matchedVariant.price) * 100) / matchedVariant.compare_at_price);
+        if (compElem) {
+          compElem.textContent = formatMoneyWithoutDecimals(matchedVariant.compare_at_price);
+          compElem.style.display = 'inline';
+        }
+        if (discElem) {
+          discElem.textContent = discPercent + '% Off';
+          discElem.style.display = 'inline';
+        }
+      } else {
+        if (compElem) compElem.style.display = 'none';
+        if (discElem) discElem.style.display = 'none';
+      }
+
+      // Update Main Image if variant has image
+      if (matchedVariant.featured_image) {
+        const mainImg = document.getElementById('BoatPdpMainImage');
+        if (mainImg) mainImg.src = matchedVariant.featured_image;
+      }
+
+      // Update Buttons
+      const atcBtn = document.getElementById('BoatPdpAtcBtn');
+      const buyBtn = document.getElementById('BoatPdpBuyBtn');
+      if (atcBtn) {
+        atcBtn.disabled = !matchedVariant.available;
+        atcBtn.innerHTML = matchedVariant.available ? '<span>Add to Cart</span>' : '<span>Sold Out</span>';
+      }
+      if (buyBtn) buyBtn.disabled = !matchedVariant.available;
+    } else {
+      // Combination unavailable
+      const atcBtn = document.getElementById('BoatPdpAtcBtn');
+      const buyBtn = document.getElementById('BoatPdpBuyBtn');
+      if (atcBtn) {
+        atcBtn.disabled = true;
+        atcBtn.innerHTML = '<span>Unavailable</span>';
+      }
+      if (buyBtn) buyBtn.disabled = true;
+    }
+  }
+
+  // Real-Time Ajax Add To Cart with Instant Header Cart & Drawer Sync
   async function handleBoatPdpAddToCart(event, form) {
     event.preventDefault();
     const btn = form.querySelector('.boat-pdp-btn--atc');
@@ -897,13 +1045,22 @@
     btn.disabled = true;
     btn.innerHTML = '<span>Adding...</span>';
 
-    const formData = new FormData(form);
+    const variantId = document.getElementById('BoatPdpSelectedVariantId').value;
+    const qtyInput = document.getElementById('BoatPdpQuantity');
+    const quantity = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
 
     try {
       const res = await fetch('/cart/add.js', {
         method: 'POST',
-        body: formData,
-        headers: { 'Accept': 'application/json' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          id: variantId,
+          quantity: quantity,
+          sections: 'cart-drawer-section'
+        })
       });
       const data = await res.json();
 
@@ -911,33 +1068,52 @@
         btn.innerHTML = '<span>✓ Added to Cart!</span>';
         btn.style.background = '#00b853';
 
-        // Show Toast Notification
-        const toast = document.getElementById('BoatPdpToast');
-        if (toast) {
-          toast.style.display = 'block';
-          setTimeout(() => { toast.style.display = 'none'; }, 3000);
-        }
-
-        // Update Header Cart Count dynamically
+        // 1. Instantly Update Header Cart Bubble / Count across the theme
         try {
           const cartRes = await fetch('/cart.js');
           const cartData = await cartRes.json();
-          const bubbles = document.querySelectorAll('.cart-count-bubble, [data-cart-count], .cart-bubble');
-          bubbles.forEach(b => {
-            b.textContent = cartData.item_count;
-            b.style.display = 'inline-flex';
+          document.querySelectorAll('.cart-bubble, .cart-count-bubble, [data-cart-count], .cart-bubble__text-count, [data-testid="cart-bubble"]').forEach(el => {
+            el.textContent = cartData.item_count;
+            el.classList.remove('visually-hidden', 'hidden');
+            el.style.display = 'flex';
           });
         } catch(e) {}
+
+        // 2. Update Cart Drawer DOM in real-time
+        const drawerHtml = data.sections ? data.sections['cart-drawer-section'] : null;
+        if (drawerHtml) {
+          const liveSection = document.getElementById('shopify-section-cart-drawer-section');
+          if (liveSection) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(drawerHtml, 'text/html');
+            const newSection = doc.getElementById('shopify-section-cart-drawer-section');
+            if (newSection) liveSection.replaceWith(newSection);
+          }
+        }
+
+        // 3. Open Cart Drawer smoothly so user sees the newly added item in real time!
+        const cartDrawer = document.getElementById('cart-drawer');
+        if (cartDrawer) {
+          if (typeof cartDrawer.showDialog === 'function') {
+            cartDrawer.showDialog();
+          } else if (cartDrawer.querySelector('dialog')) {
+            cartDrawer.querySelector('dialog').showModal();
+          }
+        }
+
+        // Dispatch Theme Events
+        document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: data } }));
+        document.dispatchEvent(new CustomEvent('theme:cart:change', { detail: { cart: data } }));
 
         setTimeout(() => {
           btn.disabled = false;
           btn.style.background = '';
           btn.innerHTML = originalText;
-        }, 2200);
+        }, 2500);
       } else {
         btn.disabled = false;
         btn.innerHTML = originalText;
-        alert(data.description || 'Could not add to cart.');
+        alert(data.description || 'Could not add product to cart.');
       }
     } catch (e) {
       btn.disabled = false;
@@ -945,22 +1121,25 @@
     }
   }
 
-  // Direct Checkout Redirect for Buy Now Button
+  // Direct Checkout for Buy Now Button
   async function buyNowBoatPdp(formId) {
     const variantId = document.getElementById('BoatPdpSelectedVariantId').value;
     if (!variantId) return;
 
+    const qtyInput = document.getElementById('BoatPdpQuantity');
+    const quantity = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+
     const buyBtn = document.getElementById('BoatPdpBuyBtn');
     if (buyBtn) {
       buyBtn.disabled = true;
-      buyBtn.innerHTML = '<span>Processing...</span>';
+      buyBtn.innerHTML = '<span>Proceeding to Checkout...</span>';
     }
 
     try {
       await fetch('/cart/add.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ id: variantId, quantity: 1 })
+        body: JSON.stringify({ id: variantId, quantity: quantity })
       });
       window.location.href = '/checkout';
     } catch(e) {
