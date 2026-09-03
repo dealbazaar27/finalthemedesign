@@ -8,8 +8,8 @@
   
   <div class="boat-search-header-container">
     <div class="boat-search-title-row">
-      <h1 class="boat-search-main-heading">
-        {% if search.performed %}
+      <h1 class="boat-search-main-heading" id="BoatSearchHeading">
+        {% if search.performed and search.terms != blank %}
           Search <span class="boat-search-highlight">Results</span>
         {% else %}
           Search <span class="boat-search-highlight">Products</span>
@@ -18,9 +18,9 @@
       <div class="boat-search-red-line"></div>
     </div>
 
-    {% comment %} Modern Search Bar Form with Live Predictive Auto-Suggestions {% endcomment %}
+    {% comment %} Modern Search Bar Form with Instant Live Grid Filtering {% endcomment %}
     <div class="boat-search-form-wrapper">
-      <form action="{{ routes.search_url }}" method="get" role="search" class="boat-search-bar-form">
+      <form action="{{ routes.search_url }}" method="get" role="search" class="boat-search-bar-form" id="BoatSearchForm">
         <input type="hidden" name="type" value="product">
         <input type="hidden" name="options[prefix]" value="last">
         
@@ -35,7 +35,7 @@
             name="q" 
             id="BoatSearchInput"
             value="{{ search.terms | escape }}" 
-            placeholder="{{ section.settings.placeholder_text | default: 'Type to search products, deals, brands...' }}"
+            placeholder="{{ section.settings.placeholder_text | default: 'Search for products, brands and deals...' }}"
             class="boat-search-text-input"
             autocomplete="off"
             autocorrect="off"
@@ -43,45 +43,42 @@
             spellcheck="false"
           >
 
-          {% if search.terms != blank %}
-            <a href="{{ routes.search_url }}" class="boat-search-clear-btn" aria-label="Clear search">✕</a>
-          {% endif %}
+          <span class="boat-search-loading-spinner" id="BoatSearchSpinner" style="display: none;"></span>
+
+          <button 
+            type="button" 
+            class="boat-search-clear-btn" 
+            id="BoatSearchClearBtn" 
+            aria-label="Clear search"
+            style="{% if search.terms == blank %}display: none;{% endif %}"
+          >✕</button>
 
           <button type="submit" class="boat-search-btn-submit">
             <span>Search</span>
           </button>
         </div>
       </form>
-
-      {% comment %} Live Predictive Auto-Suggestions Dropdown {% endcomment %}
-      <div class="boat-search-suggestions-dropdown" id="BoatSearchSuggestionsDropdown" style="display: none;">
-        <div class="boat-search-suggestions-header">
-          <span>✨ Suggested Products</span>
-        </div>
-        <div class="boat-search-suggestions-list" id="BoatSearchSuggestionsList">
-          <!-- Populated live via JS as user types -->
-        </div>
-        <a href="#" class="boat-search-view-all-btn" id="BoatSearchViewAllLink" style="display: none;">
-          View all matching results for "<span id="BoatSearchViewAllQuery"></span>" →
-        </a>
-      </div>
     </div>
 
-    {% if search.performed %}
-      <div class="boat-search-meta-info">
+    <div class="boat-search-meta-info" id="BoatSearchMetaInfo">
+      {% if search.performed and search.terms != blank %}
         {% if results_count > 0 %}
           Showing <strong>{{ results_count }}</strong> {% if results_count == 1 %}product{% else %}products{% endif %} for "<strong>{{ search.terms | escape }}</strong>"
         {% else %}
           No results found for "<strong>{{ search.terms | escape }}</strong>"
         {% endif %}
-      </div>
-    {% endif %}
+      {% endif %}
+    </div>
   </div>
 
-  {% comment %} Results Grid / Empty State {% endcomment %}
-  <div class="boat-search-results-area">
+  {% comment %} Live Results Grid / Empty State Area {% endcomment %}
+  <div class="boat-search-results-area" id="BoatSearchResultsArea">
     {% paginate search.results by products_per_page %}
-      {% if search.performed and results_count > 0 %}
+      {% if search.performed and search.terms != blank and results_count > 0 %}
+        <div class="boat-search-section-header">
+          <h2 class="boat-search-grid-heading">🔍 Matching Products ({{ results_count }})</h2>
+        </div>
+        
         <div class="boat-search-grid">
           {% for item in search_products %}
             <div class="boat-search-grid-item">
@@ -96,7 +93,7 @@
           </div>
         {% endif %}
 
-      {% elsif search.performed and results_count == 0 %}
+      {% elsif search.performed and search.terms != blank and results_count == 0 %}
         <div class="boat-search-empty-state">
           <div class="boat-search-empty-icon">🔍</div>
           <h2 class="boat-search-empty-title">We couldn't find any matches</h2>
@@ -107,7 +104,7 @@
             <div class="boat-search-trending-section">
               <h3 class="boat-search-trending-title">🔥 Popular Products You Might Like</h3>
               <div class="boat-search-grid">
-                {% for product in fallback_collection.products limit: 8 %}
+                {% for product in fallback_collection.products limit: 12 %}
                   <div class="boat-search-grid-item">
                     {% render 'boat-product-card-item', product: product %}
                   </div>
@@ -123,7 +120,7 @@
           <div class="boat-search-trending-section">
             <h3 class="boat-search-trending-title">🔥 Explore Trending Products</h3>
             <div class="boat-search-grid">
-              {% for product in default_col.products limit: 12 %}
+              {% for product in default_col.products limit: 16 %}
                 <div class="boat-search-grid-item">
                   {% render 'boat-product-card-item', product: product %}
                 </div>
@@ -153,8 +150,8 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    margin-bottom: 36px;
-    gap: 16px;
+    margin-bottom: 28px;
+    gap: 14px;
   }
 
   .boat-search-title-row {
@@ -191,8 +188,7 @@
     position: relative;
     width: 100%;
     max-width: 680px;
-    margin: 8px auto 0 auto;
-    z-index: 50;
+    margin: 4px auto 0 auto;
   }
 
   .boat-search-bar-form {
@@ -240,10 +236,28 @@
     font-weight: 500;
   }
 
+  .boat-search-loading-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #e2e8f0;
+    border-top-color: #d8232a;
+    border-radius: 50%;
+    animation: boatSpinnerRotate 0.6s linear infinite;
+    margin: 0 6px;
+    flex-shrink: 0;
+  }
+
+  @keyframes boatSpinnerRotate {
+    to { transform: rotate(360deg); }
+  }
+
   .boat-search-clear-btn {
     color: #94a3b8;
-    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
     font-size: 14px;
+    font-weight: 700;
     padding: 6px 10px;
     display: flex;
     align-items: center;
@@ -273,173 +287,33 @@
     transform: scale(1.02);
   }
 
-  /* Live Suggestions Dropdown */
-  .boat-search-suggestions-dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    right: 0;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.14);
-    overflow: hidden;
-    text-align: left;
-    z-index: 999;
-    animation: fadeInDropdown 0.2s ease;
-  }
-
-  @keyframes fadeInDropdown {
-    from { opacity: 0; transform: translateY(-6px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .boat-search-suggestions-header {
-    padding: 10px 16px;
-    font-size: 0.78rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    color: #64748b;
-    background: #f8fafc;
-    border-bottom: 1px solid #f1f5f9;
-  }
-
-  .boat-search-suggestions-list {
-    max-height: 380px;
-    overflow-y: auto;
-  }
-
-  .boat-suggestion-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    border-bottom: 1px solid #f1f5f9;
-    text-decoration: none;
-    color: inherit;
-    transition: background 0.15s ease;
-  }
-
-  .boat-suggestion-item:last-child {
-    border-bottom: none;
-  }
-
-  .boat-suggestion-item:hover {
-    background: #f8fafc;
-  }
-
-  .boat-suggestion-thumb {
-    width: 48px;
-    height: 48px;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-    overflow: hidden;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #ffffff;
-  }
-
-  .boat-suggestion-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .boat-suggestion-no-img {
-    font-size: 20px;
-  }
-
-  .boat-suggestion-details {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .boat-suggestion-title {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #0f172a;
-    line-height: 1.3;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .boat-highlight-matched {
-    color: #d8232a;
-    font-weight: 900;
-    background: #fee2e2;
-    border-radius: 2px;
-    padding: 0 2px;
-  }
-
-  .boat-suggestion-price-row {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    margin-top: 3px;
-  }
-
-  .boat-suggestion-price {
-    font-size: 0.88rem;
-    font-weight: 800;
-    color: #0f172a;
-  }
-
-  .boat-suggestion-compare {
-    font-size: 0.78rem;
-    color: #94a3b8;
-    text-decoration: line-through;
-    font-weight: 600;
-  }
-
-  .boat-suggestion-arrow {
-    color: #cbd5e1;
-    font-size: 1.25rem;
-    font-weight: 700;
-    transition: transform 0.15s ease, color 0.15s ease;
-  }
-
-  .boat-suggestion-item:hover .boat-suggestion-arrow {
-    color: #0f172a;
-    transform: translateX(3px);
-  }
-
-  .boat-search-view-all-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 16px;
-    background: #f1f5f9;
-    color: #0f172a;
-    font-size: 0.88rem;
-    font-weight: 800;
-    text-decoration: none;
-    border-top: 1px solid #e2e8f0;
-    transition: background 0.15s ease;
-  }
-
-  .boat-search-view-all-btn:hover {
-    background: #e2e8f0;
-    color: #d8232a;
-  }
-
-  .boat-search-no-match {
-    padding: 16px;
-    text-align: center;
-    color: #64748b;
-    font-size: 0.9rem;
-  }
-
   .boat-search-meta-info {
     font-size: 0.95rem;
     color: #475569;
-    margin-top: 4px;
+    min-height: 20px;
+  }
+
+  .boat-search-section-header {
+    margin-bottom: 18px;
+  }
+
+  .boat-search-grid-heading {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #0f172a;
+    margin: 0;
   }
 
   /* Product Grid */
+  .boat-search-results-area {
+    transition: opacity 0.2s ease;
+  }
+
+  .boat-search-results-area.is-loading {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
   .boat-search-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -511,7 +385,7 @@
   }
 
   .boat-search-trending-section {
-    margin-top: 40px;
+    margin-top: 10px;
     text-align: left;
   }
 
@@ -520,6 +394,9 @@
     font-weight: 900;
     color: #0f172a;
     margin: 0 0 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   /* Responsive Breakpoints */
@@ -532,7 +409,7 @@
 
   @media screen and (max-width: 640px) {
     .boat-search-page-wrapper {
-      padding: 20px 10px 48px 10px;
+      padding: 16px 10px 48px 10px;
     }
 
     .boat-search-main-heading {
@@ -552,7 +429,7 @@
       font-size: 0.85rem;
     }
 
-    /* 2 Columns on Mobile matching Deals & Store Layout */
+    /* Strict 2 Columns on Mobile matching Deal Bazaar layout */
     .boat-search-grid {
       grid-template-columns: repeat(2, 1fr);
       gap: 8px;
@@ -561,114 +438,114 @@
     .boat-search-meta-info {
       font-size: 0.85rem;
     }
+
+    .boat-search-trending-title {
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+    }
   }
 </style>
 
 <script>
-  // Live Instant Predictive Search Dropdown as Customer Types
-  (function initLivePredictiveSearch() {
-    const input = document.getElementById('BoatSearchInput');
-    const dropdown = document.getElementById('BoatSearchSuggestionsDropdown');
-    const list = document.getElementById('BoatSearchSuggestionsList');
-    const viewAllLink = document.getElementById('BoatSearchViewAllLink');
-    const viewAllQuery = document.getElementById('BoatSearchViewAllQuery');
+  // Live Instant In-Page Grid Filtering on Search Page as User Types
+  (function initLiveInPageSearch() {
+    const searchInput = document.getElementById('BoatSearchInput');
+    const searchForm = document.getElementById('BoatSearchForm');
+    const resultsArea = document.getElementById('BoatSearchResultsArea');
+    const metaInfo = document.getElementById('BoatSearchMetaInfo');
+    const heading = document.getElementById('BoatSearchHeading');
+    const spinner = document.getElementById('BoatSearchSpinner');
+    const clearBtn = document.getElementById('BoatSearchClearBtn');
 
-    if (!input || !dropdown || !list) return;
+    if (!searchInput || !resultsArea) return;
 
-    let debounceTimer = null;
+    let debounceTimeout = null;
+    let currentAbortController = null;
+    const initialContent = resultsArea.innerHTML;
+    const initialMeta = metaInfo ? metaInfo.innerHTML : '';
+    const initialHeading = heading ? heading.innerHTML : '';
 
-    input.addEventListener('input', function() {
-      const q = this.value.trim();
-      clearTimeout(debounceTimer);
+    searchInput.addEventListener('input', function() {
+      const query = this.value.trim();
 
-      if (q.length < 1) {
-        dropdown.style.display = 'none';
-        list.innerHTML = '';
+      if (clearBtn) {
+        clearBtn.style.display = query.length > 0 ? 'flex' : 'none';
+      }
+
+      clearTimeout(debounceTimeout);
+
+      if (query.length === 0) {
+        if (currentAbortController) currentAbortController.abort();
+        if (spinner) spinner.style.display = 'none';
+        resultsArea.classList.remove('is-loading');
+        resultsArea.innerHTML = initialContent;
+        if (metaInfo) metaInfo.innerHTML = initialMeta;
+        if (heading) heading.innerHTML = initialHeading;
+        window.history.replaceState({}, '', window.location.pathname);
         return;
       }
 
-      debounceTimer = setTimeout(() => {
-        fetchSuggestions(q);
-      }, 180);
+      debounceTimeout = setTimeout(() => {
+        performLiveSearch(query);
+      }, 250);
     });
 
-    async function fetchSuggestions(query) {
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        searchInput.value = '';
+        searchInput.dispatchEvent(new Event('input'));
+        searchInput.focus();
+      });
+    }
+
+    async function performLiveSearch(query) {
+      if (currentAbortController) {
+        currentAbortController.abort();
+      }
+      currentAbortController = new AbortController();
+
+      if (spinner) spinner.style.display = 'inline-block';
+      resultsArea.classList.add('is-loading');
+
       try {
-        const url = `/predictive_search.json?q=${encodeURIComponent(query)}&resources[type]=product&resources[limit]=6&resources[options][fields]=title,product_type,variants.title,vendor`;
-        const res = await fetch(url);
-        if (!res.ok) return;
-        const data = await res.json();
-        const products = data.resources?.results?.products || [];
+        const targetUrl = `${window.location.pathname}?type=product&options%5Bprefix%5D=last&q=${encodeURIComponent(query)}`;
+        const res = await fetch(targetUrl, { signal: currentAbortController.signal });
 
-        if (products.length === 0) {
-          list.innerHTML = `<div class="boat-search-no-match">No products matching "<strong>${escapeHtml(query)}</strong>"</div>`;
-          if (viewAllLink) viewAllLink.style.display = 'none';
-          dropdown.style.display = 'block';
-          return;
+        if (!res.ok) throw new Error('Search network error');
+
+        const htmlText = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+
+        const newResultsArea = doc.getElementById('BoatSearchResultsArea');
+        const newMetaInfo = doc.getElementById('BoatSearchMetaInfo');
+        const newHeading = doc.getElementById('BoatSearchHeading');
+
+        if (newResultsArea) {
+          resultsArea.innerHTML = newResultsArea.innerHTML;
         }
 
-        let html = '';
-        products.forEach(p => {
-          const imgUrl = p.image || (p.featured_image && p.featured_image.url) || '';
-          const priceFormatted = p.price ? 'Rs.' + Math.floor(p.price).toLocaleString() : '';
-          const comparePriceFormatted = p.compare_at_price && p.compare_at_price > p.price ? 'Rs.' + Math.floor(p.compare_at_price).toLocaleString() : '';
-
-          html += `
-            <a href="${p.url}" class="boat-suggestion-item">
-              <div class="boat-suggestion-thumb">
-                ${imgUrl ? `<img src="${imgUrl}" alt="${escapeHtml(p.title)}" width="48" height="48" loading="lazy">` : `<div class="boat-suggestion-no-img">🛍️</div>`}
-              </div>
-              <div class="boat-suggestion-details">
-                <div class="boat-suggestion-title">${highlightQuery(p.title, query)}</div>
-                <div class="boat-suggestion-price-row">
-                  <span class="boat-suggestion-price">${priceFormatted}</span>
-                  ${comparePriceFormatted ? `<span class="boat-suggestion-compare">${comparePriceFormatted}</span>` : ''}
-                </div>
-              </div>
-              <span class="boat-suggestion-arrow">›</span>
-            </a>
-          `;
-        });
-
-        list.innerHTML = html;
-
-        if (viewAllLink && viewAllQuery) {
-          viewAllQuery.textContent = query;
-          viewAllLink.href = `/search?type=product&q=${encodeURIComponent(query)}`;
-          viewAllLink.style.display = 'flex';
+        if (metaInfo && newMetaInfo) {
+          metaInfo.innerHTML = newMetaInfo.innerHTML;
         }
 
-        dropdown.style.display = 'block';
+        if (heading && newHeading) {
+          heading.innerHTML = newHeading.innerHTML;
+        }
+
+        // Update URL cleanly without reloading page
+        window.history.replaceState({}, '', targetUrl);
 
       } catch (err) {
-        console.error('Error fetching search suggestions:', err);
+        if (err.name !== 'AbortError') {
+          console.error('Live search error:', err);
+        }
+      } finally {
+        if (spinner) spinner.style.display = 'none';
+        resultsArea.classList.remove('is-loading');
       }
     }
-
-    function highlightQuery(text, query) {
-      if (!query) return escapeHtml(text);
-      const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp(`(${safeQuery})`, 'gi');
-      return escapeHtml(text).replace(regex, '<span class="boat-highlight-matched">$1</span>');
-    }
-
-    function escapeHtml(str) {
-      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-
-    // Close dropdown on outside click
-    document.addEventListener('click', function(e) {
-      if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.style.display = 'none';
-      }
-    });
-
-    // Reopen dropdown on input focus if query has text
-    input.addEventListener('focus', function() {
-      if (this.value.trim().length >= 1 && list.innerHTML.trim().length > 0) {
-        dropdown.style.display = 'block';
-      }
-    });
   })();
 </script>
 
@@ -682,7 +559,7 @@
       "type": "text",
       "id": "placeholder_text",
       "label": "Search Input Placeholder",
-      "default": "Type to search products, deals, brands..."
+      "default": "Search for products, brands and deals..."
     },
     {
       "type": "range",
