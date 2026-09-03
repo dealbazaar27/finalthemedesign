@@ -514,10 +514,22 @@
                   {% assign swatch_bg = '#0284c7' %}
                 {% endif %}
 
+                {% if variant_match.featured_image != blank %}
+                  {% assign swatch_thumb = variant_match.featured_image | image_url: width: 80 %}
+                  {% assign swatch_style = "background-image: url('" | append: swatch_thumb | append: "'); background-size: cover; background-position: center;" %}
+                {% elsif value.swatch.image %}
+                  {% assign swatch_thumb = value.swatch.image | image_url: width: 80 %}
+                  {% assign swatch_style = "background-image: url('" | append: swatch_thumb | append: "'); background-size: cover; background-position: center;" %}
+                {% elsif value.swatch.color %}
+                  {% assign swatch_style = "background-color: " | append: value.swatch.color | append: ";" %}
+                {% else %}
+                  {% assign swatch_style = "background-color: " | append: swatch_bg | append: ";" %}
+                {% endif %}
+
                 <button 
                   type="button"
                   class="boat-swatch-dot{% if variant_match.id == selected_variant.id %} active{% endif %}"
-                  style="background-color: {{ swatch_bg }};"
+                  style="{{ swatch_style }}"
                   title="{{ value }}"
                   data-variant-id="{{ variant_match.id }}"
                   data-variant-image="{{ var_img }}"
@@ -571,3 +583,59 @@
     </div>
   </div>
 </div>
+
+<script>
+  if (typeof window.selectBoatVariant !== 'function') {
+    window.selectBoatVariant = function(dotBtn) {
+      const card = dotBtn.closest('.boat-pick-card');
+      if (!card) return;
+
+      const allSwatches = card.querySelectorAll('.boat-swatch-dot, .boat-swatch-pill');
+      allSwatches.forEach(d => d.classList.remove('active'));
+      dotBtn.classList.add('active');
+
+      const variantId = dotBtn.getAttribute('data-variant-id');
+      const variantImage = dotBtn.getAttribute('data-variant-image');
+      const variantPrice = dotBtn.getAttribute('data-variant-price');
+      const variantCompare = dotBtn.getAttribute('data-variant-compare');
+      const variantDiscount = dotBtn.getAttribute('data-variant-discount');
+      const isAvailable = dotBtn.getAttribute('data-variant-available') === 'true';
+
+      if (variantImage) {
+        const img = card.querySelector('.boat-pick-card__image');
+        if (img) img.src = variantImage;
+      }
+
+      const input = card.querySelector('input[name="id"]');
+      if (input && variantId) input.value = variantId;
+
+      const priceElem = card.querySelector('.boat-pick-card__price');
+      if (priceElem && variantPrice) priceElem.textContent = variantPrice;
+
+      const compareElem = card.querySelector('.boat-pick-card__compare-price');
+      if (compareElem) {
+        if (variantCompare) {
+          compareElem.textContent = variantCompare;
+          compareElem.style.display = 'inline';
+        } else {
+          compareElem.style.display = 'none';
+        }
+      }
+
+      const discountElem = card.querySelector('.boat-pick-card__discount');
+      if (discountElem) {
+        if (variantDiscount && variantDiscount !== '0% off') {
+          discountElem.textContent = variantDiscount;
+          discountElem.style.display = 'inline';
+        } else {
+          discountElem.style.display = 'none';
+        }
+      }
+
+      const submitBtn = card.querySelector('.boat-pick-card__hover-atc');
+      if (submitBtn) {
+        submitBtn.disabled = !isAvailable;
+      }
+    };
+  }
+</script>
