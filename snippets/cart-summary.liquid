@@ -257,7 +257,7 @@
   </div>
 </div>
 
-<div class="cart__ctas">
+<div class="cart__ctas" style="width: 100%;">
   <button
     type="submit"
     id="checkout"
@@ -269,9 +269,15 @@
     form="cart-form"
   >
     <span class="button-text">
-      {{ 'content.checkout' | t }}
+      PROCEED TO CHECKOUT ➔
     </span>
   </button>
+
+  <div class="boat-cart-trust-row">
+    <span>🚚 Free Delivery</span>
+    <span>🔒 100% Safe</span>
+    <span>⚡ Cash on Delivery</span>
+  </div>
 
   {% if additional_checkout_buttons and settings.show_accelerated_checkout_buttons %}
     <div
