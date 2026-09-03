@@ -382,7 +382,7 @@
 {% comment %} Mobile Floating Sticky Bottom Bar (Matching Exact Screenshot UI) {% endcomment %}
 <div class="boat-pdp-sticky-bar" id="BoatPdpStickyBar">
   <div class="boat-pdp-sticky-deal-strip" id="BoatPdpStickyDealStrip">
-    Get at <span id="BoatPdpStickyDealPrice">{{ price | times: 94 | divided_by: 100 | money_without_trailing_zeros }}</span> by using <strong id="BoatPdpStickyDealCode">{{ t1_code }}</strong>
+    Get at <span id="BoatPdpStickyDealPrice">{{ price | money_without_trailing_zeros }}</span> by using <strong id="BoatPdpStickyDealCode">{{ t1_code }}</strong>
   </div>
   <div class="boat-pdp-sticky-inner">
     <div class="boat-pdp-sticky-price-row">
@@ -1309,115 +1309,117 @@
     .boat-pdp-sticky-bar {
       display: block !important;
       position: fixed !important;
-      bottom: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      width: 100% !important;
-      z-index: 99999 !important;
+      bottom: 0px !important;
+      left: 0px !important;
+      right: 0px !important;
+      width: 100vw !important;
+      max-width: 100% !important;
+      z-index: 2147483647 !important;
       box-sizing: border-box !important;
       pointer-events: auto !important;
       transform: translateZ(0);
+      margin: 0 !important;
+      padding: 0 !important;
     }
 
     .boat-pdp-sticky-deal-strip {
-      background: #00875a;
-      color: #ffffff;
-      font-size: 0.74rem;
-      font-weight: 700;
-      text-align: center;
-      padding: 4px 12px;
-      border-radius: 12px 12px 0 0;
-      margin: 0 10px;
-      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
-      display: block;
-      box-sizing: border-box;
+      background: #00875a !important;
+      color: #ffffff !important;
+      font-size: 0.72rem !important;
+      font-weight: 700 !important;
+      text-align: center !important;
+      padding: 3px 10px !important;
+      border-radius: 10px 10px 0 0 !important;
+      margin: 0 8px !important;
+      box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.08) !important;
+      display: block !important;
+      box-sizing: border-box !important;
     }
 
     .boat-pdp-sticky-inner {
-      background: #ffffff;
-      border-radius: 16px 16px 0 0;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.14);
-      border: 1px solid #e2e8f0;
-      border-bottom: none;
-      padding: 8px 12px max(10px, env(safe-area-inset-bottom)) 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      box-sizing: border-box;
-      width: 100%;
+      background: #ffffff !important;
+      border-radius: 14px 14px 0 0 !important;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.16) !important;
+      border-top: 1px solid #e2e8f0 !important;
+      padding: 6px 10px 8px 10px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 5px !important;
+      box-sizing: border-box !important;
+      width: 100% !important;
     }
 
     .boat-pdp-sticky-price-row {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-      width: 100%;
-      box-sizing: border-box;
+      display: flex !important;
+      align-items: baseline !important;
+      gap: 6px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
     }
 
     .boat-pdp-sticky-price {
-      font-size: 1.2rem;
-      font-weight: 900;
-      color: #0f172a;
-      letter-spacing: -0.3px;
+      font-size: 1.15rem !important;
+      font-weight: 900 !important;
+      color: #0f172a !important;
+      letter-spacing: -0.3px !important;
     }
 
     .boat-pdp-sticky-compare {
-      font-size: 0.82rem;
-      text-decoration: line-through;
-      color: #94a3b8;
-      font-weight: 600;
+      font-size: 0.8rem !important;
+      text-decoration: line-through !important;
+      color: #94a3b8 !important;
+      font-weight: 600 !important;
     }
 
     .boat-pdp-sticky-discount {
-      font-size: 0.82rem;
-      font-weight: 800;
-      color: #00b853;
+      font-size: 0.8rem !important;
+      font-weight: 800 !important;
+      color: #00b853 !important;
     }
 
     .boat-pdp-sticky-tax {
-      font-size: 0.65rem;
-      color: #94a3b8;
-      margin-left: auto;
+      font-size: 0.62rem !important;
+      color: #94a3b8 !important;
+      margin-left: auto !important;
     }
 
     .boat-pdp-sticky-cta-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      width: 100%;
-      box-sizing: border-box;
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
     }
 
     .boat-pdp-sticky-btn {
-      flex: 1 1 0;
-      min-width: 0;
-      height: 42px;
-      border-radius: 21px;
-      font-size: 0.9rem;
-      font-weight: 800;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: inherit;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-      box-sizing: border-box;
+      flex: 1 1 0 !important;
+      min-width: 0 !important;
+      height: 38px !important;
+      border-radius: 19px !important;
+      font-size: 0.88rem !important;
+      font-weight: 800 !important;
+      border: none !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-family: inherit !important;
+      transition: transform 0.15s ease, opacity 0.15s ease !important;
+      box-sizing: border-box !important;
     }
 
     .boat-pdp-sticky-btn:active {
-      transform: scale(0.98);
+      transform: scale(0.98) !important;
     }
 
     .boat-pdp-sticky-btn--atc {
-      background: #0f172a;
-      color: #ffffff;
+      background: #0f172a !important;
+      color: #ffffff !important;
     }
 
     .boat-pdp-sticky-btn--buy {
-      background: #00b853;
-      color: #ffffff;
+      background: #00b853 !important;
+      color: #ffffff !important;
     }
   }
 </style>
