@@ -134,7 +134,7 @@
       </div>
 
       {% comment %} --- Form for Cart Add & Dynamic Variant Selection --- {% endcomment %}
-      <form action="/cart/add" method="post" id="{{ form_id }}" onsubmit="handleBoatPdpAddToCart(event, this)">
+      <form action="/cart/add" method="post" id="{{ form_id }}" onsubmit="handleBoatAddToCart(event, this)">
         <input type="hidden" name="id" id="BoatPdpSelectedVariantId" value="{{ selected_variant.id }}">
         
         {% comment %} 4. Multi-Option Variant Selectors (Color, Quantity, Size, Pack, etc.) {% endcomment %}
@@ -1094,106 +1094,6 @@
         atcBtn.innerHTML = '<span>Unavailable</span>';
       }
       if (buyBtn) buyBtn.disabled = true;
-    }
-  }
-
-  // Smooth, Flicker-Free Ajax Add To Cart & Cart Drawer Sync
-  async function handleBoatPdpAddToCart(event, form) {
-    event.preventDefault();
-    const btn = form.querySelector('.boat-pdp-btn--atc');
-    if (!btn || btn.disabled) return;
-
-    const originalText = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<span>Adding...</span>';
-
-    const variantId = document.getElementById('BoatPdpSelectedVariantId').value;
-    const qtyInput = document.getElementById('BoatPdpQuantity');
-    const quantity = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
-
-    try {
-      const res = await fetch('/cart/add.js', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-          id: variantId,
-          quantity: quantity,
-          sections: 'cart-drawer-section'
-        })
-      });
-      const data = await res.json();
-
-      if (res.ok && !data.status) {
-        btn.innerHTML = '<span>✓ Added to Cart!</span>';
-        btn.style.background = '#00b853';
-
-        // 1. Instantly Update Header Cart Bubble / Count across the theme
-        try {
-          const cartRes = await fetch('/cart.js');
-          const cartData = await cartRes.json();
-          const count = cartData.item_count;
-
-          document.querySelectorAll('.cart-bubble').forEach(b => {
-            b.classList.remove('visually-hidden');
-            b.style.display = 'flex';
-          });
-          document.querySelectorAll('.cart-bubble__text-count, [data-testid="cart-bubble"]').forEach(t => {
-            t.classList.remove('hidden');
-            t.textContent = count;
-            t.style.display = 'inline';
-          });
-          document.querySelectorAll('.header-actions__cart-icon').forEach(icon => {
-            if (count > 0) icon.classList.add('header-actions__cart-icon--has-cart');
-          });
-        } catch(e) {}
-
-        // 2. Smoothly Update Cart Drawer Inner DOM FIRST before opening to prevent any flicker
-        const drawerHtml = data.sections ? data.sections['cart-drawer-section'] : null;
-        if (drawerHtml) {
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(drawerHtml, 'text/html');
-          const newInner = doc.querySelector('.cart-drawer__inner');
-          const currentInner = document.querySelector('#cart-drawer .cart-drawer__inner');
-          if (newInner && currentInner) {
-            currentInner.innerHTML = newInner.innerHTML;
-            currentInner.className = newInner.className;
-          }
-        }
-
-        // 3. Smooth Open Cart Drawer
-        const drawer = document.getElementById('cart-drawer');
-        if (drawer) {
-          if (typeof drawer.open === 'function') {
-            drawer.open();
-          } else {
-            const dialog = drawer.querySelector('dialog');
-            if (dialog && !dialog.open && typeof dialog.showModal === 'function') {
-              dialog.showModal();
-            }
-            drawer.setAttribute('open', '');
-          }
-        }
-
-        // Dispatch Theme Events
-        document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: data } }));
-        document.dispatchEvent(new CustomEvent('theme:cart:change', { detail: { cart: data } }));
-
-        setTimeout(() => {
-          btn.disabled = false;
-          btn.style.background = '';
-          btn.innerHTML = originalText;
-        }, 2200);
-      } else {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-        alert(data.description || 'Could not add product to cart.');
-      }
-    } catch (e) {
-      btn.disabled = false;
-      btn.innerHTML = originalText;
     }
   }
 
