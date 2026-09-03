@@ -228,22 +228,35 @@
   -%}
 
   <div class="cart-totals__container{% if settings.show_installments %} cart-totals__container--has-installments{% endif %}">
-    <span
-      class="cart-totals__item cart-totals__total"
-      role="status"
-    >
-      <span class="cart-totals__total-label cart-primary-typography">{{ 'content.cart_estimated_total' | t }}</span>
+    {% if total_compare_price > cart.total_price %}
+      <div class="boat-cart-breakdown-row">
+        <span class="boat-breakdown-label">Items Subtotal</span>
+        <span class="boat-breakdown-val">{{ total_compare_price | money_without_trailing_zeros }}</span>
+      </div>
+      <div class="boat-cart-breakdown-row boat-discount-row">
+        <span class="boat-breakdown-label">Special Discount</span>
+        <span class="boat-breakdown-val savings-green">- {{ total_savings | money_without_trailing_zeros }}</span>
+      </div>
+    {% endif %}
+
+    <div class="boat-cart-breakdown-row">
+      <span class="boat-breakdown-label">Express Delivery</span>
+      <span class="boat-breakdown-val savings-green">FREE</span>
+    </div>
+
+    <div class="boat-cart-breakdown-row boat-total-row">
+      <span class="boat-total-label">Estimated Total</span>
       <text-component
         ref="cartTotal"
         value="{{ total_price | strip_html }}"
-        class="cart-totals__total-value cart-secondary-typography"
-        {% comment %} Used by payment_terms web component {% endcomment %}
+        class="boat-total-val"
         data-testid="cart-total-value"
         data-cart-subtotal
       >
         {{ total_price }}
       </text-component>
-    </span>
+    </div>
+
     {% if settings.show_installments %}
       <span class="cart-totals__item cart-totals__installments">
         {% form 'cart', cart %}
