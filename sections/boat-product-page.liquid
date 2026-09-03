@@ -64,6 +64,11 @@
     assign show_deal = true
   endif
 
+  assign show_mobile_sticky = section.settings.enable_mobile_sticky
+  if show_mobile_sticky == nil
+    assign show_mobile_sticky = true
+  endif
+
   if section.settings.deals_tag_filter != blank
     unless product.tags contains section.settings.deals_tag_filter
       assign show_deal = false
@@ -380,41 +385,49 @@
 </div>
 
 {% comment %} Mobile Floating Sticky Bottom Bar (Matching Exact Screenshot UI) {% endcomment %}
-<div class="boat-pdp-sticky-bar" id="BoatPdpStickyBar">
-  <div class="boat-pdp-sticky-deal-strip" id="BoatPdpStickyDealStrip">
-    Get at <span id="BoatPdpStickyDealPrice">{{ price | money_without_trailing_zeros }}</span> by using <strong id="BoatPdpStickyDealCode">{{ t1_code }}</strong>
-  </div>
-  <div class="boat-pdp-sticky-inner">
-    <div class="boat-pdp-sticky-price-row">
-      <span class="boat-pdp-sticky-price" id="BoatPdpStickyPrice">{{ price | money_without_trailing_zeros }}</span>
-      <span class="boat-pdp-sticky-compare" id="BoatPdpStickyCompare" style="{% unless compare_price > price %}display: none;{% endunless %}">
-        {{ compare_price | money_without_trailing_zeros }}
-      </span>
-      <span class="boat-pdp-sticky-discount" id="BoatPdpStickyDiscount" style="{% unless compare_price > price %}display: none;{% endunless %}">
-        {{ discount_percent }}% Off
-      </span>
-      <span class="boat-pdp-sticky-tax">Inclusive of all Taxes</span>
+{% if show_mobile_sticky %}
+  <div class="boat-pdp-sticky-bar" id="BoatPdpStickyBar">
+    <div class="boat-pdp-sticky-deal-strip" id="BoatPdpStickyDealStrip" onclick="scrollToBoatDeals()">
+      {% if show_deal %}
+        Get at <span id="BoatPdpStickyDealPrice">{{ price | money_without_trailing_zeros }}</span> by using <strong id="BoatPdpStickyDealCode">{{ t1_code }}</strong>
+      {% elsif discount_percent > 0 %}
+        🔥 Special Sale Price: {{ price | money_without_trailing_zeros }} (Save {{ discount_percent }}%)
+      {% else %}
+        ⚡ Best Price: {{ price | money_without_trailing_zeros }}
+      {% endif %}
     </div>
-    <div class="boat-pdp-sticky-cta-row">
-      <button 
-        type="button" 
-        class="boat-pdp-sticky-btn boat-pdp-sticky-btn--atc" 
-        onclick="document.getElementById('BoatPdpAtcBtn').click()"
-        {% unless selected_variant.available %}disabled{% endunless %}
-      >
-        <span>Add To Cart</span>
-      </button>
-      <button 
-        type="button" 
-        class="boat-pdp-sticky-btn boat-pdp-sticky-btn--buy" 
-        onclick="document.getElementById('BoatPdpBuyBtn').click()"
-        {% unless selected_variant.available %}disabled{% endunless %}
-      >
-        <span>Buy Now</span>
-      </button>
+    <div class="boat-pdp-sticky-inner">
+      <div class="boat-pdp-sticky-price-row">
+        <span class="boat-pdp-sticky-price" id="BoatPdpStickyPrice">{{ price | money_without_trailing_zeros }}</span>
+        <span class="boat-pdp-sticky-compare" id="BoatPdpStickyCompare" style="{% unless compare_price > price %}display: none;{% endunless %}">
+          {{ compare_price | money_without_trailing_zeros }}
+        </span>
+        <span class="boat-pdp-sticky-discount" id="BoatPdpStickyDiscount" style="{% unless compare_price > price %}display: none;{% endunless %}">
+          {{ discount_percent }}% Off
+        </span>
+        <span class="boat-pdp-sticky-tax">Inclusive of all Taxes</span>
+      </div>
+      <div class="boat-pdp-sticky-cta-row">
+        <button 
+          type="button" 
+          class="boat-pdp-sticky-btn boat-pdp-sticky-btn--atc" 
+          onclick="document.getElementById('BoatPdpAtcBtn').click()"
+          {% unless selected_variant.available %}disabled{% endunless %}
+        >
+          <span>Add To Cart</span>
+        </button>
+        <button 
+          type="button" 
+          class="boat-pdp-sticky-btn boat-pdp-sticky-btn--buy" 
+          onclick="document.getElementById('BoatPdpBuyBtn').click()"
+          {% unless selected_variant.available %}disabled{% endunless %}
+        >
+          <span>Buy Now</span>
+        </button>
+      </div>
     </div>
   </div>
-</div>
+{% endif %}
 
 {% comment %} Output Master Product Variants JSON {% endcomment %}
 <script type="application/json" id="BoatPdpVariantsData">
@@ -1202,14 +1215,46 @@
     }
 
     .boat-pdp-breadcrumb {
-      font-size: 0.75rem;
-      margin-bottom: 10px;
-      gap: 4px;
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      overflow-x: auto !important;
+      white-space: nowrap !important;
+      scrollbar-width: none !important;
+      -webkit-overflow-scrolling: touch !important;
+      font-size: 0.75rem !important;
+      margin-bottom: 10px !important;
+      gap: 4px !important;
+      width: 100% !important;
+    }
+
+    .boat-pdp-breadcrumb::-webkit-scrollbar {
+      display: none !important;
+    }
+
+    .boat-pdp-breadcrumb a,
+    .boat-pdp-breadcrumb span {
+      flex-shrink: 0 !important;
+    }
+
+    .boat-pdp-breadcrumb__current {
+      max-width: 150px !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+      flex-shrink: 1 !important;
     }
 
     .boat-pdp-title {
-      font-size: calc(var(--boat-pdp-title-size) * 0.82);
-      letter-spacing: -0.3px;
+      font-size: calc(var(--boat-pdp-title-size) * 0.82) !important;
+      letter-spacing: -0.3px !important;
+      display: -webkit-box !important;
+      -webkit-line-clamp: 2 !important;
+      -webkit-box-orient: vertical !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      line-height: 1.25 !important;
+      max-height: calc(1.25em * 2) !important;
     }
 
     .boat-pdp-subtitle {
@@ -1538,6 +1583,19 @@
     return 'Rs.' + amount.toLocaleString();
   }
 
+  const isDealsEnabledOnProduct = {{ show_deal | json }};
+
+  function scrollToBoatDeals() {
+    const dealSec = document.querySelector('.boat-pdp-offers-section');
+    if (dealSec) {
+      dealSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      dealSec.style.transition = 'all 0.3s ease';
+      dealSec.style.boxShadow = '0 0 0 3px #00a651';
+      dealSec.style.borderRadius = '14px';
+      setTimeout(() => { dealSec.style.boxShadow = ''; }, 1500);
+    }
+  }
+
   // Dynamic Subtotal Calculator with Automatic Tier Discounts and Sticky Bar Sync
   function updateBoatSubtotal() {
     const qtyInput = document.getElementById('BoatPdpQuantity');
@@ -1621,8 +1679,13 @@
 
       // Default prompt before deal is clicked
       if (stickyDealStrip) {
-        const t1UnitDiscounted = Math.round(currentVariantPrice * (1 - (tierConfig.t1_disc / 100)));
-        stickyDealStrip.innerHTML = 'Get at ' + formatMoneyWithoutDecimals(t1UnitDiscounted) + ' by using <strong>' + tierConfig.t1_code + '</strong>';
+        if (isDealsEnabledOnProduct) {
+          stickyDealStrip.innerHTML = 'Get at ' + formatMoneyWithoutDecimals(currentVariantPrice) + ' by using <strong>' + tierConfig.t1_code + '</strong>';
+        } else if (currentVariantDiscountPercent > 0) {
+          stickyDealStrip.innerHTML = '🔥 Special Sale Price: ' + formatMoneyWithoutDecimals(currentVariantPrice) + ' (Save ' + currentVariantDiscountPercent + '%)';
+        } else {
+          stickyDealStrip.innerHTML = '⚡ Best Price: ' + formatMoneyWithoutDecimals(currentVariantPrice);
+        }
       }
     }
 
@@ -1867,6 +1930,16 @@
       "id": "timer_minutes",
       "label": "Timer Minutes",
       "default": 2
+    },
+    {
+      "type": "header",
+      "content": "📱 Mobile Sticky Bottom Bar Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_mobile_sticky",
+      "label": "Enable Mobile Sticky Bottom Bar",
+      "default": true
     },
     {
       "type": "header",
