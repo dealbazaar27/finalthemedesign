@@ -16,6 +16,16 @@
     assign show_deal = true
   endif
 
+  assign enable_sticky_mobile = section.settings.enable_mobile_sticky_bar
+  if enable_sticky_mobile == nil
+    assign enable_sticky_mobile = true
+  endif
+
+  assign hide_in_page_mobile = section.settings.hide_in_page_buttons_mobile
+  if hide_in_page_mobile == nil
+    assign hide_in_page_mobile = false
+  endif
+
   if section.settings.deals_tag_filter != blank
     unless product.tags contains section.settings.deals_tag_filter
       assign show_deal = false
@@ -292,7 +302,7 @@
         {% endif %}
 
         {% comment %} 6. Action Buttons (Add to Cart + Buy Now) {% endcomment %}
-        <div class="boat-pdp-cta-group">
+        <div class="boat-pdp-cta-group{% if hide_in_page_mobile %} boat-pdp-cta-group--hide-mobile{% endif %}">
           <button 
             type="submit" 
             class="boat-pdp-btn boat-pdp-btn--atc" 
@@ -325,42 +335,44 @@
 
 </div>
 
-{% comment %} Mobile Sticky Bottom Bar (Matching boAt UI) {% endcomment %}
-<div class="boat-pdp-sticky-bar" id="BoatPdpStickyBar">
-  <div class="boat-pdp-sticky-deal-strip" id="BoatPdpStickyDealStrip" style="display: none;">
-    Get at <span id="BoatPdpStickyDealPrice"></span> by using <strong id="BoatPdpStickyDealCode"></strong>
-  </div>
-  <div class="boat-pdp-sticky-inner">
-    <div class="boat-pdp-sticky-price-row">
-      <span class="boat-pdp-sticky-price" id="BoatPdpStickyPrice">{{ price | money_without_trailing_zeros }}</span>
-      <span class="boat-pdp-sticky-compare" id="BoatPdpStickyCompare" style="{% unless compare_price > price %}display: none;{% endunless %}">
-        {{ compare_price | money_without_trailing_zeros }}
-      </span>
-      <span class="boat-pdp-sticky-discount" id="BoatPdpStickyDiscount" style="{% unless compare_price > price %}display: none;{% endunless %}">
-        {{ discount_percent }}% Off
-      </span>
-      <span class="boat-pdp-sticky-tax">Inclusive of all Taxes</span>
+{% comment %} Mobile Sticky Bottom Bar (Controlled via Theme Settings) {% endcomment %}
+{% if enable_sticky_mobile %}
+  <div class="boat-pdp-sticky-bar" id="BoatPdpStickyBar">
+    <div class="boat-pdp-sticky-deal-strip" id="BoatPdpStickyDealStrip" style="display: none;">
+      Get at <span id="BoatPdpStickyDealPrice"></span> by using <strong id="BoatPdpStickyDealCode"></strong>
     </div>
-    <div class="boat-pdp-sticky-cta-row">
-      <button 
-        type="button" 
-        class="boat-pdp-sticky-btn boat-pdp-sticky-btn--atc" 
-        onclick="document.getElementById('BoatPdpAtcBtn').click()"
-        {% unless selected_variant.available %}disabled{% endunless %}
-      >
-        <span>Add To Cart</span>
-      </button>
-      <button 
-        type="button" 
-        class="boat-pdp-sticky-btn boat-pdp-sticky-btn--buy" 
-        onclick="document.getElementById('BoatPdpBuyBtn').click()"
-        {% unless selected_variant.available %}disabled{% endunless %}
-      >
-        <span>Buy Now</span>
-      </button>
+    <div class="boat-pdp-sticky-inner">
+      <div class="boat-pdp-sticky-price-row">
+        <span class="boat-pdp-sticky-price" id="BoatPdpStickyPrice">{{ price | money_without_trailing_zeros }}</span>
+        <span class="boat-pdp-sticky-compare" id="BoatPdpStickyCompare" style="{% unless compare_price > price %}display: none;{% endunless %}">
+          {{ compare_price | money_without_trailing_zeros }}
+        </span>
+        <span class="boat-pdp-sticky-discount" id="BoatPdpStickyDiscount" style="{% unless compare_price > price %}display: none;{% endunless %}">
+          {{ discount_percent }}% Off
+        </span>
+        <span class="boat-pdp-sticky-tax">Inclusive of all Taxes</span>
+      </div>
+      <div class="boat-pdp-sticky-cta-row">
+        <button 
+          type="button" 
+          class="boat-pdp-sticky-btn boat-pdp-sticky-btn--atc" 
+          onclick="document.getElementById('BoatPdpAtcBtn').click()"
+          {% unless selected_variant.available %}disabled{% endunless %}
+        >
+          <span>Add To Cart</span>
+        </button>
+        <button 
+          type="button" 
+          class="boat-pdp-sticky-btn boat-pdp-sticky-btn--buy" 
+          onclick="document.getElementById('BoatPdpBuyBtn').click()"
+          {% unless selected_variant.available %}disabled{% endunless %}
+        >
+          <span>Buy Now</span>
+        </button>
+      </div>
     </div>
   </div>
-</div>
+{% endif %}
 
 {% comment %} Output Master Product Variants JSON {% endcomment %}
 <script type="application/json" id="BoatPdpVariantsData">
@@ -388,11 +400,13 @@
 
   .boat-pdp-container {
     max-width: 1320px;
+    width: 100%;
     margin: 0 auto;
     padding: 16px 20px 48px 20px;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: #0f172a;
     box-sizing: border-box;
+    overflow-x: clip;
   }
 
   /* Breadcrumb */
@@ -433,6 +447,8 @@
     grid-template-columns: 1.05fr 1fr;
     gap: 48px;
     align-items: start;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   /* Gallery Inner Layout */
@@ -572,6 +588,8 @@
     flex-direction: column;
     gap: 14px;
     min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   /* Rating Row */
@@ -607,6 +625,7 @@
     margin: 0;
     line-height: 1.25;
     letter-spacing: -0.5px;
+    word-break: break-word;
   }
 
   .boat-pdp-subtitle {
@@ -867,6 +886,8 @@
     flex-direction: column;
     gap: 10px;
     margin-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .boat-pdp-card-title {
@@ -880,6 +901,8 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .boat-pdp-offer-card {
@@ -893,6 +916,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     user-select: none;
+    box-sizing: border-box;
   }
 
   .boat-pdp-offer-card:hover {
@@ -923,6 +947,7 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
+    box-sizing: border-box;
   }
 
   .boat-pdp-offer-qty {
@@ -948,6 +973,7 @@
     width: 100%;
     margin-top: 4px;
     transition: all 0.2s ease;
+    box-sizing: border-box;
   }
 
   .boat-pdp-offer-card:hover .boat-pdp-offer-code,
@@ -968,6 +994,7 @@
 
   .boat-pdp-btn {
     flex: 1 1 0;
+    width: 50%;
     min-width: 0;
     height: 48px;
     border-radius: 26px;
@@ -1014,7 +1041,7 @@
 
   @media screen and (max-width: 989px) {
     .boat-pdp-container {
-      padding: 12px 16px 80px 16px;
+      padding: 12px 16px 36px 16px;
     }
 
     .boat-pdp-layout {
@@ -1046,7 +1073,10 @@
 
   @media screen and (max-width: 640px) {
     .boat-pdp-container {
-      padding: 10px 12px 90px 12px;
+      padding: 10px 12px 32px 12px;
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100vw;
     }
 
     .boat-pdp-breadcrumb {
@@ -1087,6 +1117,8 @@
     .boat-pdp-subtotal-wrapper {
       padding: 8px 12px;
       margin-top: 8px;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .boat-pdp-subtotal-label {
@@ -1097,14 +1129,17 @@
       font-size: 1.1rem;
     }
 
-    /* DEAL Carousel Slider on Mobile */
+    /* DEAL Touch Carousel Slider on Mobile (Zero Horizontal Page Scroll) */
     .boat-pdp-offers-grid {
       display: flex;
+      width: 100%;
+      max-width: 100%;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
-      gap: 10px;
+      gap: 8px;
       padding: 2px 2px 8px 2px;
+      box-sizing: border-box;
       scrollbar-width: none;
     }
 
@@ -1113,9 +1148,12 @@
     }
 
     .boat-pdp-offer-card {
-      flex: 0 0 145px;
-      min-width: 145px;
+      flex: 0 0 135px;
+      width: 135px;
+      min-width: 135px;
+      max-width: 135px;
       scroll-snap-align: start;
+      box-sizing: border-box;
     }
 
     .boat-pdp-offer-inner {
@@ -1141,18 +1179,30 @@
       padding: 2px 4px;
     }
 
+    /* In-Page Action CTA Buttons on Mobile (100% Fit, No Cutoff) */
     .boat-pdp-cta-group {
-      gap: 10px;
-      margin: 14px 0 6px 0;
+      display: flex;
       width: 100%;
+      max-width: 100%;
+      gap: 8px;
+      margin: 12px 0 6px 0;
+      box-sizing: border-box;
+    }
+
+    .boat-pdp-cta-group--hide-mobile {
+      display: none !important;
     }
 
     .boat-pdp-btn {
       flex: 1 1 0;
+      width: calc(50% - 4px);
       min-width: 0;
-      height: 46px;
-      font-size: 0.9rem;
+      height: 44px;
+      font-size: 0.88rem;
       border-radius: 24px;
+      padding: 0 4px;
+      white-space: nowrap;
+      box-sizing: border-box;
     }
 
     /* Sticky Bottom Bar on Mobile */
@@ -1611,6 +1661,22 @@
 {
   "name": "boAt Product Page",
   "settings": [
+    {
+      "type": "header",
+      "content": "📱 Mobile Sticky Bottom Bar Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_mobile_sticky_bar",
+      "label": "Enable Sticky Bottom CTA Bar on Mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_in_page_buttons_mobile",
+      "label": "Hide In-Page Buttons on Mobile (When Sticky Bar is ON)",
+      "default": false
+    },
     {
       "type": "header",
       "content": "🔥 DEAL Section Settings"
