@@ -37,22 +37,20 @@
   /* --- Section Header Row --- */
   .boat-top-picks__header {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+    flex-direction: column;
     margin-bottom: 1rem;
-    flex-wrap: wrap;
     gap: 0.75rem;
     width: 100%;
     min-width: 0;
     box-sizing: border-box;
   }
 
-  .boat-top-picks__title-group {
+  .boat-top-picks__title-row {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
     gap: 0.75rem;
-    max-width: 100%;
-    min-width: 0;
     box-sizing: border-box;
   }
 
@@ -159,8 +157,8 @@
     background: #0f172a !important;
     color: #ffffff !important;
     border-color: #0f172a !important;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
-    transform: scale(1.02);
+    box-shadow: none !important;
+    transform: none !important;
   }
 
   /* --- Slider Container & Controls --- */
@@ -573,33 +571,33 @@
   
   {% comment %} --- Section Header & Tabs --- {% endcomment %}
   <div class="boat-top-picks__header">
-    <div class="boat-top-picks__title-group">
+    <div class="boat-top-picks__title-row">
       <h2 class="boat-top-picks__heading">
         {{ title | remove: underline_word }} <span class="underline-red">{{ underline_word }}</span>
       </h2>
 
-      {% assign blocks_tabs = section.blocks | where: 'type', 'tab_block' %}
-      {% if blocks_tabs.size > 0 %}
-        <div class="boat-top-picks__tabs">
-          {% for block in blocks_tabs %}
-            <button 
-              type="button" 
-              class="boat-top-picks__tab-btn{% if forloop.first %} active{% endif %}"
-              onclick="switchBoatTab('{{ section.id }}', 'tab-{{ block.id }}', this)"
-              {{ block.shopify_attributes }}
-            >
-              {{ block.settings.tab_title }}
-            </button>
-          {% endfor %}
-        </div>
+      {% if view_all_text != blank %}
+        <a href="{{ view_all_link }}" class="boat-top-picks__view-all">
+          <span>{{ view_all_text }}</span>
+          <span class="boat-top-picks__view-all-arrow">➔</span>
+        </a>
       {% endif %}
     </div>
 
-    {% if view_all_text != blank %}
-      <a href="{{ view_all_link }}" class="boat-top-picks__view-all">
-        <span>{{ view_all_text }}</span>
-        <span class="boat-top-picks__view-all-arrow">➔</span>
-      </a>
+    {% assign blocks_tabs = section.blocks | where: 'type', 'tab_block' %}
+    {% if blocks_tabs.size > 0 %}
+      <div class="boat-top-picks__tabs">
+        {% for block in blocks_tabs %}
+          <button 
+            type="button" 
+            class="boat-top-picks__tab-btn{% if forloop.first %} active{% endif %}"
+            onclick="switchBoatTab('{{ section.id }}', 'tab-{{ block.id }}', this)"
+            {{ block.shopify_attributes }}
+          >
+            {{ block.settings.tab_title }}
+          </button>
+        {% endfor %}
+      </div>
     {% endif %}
   </div>
 
