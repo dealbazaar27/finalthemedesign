@@ -69,6 +69,16 @@
     assign show_mobile_sticky = true
   endif
 
+  assign hide_inline_buttons_mobile = section.settings.hide_inline_buttons_mobile
+  if hide_inline_buttons_mobile == nil
+    assign hide_inline_buttons_mobile = true
+  endif
+
+  assign show_sticky_deal_strip = section.settings.show_sticky_deal_strip
+  if show_sticky_deal_strip == nil
+    assign show_sticky_deal_strip = true
+  endif
+
   if section.settings.deals_tag_filter != blank
     unless product.tags contains section.settings.deals_tag_filter
       assign show_deal = false
@@ -351,7 +361,7 @@
         {% endif %}
 
         {% comment %} 6. Action Buttons (Add to Cart + Buy Now) {% endcomment %}
-        <div class="boat-pdp-cta-group">
+        <div class="boat-pdp-cta-group{% if hide_inline_buttons_mobile %} boat-pdp-cta-group--hide-mobile{% endif %}">
           <button 
             type="submit" 
             class="boat-pdp-btn boat-pdp-btn--atc" 
@@ -387,15 +397,17 @@
 {% comment %} Mobile Floating Sticky Bottom Bar (Matching Exact Screenshot UI) {% endcomment %}
 {% if show_mobile_sticky %}
   <div class="boat-pdp-sticky-bar" id="BoatPdpStickyBar">
-    <div class="boat-pdp-sticky-deal-strip" id="BoatPdpStickyDealStrip" onclick="scrollToBoatDeals()">
-      {% if show_deal %}
-        Get at <span id="BoatPdpStickyDealPrice">{{ price | money_without_trailing_zeros }}</span> by using <strong id="BoatPdpStickyDealCode">{{ t1_code }}</strong>
-      {% elsif discount_percent > 0 %}
-        🔥 Special Sale Price: {{ price | money_without_trailing_zeros }} (Save {{ discount_percent }}%)
-      {% else %}
-        ⚡ Best Price: {{ price | money_without_trailing_zeros }}
-      {% endif %}
-    </div>
+    {% if show_sticky_deal_strip %}
+      <div class="boat-pdp-sticky-deal-strip" id="BoatPdpStickyDealStrip" onclick="scrollToBoatDeals()">
+        {% if show_deal %}
+          Get at <span id="BoatPdpStickyDealPrice">{{ price | money_without_trailing_zeros }}</span> by using <strong id="BoatPdpStickyDealCode">{{ t1_code }}</strong>
+        {% elsif discount_percent > 0 %}
+          🔥 Special Sale Price: {{ price | money_without_trailing_zeros }} (Save {{ discount_percent }}%)
+        {% else %}
+          ⚡ Best Price: {{ price | money_without_trailing_zeros }}
+        {% endif %}
+      </div>
+    {% endif %}
     <div class="boat-pdp-sticky-inner">
       <div class="boat-pdp-sticky-price-row">
         <span class="boat-pdp-sticky-price" id="BoatPdpStickyPrice">{{ price | money_without_trailing_zeros }}</span>
@@ -414,7 +426,7 @@
           onclick="document.getElementById('BoatPdpAtcBtn').click()"
           {% unless selected_variant.available %}disabled{% endunless %}
         >
-          <span>Add To Cart</span>
+          <span>{{ section.settings.sticky_atc_text | default: 'Add To Cart' }}</span>
         </button>
         <button 
           type="button" 
@@ -422,7 +434,7 @@
           onclick="document.getElementById('BoatPdpBuyBtn').click()"
           {% unless selected_variant.available %}disabled{% endunless %}
         >
-          <span>Buy Now</span>
+          <span>{{ section.settings.sticky_buy_text | default: 'Buy Now' }}</span>
         </button>
       </div>
     </div>
@@ -462,6 +474,12 @@
     --boat-pdp-atc-text: {{ section.settings.atc_btn_text | default: '#ffffff' }};
     --boat-pdp-buy-bg: {{ section.settings.buy_btn_bg | default: '#00b853' }};
     --boat-pdp-buy-text: {{ section.settings.buy_btn_text | default: '#ffffff' }};
+    --boat-pdp-sticky-strip-bg: {{ section.settings.sticky_strip_bg | default: '#00875a' }};
+    --boat-pdp-sticky-strip-text: {{ section.settings.sticky_strip_text | default: '#ffffff' }};
+    --boat-pdp-sticky-atc-bg: {{ section.settings.sticky_atc_bg | default: '#0f172a' }};
+    --boat-pdp-sticky-atc-text: {{ section.settings.sticky_atc_text_color | default: '#ffffff' }};
+    --boat-pdp-sticky-buy-bg: {{ section.settings.sticky_buy_bg | default: '#00b853' }};
+    --boat-pdp-sticky-buy-text: {{ section.settings.sticky_buy_text_color | default: '#ffffff' }};
   }
 
   .boat-pdp-container {
@@ -1339,6 +1357,10 @@
       box-sizing: border-box;
     }
 
+    .boat-pdp-cta-group--hide-mobile {
+      display: none !important;
+    }
+
     .boat-pdp-btn {
       flex: 1 1 0;
       width: calc(50% - 4px);
@@ -1368,8 +1390,8 @@
     }
 
     .boat-pdp-sticky-deal-strip {
-      background: #00875a !important;
-      color: #ffffff !important;
+      background: var(--boat-pdp-sticky-strip-bg) !important;
+      color: var(--boat-pdp-sticky-strip-text) !important;
       font-size: 0.72rem !important;
       font-weight: 700 !important;
       text-align: center !important;
@@ -1379,6 +1401,7 @@
       box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.08) !important;
       display: block !important;
       box-sizing: border-box !important;
+      cursor: pointer !important;
     }
 
     .boat-pdp-sticky-inner {
@@ -1458,13 +1481,13 @@
     }
 
     .boat-pdp-sticky-btn--atc {
-      background: #0f172a !important;
-      color: #ffffff !important;
+      background: var(--boat-pdp-sticky-atc-bg) !important;
+      color: var(--boat-pdp-sticky-atc-text) !important;
     }
 
     .boat-pdp-sticky-btn--buy {
-      background: #00b853 !important;
-      color: #ffffff !important;
+      background: var(--boat-pdp-sticky-buy-bg) !important;
+      color: var(--boat-pdp-sticky-buy-text) !important;
     }
   }
 </style>
@@ -1933,13 +1956,74 @@
     },
     {
       "type": "header",
-      "content": "📱 Mobile Sticky Bottom Bar Settings"
+      "content": "📱 Mobile Buttons & Sticky Bar Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_inline_buttons_mobile",
+      "label": "Hide In-Page (Top) Add to Cart & Buy Now on Mobile",
+      "info": "Prevents duplicate buttons on mobile since Sticky Bar is active at bottom",
+      "default": true
     },
     {
       "type": "checkbox",
       "id": "enable_mobile_sticky",
       "label": "Enable Mobile Sticky Bottom Bar",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sticky_deal_strip",
+      "label": "Show Top Deal / Sale Strip on Sticky Bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "sticky_atc_text",
+      "label": "Sticky Add to Cart Button Text",
+      "default": "Add To Cart"
+    },
+    {
+      "type": "text",
+      "id": "sticky_buy_text",
+      "label": "Sticky Buy Now Button Text",
+      "default": "Buy Now"
+    },
+    {
+      "type": "color",
+      "id": "sticky_strip_bg",
+      "label": "Sticky Deal Strip Background Color",
+      "default": "#00875a"
+    },
+    {
+      "type": "color",
+      "id": "sticky_strip_text",
+      "label": "Sticky Deal Strip Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "sticky_atc_bg",
+      "label": "Sticky Add to Cart Button Background",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "sticky_atc_text_color",
+      "label": "Sticky Add to Cart Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "sticky_buy_bg",
+      "label": "Sticky Buy Now Button Background",
+      "default": "#00b853"
+    },
+    {
+      "type": "color",
+      "id": "sticky_buy_text_color",
+      "label": "Sticky Buy Now Button Text Color",
+      "default": "#ffffff"
     },
     {
       "type": "header",
