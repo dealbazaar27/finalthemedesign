@@ -14,7 +14,7 @@
 
 <div
   ref="cartBubble"
-  class="cart-bubble{% if cart == empty %} visually-hidden{% endif %}"
+  class="cart-bubble{% if cart == empty or cart.item_count == 0 %} visually-hidden{% endif %}"
   style="--cart-bubble-background-fallback: {{ bubble_bg_fallback }}; --cart-bubble-text-fallback: {{ bubble_text_fallback }};"
   {% assign item_count = cart.item_count %}
   {% if item_count <= 99 %}
@@ -28,13 +28,15 @@
     class="cart-bubble__text"
   >
     <span
-      class="cart-bubble__text-count{% if cart == empty %} hidden{% endif %}"
+      class="cart-bubble__text-count{% if cart == empty or cart.item_count == 0 %} hidden{% endif %}"
       ref="cartBubbleCount"
       aria-hidden="true"
       data-testid="cart-bubble"
     >
       {%- if limit == blank or cart.item_count < limit %}
         {{- cart.item_count -}}
+      {%- else -%}
+        99+
       {%- endif -%}
     </span>
   </span>
@@ -42,42 +44,49 @@
 
 {% stylesheet %}
   .cart-bubble {
-    --cart-padding: 0.2em;
-
-    position: relative;
+    position: absolute;
     width: 20px;
-    aspect-ratio: 1;
+    height: 20px;
     border-radius: 50%;
     border-width: 0;
     display: flex;
-    line-height: normal;
+    line-height: 1;
     align-items: center;
     justify-content: center;
-    color: var(--cart-bubble-text, var(--cart-bubble-text-fallback));
-    padding-inline: var(--cart-padding);
+    color: #ffffff;
+    padding: 0;
+    top: 2px;
+    right: -4px;
+    z-index: 10;
   }
 
   .cart-bubble[data-maintain-ratio] {
     aspect-ratio: 1;
   }
 
-  .cart-bubble[data-maintain-ratio] .cart-bubble__background {
-    border-radius: var(--style-border-radius-50);
-  }
-
   .cart-bubble__background {
     position: absolute;
     inset: 0;
-    background-color: var(--cart-bubble-background, var(--cart-bubble-background-fallback));
-    border-radius: var(--style-border-radius-lg);
+    background-color: #d8232a;
+    border-radius: 50%;
+    z-index: 1;
   }
 
   .cart-bubble__text {
-    font-size: var(--font-size--3xs);
-    z-index: var(--layer-flat);
+    font-size: 10px;
+    font-weight: 800;
+    z-index: 2;
     line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #ffffff;
+  }
+
+  .cart-bubble__text-count {
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
   }
 {% endstylesheet %}

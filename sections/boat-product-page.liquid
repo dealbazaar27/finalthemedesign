@@ -80,11 +80,6 @@
               <button type="button" class="boat-pdp-arrow-btn boat-pdp-arrow-btn--prev" onclick="prevBoatPdpImage()" aria-label="Previous image">‹</button>
               <button type="button" class="boat-pdp-arrow-btn boat-pdp-arrow-btn--next" onclick="nextBoatPdpImage()" aria-label="Next image">›</button>
             {% endif %}
-
-            <div class="boat-pdp-view-similar">
-              <span>👁️</span>
-              <span>View Similar</span>
-            </div>
           </div>
 
           {% comment %} Countdown Flash Sale Timer Bar {% endcomment %}
@@ -485,25 +480,6 @@
 
   .boat-pdp-arrow-btn--prev { left: 12px; }
   .boat-pdp-arrow-btn--next { right: 12px; }
-
-  .boat-pdp-view-similar {
-    position: absolute;
-    bottom: 12px;
-    right: 12px;
-    background: rgba(255, 255, 255, 0.92);
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    padding: 4px 12px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #475569;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  }
 
   /* Flash Sale Countdown Timer Bar */
   .boat-pdp-timer-bar {
@@ -1072,32 +1048,48 @@
         try {
           const cartRes = await fetch('/cart.js');
           const cartData = await cartRes.json();
-          document.querySelectorAll('.cart-bubble, .cart-count-bubble, [data-cart-count], .cart-bubble__text-count, [data-testid="cart-bubble"]').forEach(el => {
-            el.textContent = cartData.item_count;
-            el.classList.remove('visually-hidden', 'hidden');
-            el.style.display = 'flex';
+          const count = cartData.item_count;
+
+          document.querySelectorAll('.cart-bubble').forEach(b => {
+            b.classList.remove('visually-hidden');
+            b.style.display = 'flex';
+          });
+          document.querySelectorAll('.cart-bubble__text-count, [data-testid="cart-bubble"]').forEach(t => {
+            t.classList.remove('hidden');
+            t.textContent = count;
+            t.style.display = 'inline';
+          });
+          document.querySelectorAll('.header-actions__cart-icon').forEach(icon => {
+            if (count > 0) icon.classList.add('header-actions__cart-icon--has-cart');
           });
         } catch(e) {}
 
-        // 2. Update Cart Drawer DOM in real-time
+        // 2. Update Cart Drawer Inner DOM safely
         const drawerHtml = data.sections ? data.sections['cart-drawer-section'] : null;
         if (drawerHtml) {
-          const liveSection = document.getElementById('shopify-section-cart-drawer-section');
-          if (liveSection) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(drawerHtml, 'text/html');
-            const newSection = doc.getElementById('shopify-section-cart-drawer-section');
-            if (newSection) liveSection.replaceWith(newSection);
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(drawerHtml, 'text/html');
+          const newInner = doc.querySelector('.cart-drawer__inner');
+          const currentInner = document.querySelector('#cart-drawer .cart-drawer__inner');
+          if (newInner && currentInner) {
+            currentInner.replaceWith(newInner);
           }
         }
 
-        // 3. Open Cart Drawer smoothly so user sees the newly added item in real time!
-        const cartDrawer = document.getElementById('cart-drawer');
-        if (cartDrawer) {
-          if (typeof cartDrawer.showDialog === 'function') {
-            cartDrawer.showDialog();
-          } else if (cartDrawer.querySelector('dialog')) {
-            cartDrawer.querySelector('dialog').showModal();
+        // 3. Open Cart Drawer
+        const drawerTrigger = document.querySelector('[data-testid="cart-drawer-trigger"], [on\\:click*="#cart-drawer/toggle"]');
+        const drawer = document.getElementById('cart-drawer');
+        if (drawerTrigger && !drawer?.hasAttribute('open')) {
+          drawerTrigger.click();
+        } else if (drawer) {
+          if (typeof drawer.open === 'function') {
+            drawer.open();
+          } else {
+            const dialog = drawer.querySelector('dialog');
+            if (dialog && !dialog.open && typeof dialog.showModal === 'function') {
+              dialog.showModal();
+            }
+            drawer.setAttribute('open', '');
           }
         }
 
@@ -1156,6 +1148,26 @@
       elem.innerHTML = originalText;
     }, 1500);
   }
+
+  // Global Delegated Click Listener to Ensure Cart Drawer (X) Close & Backdrop Always Works 100%
+  document.addEventListener('click', function(e) {
+    const closeBtn = e.target.closest('.theme-drawer__close-button, [on\\:click*="close"], .cart-drawer__close-button--empty');
+    if (closeBtn && closeBtn.closest('#cart-drawer, .theme-drawer, cart-drawer-component')) {
+      e.preventDefault();
+      e.stopPropagation();
+      const drawer = document.getElementById('cart-drawer');
+      if (drawer) {
+        if (typeof drawer.close === 'function') {
+          drawer.close();
+        }
+        const dialog = drawer.querySelector('dialog');
+        if (dialog && typeof dialog.close === 'function') {
+          dialog.close();
+        }
+        drawer.removeAttribute('open');
+      }
+    }
+  });
 </script>
 
 {% schema %}
