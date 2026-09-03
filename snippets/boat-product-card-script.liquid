@@ -54,7 +54,7 @@
     };
   }
 
-  // Unified Ultra-Smooth Add to Cart Handler (Zero-Flicker Native Cart Drawer Sync)
+  // Unified Ultra-Smooth Add to Cart Handler (Zero-Flicker Native Cart Drawer Sync + Auto Discount Apply)
   if (typeof handleBoatAddToCart !== 'function') {
     window.handleBoatAddToCart = async function(event, formElement) {
       event.preventDefault();
@@ -97,8 +97,32 @@
             btn.innerHTML = '<span style="font-size:15px; font-weight:800; color:#fff;">✓</span>';
           }
 
-          const sections = responseData.sections || {};
-          const drawerHtml = sections['cart-drawer-section'];
+          let sections = responseData.sections || {};
+          let drawerHtml = sections['cart-drawer-section'];
+
+          // Auto-apply discount code if active
+          const activeCode = window.activePdpDiscountCode || '';
+          if (activeCode) {
+            try {
+              fetch('/discount/' + encodeURIComponent(activeCode));
+
+              const updateRes = await fetch('/cart/update.js', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                  discount: activeCode,
+                  sections: ['cart-drawer-section']
+                })
+              });
+              const updateData = await updateRes.json();
+              if (updateData.sections && updateData.sections['cart-drawer-section']) {
+                drawerHtml = updateData.sections['cart-drawer-section'];
+                sections = updateData.sections;
+              }
+            } catch (err) {
+              console.warn('Cart discount update error:', err);
+            }
+          }
 
           if (drawerHtml) {
             const liveSection = document.getElementById('shopify-section-cart-drawer-section');
@@ -132,6 +156,19 @@
                 }
               }
             }
+          }
+
+          // Open Discount disclosure in cart drawer & populate input
+          if (activeCode) {
+            setTimeout(() => {
+              const discountDisclosure = document.querySelector('#shopify-section-cart-drawer-section details.cart-discount');
+              if (discountDisclosure) discountDisclosure.setAttribute('open', '');
+
+              const discountInput = document.getElementById('cart-discount');
+              if (discountInput && !discountInput.value) {
+                discountInput.value = activeCode;
+              }
+            }, 100);
           }
 
           let itemCount = null;

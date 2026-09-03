@@ -1193,6 +1193,7 @@
     }
 
     activeCouponCode = activeCode;
+    window.activePdpDiscountCode = activeCode;
 
     const discountedCents = Math.round(originalCents * (1 - (discountPercent / 100)));
 
@@ -1233,6 +1234,8 @@
     if (qtyInput) {
       qtyInput.value = qty;
     }
+
+    window.activePdpDiscountCode = code;
 
     try {
       navigator.clipboard.writeText(code);
