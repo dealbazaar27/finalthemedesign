@@ -10,6 +10,45 @@
   endif
 
   assign form_id = 'BoatProductPageForm-' | append: product.id
+
+  assign show_deal = section.settings.enable_deals
+  if show_deal == nil
+    assign show_deal = true
+  endif
+
+  if section.settings.deals_tag_filter != blank
+    unless product.tags contains section.settings.deals_tag_filter
+      assign show_deal = false
+    endunless
+  endif
+
+  if section.settings.deals_collection_filter != blank
+    assign in_col = false
+    for c in product.collections
+      if c.handle == section.settings.deals_collection_filter
+        assign in_col = true
+        break
+      endif
+    endfor
+    unless in_col
+      assign show_deal = false
+    endunless
+  endif
+
+  assign t1_qty = section.settings.tier_1_qty | default: 2
+  assign t1_disc = section.settings.tier_1_discount | default: 6
+  assign t1_code = section.settings.tier_1_code | default: 'DEAL6'
+  assign t1_badge = section.settings.tier_1_badge | default: 'MOST POPULAR'
+
+  assign t2_qty = section.settings.tier_2_qty | default: 5
+  assign t2_disc = section.settings.tier_2_discount | default: 7
+  assign t2_code = section.settings.tier_2_code | default: 'DEAL7'
+  assign t2_badge = section.settings.tier_2_badge | default: 'BEST VALUE'
+
+  assign t3_qty = section.settings.tier_3_qty | default: 10
+  assign t3_disc = section.settings.tier_3_discount | default: 10
+  assign t3_code = section.settings.tier_3_code | default: 'DEAL10'
+  assign t3_badge = section.settings.tier_3_badge | default: 'MOST SAVINGS'
 %}
 
 <div class="boat-pdp-container">
@@ -134,7 +173,7 @@
       </div>
 
       {% comment %} --- Form for Cart Add & Dynamic Variant Selection --- {% endcomment %}
-      <form action="/cart/add" method="post" id="{{ form_id }}" onsubmit="handleBoatAddToCart(event, this)">
+      <form action="/cart/add" method="post" id="{{ form_id }}" onsubmit="handleBoatPdpSubmit(event, this)">
         <input type="hidden" name="id" id="BoatPdpSelectedVariantId" value="{{ selected_variant.id }}">
         
         {% comment %} 4. Multi-Option Variant Selectors (Color, Quantity, Size, Pack, etc.) {% endcomment %}
@@ -215,40 +254,42 @@
           <span class="boat-pdp-subtotal-discount-tag" id="BoatPdpSubtotalDiscountTag" style="display: none;"></span>
         </div>
 
-        {% comment %} 5. DEAL Section with Interactive Auto-Quantity & Discount Calculation {% endcomment %}
-        <div class="boat-pdp-offers-section">
-          <div class="boat-pdp-card-title">🔥 DEAL</div>
-          <div class="boat-pdp-offers-grid">
-            
-            <div class="boat-pdp-offer-card" id="BoatDealCard-2" onclick="applyBoatDeal(2, 6, 'DEAL6', this)">
-              <div class="boat-pdp-offer-badge">MOST POPULAR</div>
-              <div class="boat-pdp-offer-inner">
-                <div class="boat-pdp-offer-qty">Buy 2 or more</div>
-                <div class="boat-pdp-offer-disc">Get 6% Off</div>
-                <div class="boat-pdp-offer-code" id="BoatDealCode-2">Code: <strong>DEAL6</strong></div>
+        {% comment %} 5. Dynamic DEAL Section with Interactive Auto-Quantity & Discount Calculation {% endcomment %}
+        {% if show_deal %}
+          <div class="boat-pdp-offers-section">
+            <div class="boat-pdp-card-title">{{ section.settings.deal_title | default: '🔥 DEAL' }}</div>
+            <div class="boat-pdp-offers-grid">
+              
+              <div class="boat-pdp-offer-card" id="BoatDealCard-{{ t1_qty }}" onclick="applyBoatDeal({{ t1_qty }}, {{ t1_disc }}, '{{ t1_code }}', this)">
+                <div class="boat-pdp-offer-badge">{{ t1_badge }}</div>
+                <div class="boat-pdp-offer-inner">
+                  <div class="boat-pdp-offer-qty">Buy {{ t1_qty }} or more</div>
+                  <div class="boat-pdp-offer-disc">Get {{ t1_disc }}% Off</div>
+                  <div class="boat-pdp-offer-code">Code: <strong>{{ t1_code }}</strong></div>
+                </div>
               </div>
-            </div>
 
-            <div class="boat-pdp-offer-card" id="BoatDealCard-5" onclick="applyBoatDeal(5, 7, 'DEAL7', this)">
-              <div class="boat-pdp-offer-badge">BEST VALUE</div>
-              <div class="boat-pdp-offer-inner">
-                <div class="boat-pdp-offer-qty">Buy 5 or more</div>
-                <div class="boat-pdp-offer-disc">Get 7% Off</div>
-                <div class="boat-pdp-offer-code" id="BoatDealCode-5">Code: <strong>DEAL7</strong></div>
+              <div class="boat-pdp-offer-card" id="BoatDealCard-{{ t2_qty }}" onclick="applyBoatDeal({{ t2_qty }}, {{ t2_disc }}, '{{ t2_code }}', this)">
+                <div class="boat-pdp-offer-badge">{{ t2_badge }}</div>
+                <div class="boat-pdp-offer-inner">
+                  <div class="boat-pdp-offer-qty">Buy {{ t2_qty }} or more</div>
+                  <div class="boat-pdp-offer-disc">Get {{ t2_disc }}% Off</div>
+                  <div class="boat-pdp-offer-code">Code: <strong>{{ t2_code }}</strong></div>
+                </div>
               </div>
-            </div>
 
-            <div class="boat-pdp-offer-card" id="BoatDealCard-10" onclick="applyBoatDeal(10, 10, 'DEAL10', this)">
-              <div class="boat-pdp-offer-badge">MOST SAVINGS</div>
-              <div class="boat-pdp-offer-inner">
-                <div class="boat-pdp-offer-qty">Buy 10 or more</div>
-                <div class="boat-pdp-offer-disc">Get 10% Off</div>
-                <div class="boat-pdp-offer-code" id="BoatDealCode-10">Code: <strong>DEAL10</strong></div>
+              <div class="boat-pdp-offer-card" id="BoatDealCard-{{ t3_qty }}" onclick="applyBoatDeal({{ t3_qty }}, {{ t3_disc }}, '{{ t3_code }}', this)">
+                <div class="boat-pdp-offer-badge">{{ t3_badge }}</div>
+                <div class="boat-pdp-offer-inner">
+                  <div class="boat-pdp-offer-qty">Buy {{ t3_qty }} or more</div>
+                  <div class="boat-pdp-offer-disc">Get {{ t3_disc }}% Off</div>
+                  <div class="boat-pdp-offer-code">Code: <strong>{{ t3_code }}</strong></div>
+                </div>
               </div>
-            </div>
 
+            </div>
           </div>
-        </div>
+        {% endif %}
 
         {% comment %} 6. Action Buttons (Add to Cart + Buy Now to Checkout) {% endcomment %}
         <div class="boat-pdp-cta-group">
@@ -1108,6 +1149,18 @@
   let currentVariantPrice = {{ selected_variant.price }};
   let activeCouponCode = '';
 
+  const tierConfig = {
+    t1_qty: {{ t1_qty }},
+    t1_disc: {{ t1_disc }},
+    t1_code: {{ t1_code | json }},
+    t2_qty: {{ t2_qty }},
+    t2_disc: {{ t2_disc }},
+    t2_code: {{ t2_code | json }},
+    t3_qty: {{ t3_qty }},
+    t3_disc: {{ t3_disc }},
+    t3_code: {{ t3_code | json }}
+  };
+
   let selectedOptions = [
     {% for option in product.options_with_values %}
       {{ option.selected_value | json }}{% unless forloop.last %},{% endunless %}
@@ -1119,7 +1172,7 @@
     return 'Rs.' + amount.toLocaleString();
   }
 
-  // Dynamic Subtotal Calculator with Automatic Tier Discounts (DEAL6, DEAL7, DEAL10)
+  // Dynamic Subtotal Calculator with Automatic Tier Discounts
   function updateBoatSubtotal() {
     const qtyInput = document.getElementById('BoatPdpQuantity');
     const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
@@ -1128,15 +1181,15 @@
     let discountPercent = 0;
     let activeCode = '';
 
-    if (qty >= 10) {
-      discountPercent = 10;
-      activeCode = 'DEAL10';
-    } else if (qty >= 5) {
-      discountPercent = 7;
-      activeCode = 'DEAL7';
-    } else if (qty >= 2) {
-      discountPercent = 6;
-      activeCode = 'DEAL6';
+    if (qty >= tierConfig.t3_qty) {
+      discountPercent = tierConfig.t3_disc;
+      activeCode = tierConfig.t3_code;
+    } else if (qty >= tierConfig.t2_qty) {
+      discountPercent = tierConfig.t2_disc;
+      activeCode = tierConfig.t2_code;
+    } else if (qty >= tierConfig.t1_qty) {
+      discountPercent = tierConfig.t1_disc;
+      activeCode = tierConfig.t1_code;
     }
 
     activeCouponCode = activeCode;
@@ -1165,12 +1218,12 @@
 
     // Highlight active card
     document.querySelectorAll('.boat-pdp-offer-card').forEach(c => c.classList.remove('active'));
-    if (qty >= 10) {
-      document.getElementById('BoatDealCard-10')?.classList.add('active');
-    } else if (qty >= 5) {
-      document.getElementById('BoatDealCard-5')?.classList.add('active');
-    } else if (qty >= 2) {
-      document.getElementById('BoatDealCard-2')?.classList.add('active');
+    if (qty >= tierConfig.t3_qty) {
+      document.getElementById('BoatDealCard-' + tierConfig.t3_qty)?.classList.add('active');
+    } else if (qty >= tierConfig.t2_qty) {
+      document.getElementById('BoatDealCard-' + tierConfig.t2_qty)?.classList.add('active');
+    } else if (qty >= tierConfig.t1_qty) {
+      document.getElementById('BoatDealCard-' + tierConfig.t1_qty)?.classList.add('active');
     }
   }
 
@@ -1289,6 +1342,16 @@
     }
   }
 
+  // Smooth Submit Handler supporting auto coupon session sync
+  async function handleBoatPdpSubmit(event, form) {
+    if (activeCouponCode) {
+      try {
+        fetch('/discount/' + encodeURIComponent(activeCouponCode));
+      } catch(e) {}
+    }
+    handleBoatAddToCart(event, form);
+  }
+
   // Direct Checkout for Buy Now Button with Active Coupon Applied
   async function buyNowBoatPdp(formId) {
     const variantId = document.getElementById('BoatPdpSelectedVariantId').value;
@@ -1347,7 +1410,120 @@
 {% schema %}
 {
   "name": "boAt Product Page",
-  "settings": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "🔥 DEAL Section Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_deals",
+      "label": "Enable DEAL Section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "deal_title",
+      "label": "Deal Section Heading",
+      "default": "🔥 DEAL"
+    },
+    {
+      "type": "text",
+      "id": "deals_tag_filter",
+      "label": "Show only on products with tag (Optional)",
+      "info": "Leave blank to show on all products. Example: deal"
+    },
+    {
+      "type": "collection",
+      "id": "deals_collection_filter",
+      "label": "Show only on collection (Optional)",
+      "info": "Leave empty to show on all collections"
+    },
+    {
+      "type": "header",
+      "content": "Tier 1 Offer"
+    },
+    {
+      "type": "number",
+      "id": "tier_1_qty",
+      "label": "Tier 1 Min Quantity",
+      "default": 2
+    },
+    {
+      "type": "number",
+      "id": "tier_1_discount",
+      "label": "Tier 1 Discount %",
+      "default": 6
+    },
+    {
+      "type": "text",
+      "id": "tier_1_code",
+      "label": "Tier 1 Coupon Code",
+      "default": "DEAL6"
+    },
+    {
+      "type": "text",
+      "id": "tier_1_badge",
+      "label": "Tier 1 Badge Text",
+      "default": "MOST POPULAR"
+    },
+    {
+      "type": "header",
+      "content": "Tier 2 Offer"
+    },
+    {
+      "type": "number",
+      "id": "tier_2_qty",
+      "label": "Tier 2 Min Quantity",
+      "default": 5
+    },
+    {
+      "type": "number",
+      "id": "tier_2_discount",
+      "label": "Tier 2 Discount %",
+      "default": 7
+    },
+    {
+      "type": "text",
+      "id": "tier_2_code",
+      "label": "Tier 2 Coupon Code",
+      "default": "DEAL7"
+    },
+    {
+      "type": "text",
+      "id": "tier_2_badge",
+      "label": "Tier 2 Badge Text",
+      "default": "BEST VALUE"
+    },
+    {
+      "type": "header",
+      "content": "Tier 3 Offer"
+    },
+    {
+      "type": "number",
+      "id": "tier_3_qty",
+      "label": "Tier 3 Min Quantity",
+      "default": 10
+    },
+    {
+      "type": "number",
+      "id": "tier_3_discount",
+      "label": "Tier 3 Discount %",
+      "default": 10
+    },
+    {
+      "type": "text",
+      "id": "tier_3_code",
+      "label": "Tier 3 Coupon Code",
+      "default": "DEAL10"
+    },
+    {
+      "type": "text",
+      "id": "tier_3_badge",
+      "label": "Tier 3 Badge Text",
+      "default": "MOST SAVINGS"
+    }
+  ],
   "presets": [
     {
       "name": "boAt Product Page"
