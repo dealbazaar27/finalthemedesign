@@ -76,7 +76,7 @@
     {% paginate search.results by products_per_page %}
       {% if search.performed and search.terms != blank and results_count > 0 %}
         <div class="boat-search-section-header">
-          <h2 class="boat-search-grid-heading">🔍 Matching Products ({{ results_count }})</h2>
+          <h2 class="boat-search-grid-heading">Matching Products ({{ results_count }})</h2>
         </div>
         
         <div class="boat-search-grid">
@@ -102,7 +102,7 @@
           {% assign fallback_collection = section.settings.fallback_collection | default: collections.all %}
           {% if fallback_collection != blank and fallback_collection.products.size > 0 %}
             <div class="boat-search-trending-section">
-              <h3 class="boat-search-trending-title">🔥 Popular Products You Might Like</h3>
+              <h3 class="boat-search-trending-title">Popular Products You Might Like</h3>
               <div class="boat-search-grid">
                 {% for product in fallback_collection.products limit: 12 %}
                   <div class="boat-search-grid-item">
@@ -118,7 +118,7 @@
         {% assign default_col = section.settings.fallback_collection | default: collections.all %}
         {% if default_col != blank and default_col.products.size > 0 %}
           <div class="boat-search-trending-section">
-            <h3 class="boat-search-trending-title">🔥 Explore Trending Products</h3>
+            <h3 class="boat-search-trending-title">Explore Trending Products</h3>
             <div class="boat-search-grid">
               {% for product in default_col.products limit: 16 %}
                 <div class="boat-search-grid-item">
