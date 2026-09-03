@@ -2,7 +2,7 @@
   <h4 class="boat-offers-heading">{{ block.settings.heading | default: 'Rewards and Payment Offers' }}</h4>
   <div class="boat-payment-reward-banner">
     <div class="boat-payment-reward-text">
-      {{ block.settings.offer_text | default: 'Redeem upto 10% off additionally with boAt rewards' }}
+      {{ block.settings.offer_text | default: 'Redeem upto 10% off additionally with Deal Bazaar rewards' }}
     </div>
     <div class="boat-gift-icon-wrapper">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e03131" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -18,7 +18,7 @@
 
 {% schema %}
 {
-  "name": "boAt Payment Rewards",
+  "name": "Deal Bazaar Payment Rewards",
   "tag": "div",
   "class": "boat-payment-rewards-block",
   "settings": [
@@ -32,12 +32,12 @@
       "type": "text",
       "id": "offer_text",
       "label": "Offer Text",
-      "default": "Redeem upto 10% off additionally with boAt rewards"
+      "default": "Redeem upto 10% off additionally with Deal Bazaar rewards"
     }
   ],
   "presets": [
     {
-      "name": "boAt Payment Rewards"
+      "name": "Deal Bazaar Payment Rewards"
     }
   ]
 }

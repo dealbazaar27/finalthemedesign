@@ -7,7 +7,7 @@
   {% if block.settings.show_reward_points %}
     <div class="boat-reward-points-pill">
       <span class="boat-reward-text">
-        {{ block.settings.reward_points_text | default: 'Earn upto 69 boAt reward points on this product' }}
+        {{ block.settings.reward_points_text | default: 'Earn upto 69 Deal Bazaar reward points on this product' }}
       </span>
     </div>
   {% endif %}
@@ -15,7 +15,7 @@
 
 {% schema %}
 {
-  "name": "boAt Rating & Rewards",
+  "name": "Deal Bazaar Rating & Rewards",
   "tag": "div",
   "class": "boat-rating-rewards-block",
   "settings": [
@@ -41,12 +41,12 @@
       "type": "text",
       "id": "reward_points_text",
       "label": "Reward Points Text",
-      "default": "Earn upto 69 boAt reward points on this product"
+      "default": "Earn upto 69 Deal Bazaar reward points on this product"
     }
   ],
   "presets": [
     {
-      "name": "boAt Rating & Rewards"
+      "name": "Deal Bazaar Rating & Rewards"
     }
   ]
 }
