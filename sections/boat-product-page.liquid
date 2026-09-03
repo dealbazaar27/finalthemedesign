@@ -11,6 +11,54 @@
 
   assign form_id = 'BoatProductPageForm-' | append: product.id
 
+  # Dynamic realistic rating unique per product (so every product has a distinct realistic rating like Top Picks)
+  assign id_mod_10 = product.id | modulo: 10
+  case id_mod_10
+    when 0
+      assign auto_rating = '4.9'
+    when 1
+      assign auto_rating = '4.7'
+    when 2
+      assign auto_rating = '4.8'
+    when 3
+      assign auto_rating = '4.6'
+    when 4
+      assign auto_rating = '4.9'
+    when 5
+      assign auto_rating = '4.8'
+    when 6
+      assign auto_rating = '5.0'
+    when 7
+      assign auto_rating = '4.7'
+    when 8
+      assign auto_rating = '4.8'
+    else
+      assign auto_rating = '4.9'
+  endcase
+
+  assign id_mod_500 = product.id | modulo: 480 | plus: 125
+  assign auto_reviews_count = id_mod_500
+
+  assign display_rating = auto_rating
+  if section.settings.custom_rating != blank
+    assign display_rating = section.settings.custom_rating
+  endif
+
+  assign display_reviews_count = auto_reviews_count
+  if section.settings.custom_reviews_count != blank and section.settings.custom_reviews_count > 0
+    assign display_reviews_count = section.settings.custom_reviews_count
+  endif
+
+  assign show_rating = section.settings.show_rating
+  if show_rating == nil
+    assign show_rating = true
+  endif
+
+  assign show_timer = section.settings.show_timer
+  if show_timer == nil
+    assign show_timer = true
+  endif
+
   assign show_deal = section.settings.enable_deals
   if show_deal == nil
     assign show_deal = true
@@ -122,11 +170,13 @@
           </div>
 
           {% comment %} Countdown Flash Sale Timer Bar {% endcomment %}
-          <div class="boat-pdp-timer-bar">
-            <span class="boat-pdp-timer-icon">⏳</span>
-            <span class="boat-pdp-timer-label">Flash Sale Ends In:</span>
-            <span class="boat-pdp-timer-digits" id="boatPdpCountdown">04h : 02m : 19s</span>
-          </div>
+          {% if show_timer %}
+            <div class="boat-pdp-timer-bar">
+              <span class="boat-pdp-timer-icon">⏳</span>
+              <span class="boat-pdp-timer-label">{{ section.settings.timer_label | default: 'Flash Sale Ends In:' }}</span>
+              <span class="boat-pdp-timer-digits" id="boatPdpCountdown">04h : 02m : 19s</span>
+            </div>
+          {% endif %}
         </div>
 
       </div>
@@ -135,13 +185,15 @@
     {% comment %} === Right Column: Product Information & Offers === {% endcomment %}
     <div class="boat-pdp-info-col">
       
-      {% comment %} 1. Review Rating Badge {% endcomment %}
-      <div class="boat-pdp-rating-row">
-        <span class="boat-pdp-star">★</span>
-        <span class="boat-pdp-score">4.8</span>
-        <span class="boat-pdp-count">(528)</span>
-        <span class="boat-pdp-verified-icon">✔</span>
-      </div>
+      {% comment %} 1. Review Rating Badge (Unique & Dynamic per Product) {% endcomment %}
+      {% if show_rating %}
+        <div class="boat-pdp-rating-row">
+          <span class="boat-pdp-star">★</span>
+          <span class="boat-pdp-score">{{ display_rating }}</span>
+          <span class="boat-pdp-count">({{ display_reviews_count }})</span>
+          <span class="boat-pdp-verified-icon">✔</span>
+        </div>
+      {% endif %}
 
       {% comment %} 2. Product Title & Subtitle {% endcomment %}
       <h1 class="boat-pdp-title">{{ product.title }}</h1>
@@ -348,6 +400,17 @@
   /* ------------------------------------------------------------- */
   /* boAt Authentic Product Page Styling (100% Mobile Responsive)  */
   /* ------------------------------------------------------------- */
+
+  :root {
+    --boat-pdp-title-size: {{ section.settings.title_font_size | default: 28 }}px;
+    --boat-pdp-title-color: {{ section.settings.title_color | default: '#0f172a' }};
+    --boat-pdp-price-color: {{ section.settings.price_color | default: '#0f172a' }};
+    --boat-pdp-discount-color: {{ section.settings.discount_color | default: '#00b853' }};
+    --boat-pdp-atc-bg: {{ section.settings.atc_btn_bg | default: '#0f172a' }};
+    --boat-pdp-atc-text: {{ section.settings.atc_btn_text | default: '#ffffff' }};
+    --boat-pdp-buy-bg: {{ section.settings.buy_btn_bg | default: '#00b853' }};
+    --boat-pdp-buy-text: {{ section.settings.buy_btn_text | default: '#ffffff' }};
+  }
 
   .boat-pdp-container {
     max-width: 1320px;
@@ -575,6 +638,7 @@
   }
 
   .boat-pdp-star { color: #f59e0b; font-size: 1rem; }
+  .boat-pdp-score { color: #0f172a; font-weight: 800; font-size: 0.9rem; }
   .boat-pdp-count { color: #64748b; font-weight: 600; font-size: 0.8rem; }
   .boat-pdp-verified-icon {
     display: inline-flex;
@@ -591,9 +655,9 @@
 
   /* Title & Subtitle */
   .boat-pdp-title {
-    font-size: 1.75rem;
+    font-size: var(--boat-pdp-title-size);
     font-weight: 900;
-    color: #0f172a;
+    color: var(--boat-pdp-title-color);
     margin: 0;
     line-height: 1.25;
     letter-spacing: -0.5px;
@@ -627,7 +691,7 @@
   .boat-pdp-price {
     font-size: 1.6rem;
     font-weight: 900;
-    color: #0f172a;
+    color: var(--boat-pdp-price-color);
   }
 
   .boat-pdp-compare-price {
@@ -640,7 +704,7 @@
   .boat-pdp-discount {
     font-size: 0.95rem;
     font-weight: 800;
-    color: #00b853;
+    color: var(--boat-pdp-discount-color);
   }
 
   .boat-pdp-tax-text {
@@ -997,22 +1061,22 @@
   }
 
   .boat-pdp-btn--atc {
-    background: #0f172a;
-    color: #ffffff;
+    background: var(--boat-pdp-atc-bg);
+    color: var(--boat-pdp-atc-text);
   }
 
   .boat-pdp-btn--atc:hover {
-    background: #1e293b;
+    opacity: 0.9;
     transform: translateY(-1px);
   }
 
   .boat-pdp-btn--buy {
-    background: #00b853;
-    color: #ffffff;
+    background: var(--boat-pdp-buy-bg);
+    color: var(--boat-pdp-buy-text);
   }
 
   .boat-pdp-btn--buy:hover {
-    background: #009944;
+    opacity: 0.9;
     transform: translateY(-1px);
   }
 
@@ -1087,7 +1151,7 @@
     }
 
     .boat-pdp-title {
-      font-size: 1.3rem;
+      font-size: calc(var(--boat-pdp-title-size) * 0.82);
       letter-spacing: -0.3px;
     }
 
@@ -1257,7 +1321,7 @@
 
   // Live Flash Sale Countdown Timer
   (function() {
-    let totalSeconds = 4 * 3600 + 2 * 60 + 19;
+    let totalSeconds = {{ section.settings.timer_hours | default: 4 }} * 3600 + {{ section.settings.timer_minutes | default: 2 }} * 60 + 19;
     const timerElem = document.getElementById('boatPdpCountdown');
     if (!timerElem) return;
 
@@ -1540,6 +1604,112 @@
 {
   "name": "boAt Product Page",
   "settings": [
+    {
+      "type": "header",
+      "content": "⭐ Product Rating Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show Rating Badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "custom_rating",
+      "label": "Custom Rating (e.g. 4.8)",
+      "info": "Leave blank to generate realistic unique ratings automatically per product"
+    },
+    {
+      "type": "number",
+      "id": "custom_reviews_count",
+      "label": "Custom Reviews Count (e.g. 528)",
+      "info": "Leave blank to generate realistic unique review counts automatically"
+    },
+    {
+      "type": "header",
+      "content": "⏳ Flash Sale Timer"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_timer",
+      "label": "Show Flash Sale Countdown Timer",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "timer_label",
+      "label": "Timer Label Text",
+      "default": "Flash Sale Ends In:"
+    },
+    {
+      "type": "number",
+      "id": "timer_hours",
+      "label": "Timer Hours",
+      "default": 4
+    },
+    {
+      "type": "number",
+      "id": "timer_minutes",
+      "label": "Timer Minutes",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "🎨 Colors & Typography Settings"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "min": 18,
+      "max": 42,
+      "step": 1,
+      "unit": "px",
+      "label": "Product Title Font Size",
+      "default": 28
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Product Title Color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "price_color",
+      "label": "Price Color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "discount_color",
+      "label": "Discount % Text Color",
+      "default": "#00b853"
+    },
+    {
+      "type": "color",
+      "id": "atc_btn_bg",
+      "label": "Add to Cart Button Background",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "atc_btn_text",
+      "label": "Add to Cart Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "buy_btn_bg",
+      "label": "Buy Now Button Background",
+      "default": "#00b853"
+    },
+    {
+      "type": "color",
+      "id": "buy_btn_text",
+      "label": "Buy Now Button Text Color",
+      "default": "#ffffff"
+    },
     {
       "type": "header",
       "content": "🔥 DEAL Section Settings"
