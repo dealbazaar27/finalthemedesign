@@ -16,16 +16,6 @@
     assign show_deal = true
   endif
 
-  assign enable_sticky_mobile = section.settings.enable_mobile_sticky_bar
-  if enable_sticky_mobile == nil
-    assign enable_sticky_mobile = true
-  endif
-
-  assign hide_in_page_mobile = section.settings.hide_in_page_buttons_mobile
-  if hide_in_page_mobile == nil
-    assign hide_in_page_mobile = false
-  endif
-
   if section.settings.deals_tag_filter != blank
     unless product.tags contains section.settings.deals_tag_filter
       assign show_deal = false
@@ -264,7 +254,7 @@
           <span class="boat-pdp-subtotal-discount-tag" id="BoatPdpSubtotalDiscountTag" style="display: none;"></span>
         </div>
 
-        {% comment %} 5. Dynamic DEAL Section (Mobile Smooth Carousel) {% endcomment %}
+        {% comment %} 5. Dynamic DEAL Section with Interactive Auto-Quantity & Discount Calculation {% endcomment %}
         {% if show_deal %}
           <div class="boat-pdp-offers-section">
             <div class="boat-pdp-card-title">{{ section.settings.deal_title | default: '🔥 DEAL' }}</div>
@@ -301,8 +291,8 @@
           </div>
         {% endif %}
 
-        {% comment %} 6. Action Buttons (Add to Cart + Buy Now) {% endcomment %}
-        <div class="boat-pdp-cta-group{% if hide_in_page_mobile %} boat-pdp-cta-group--hide-mobile{% endif %}">
+        {% comment %} 6. Action Buttons (Add to Cart + Buy Now to Checkout) {% endcomment %}
+        <div class="boat-pdp-cta-group">
           <button 
             type="submit" 
             class="boat-pdp-btn boat-pdp-btn--atc" 
@@ -335,45 +325,6 @@
 
 </div>
 
-{% comment %} Mobile Sticky Bottom Bar (Controlled via Theme Settings) {% endcomment %}
-{% if enable_sticky_mobile %}
-  <div class="boat-pdp-sticky-bar" id="BoatPdpStickyBar">
-    <div class="boat-pdp-sticky-deal-strip" id="BoatPdpStickyDealStrip" style="display: none;">
-      Get at <span id="BoatPdpStickyDealPrice"></span> by using <strong id="BoatPdpStickyDealCode"></strong>
-    </div>
-    <div class="boat-pdp-sticky-inner">
-      <div class="boat-pdp-sticky-price-row">
-        <span class="boat-pdp-sticky-price" id="BoatPdpStickyPrice">{{ price | money_without_trailing_zeros }}</span>
-        <span class="boat-pdp-sticky-compare" id="BoatPdpStickyCompare" style="{% unless compare_price > price %}display: none;{% endunless %}">
-          {{ compare_price | money_without_trailing_zeros }}
-        </span>
-        <span class="boat-pdp-sticky-discount" id="BoatPdpStickyDiscount" style="{% unless compare_price > price %}display: none;{% endunless %}">
-          {{ discount_percent }}% Off
-        </span>
-        <span class="boat-pdp-sticky-tax">Inclusive of all Taxes</span>
-      </div>
-      <div class="boat-pdp-sticky-cta-row">
-        <button 
-          type="button" 
-          class="boat-pdp-sticky-btn boat-pdp-sticky-btn--atc" 
-          onclick="document.getElementById('BoatPdpAtcBtn').click()"
-          {% unless selected_variant.available %}disabled{% endunless %}
-        >
-          <span>Add To Cart</span>
-        </button>
-        <button 
-          type="button" 
-          class="boat-pdp-sticky-btn boat-pdp-sticky-btn--buy" 
-          onclick="document.getElementById('BoatPdpBuyBtn').click()"
-          {% unless selected_variant.available %}disabled{% endunless %}
-        >
-          <span>Buy Now</span>
-        </button>
-      </div>
-    </div>
-  </div>
-{% endif %}
-
 {% comment %} Output Master Product Variants JSON {% endcomment %}
 <script type="application/json" id="BoatPdpVariantsData">
   [
@@ -400,13 +351,11 @@
 
   .boat-pdp-container {
     max-width: 1320px;
-    width: 100%;
     margin: 0 auto;
     padding: 16px 20px 48px 20px;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: #0f172a;
     box-sizing: border-box;
-    overflow-x: clip;
   }
 
   /* Breadcrumb */
@@ -447,8 +396,6 @@
     grid-template-columns: 1.05fr 1fr;
     gap: 48px;
     align-items: start;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   /* Gallery Inner Layout */
@@ -588,8 +535,6 @@
     flex-direction: column;
     gap: 14px;
     min-width: 0;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   /* Rating Row */
@@ -625,7 +570,6 @@
     margin: 0;
     line-height: 1.25;
     letter-spacing: -0.5px;
-    word-break: break-word;
   }
 
   .boat-pdp-subtitle {
@@ -880,14 +824,12 @@
     to { transform: scale(1); opacity: 1; }
   }
 
-  /* DEAL Section */
+  /* DEAL Section (Above Buttons) */
   .boat-pdp-offers-section {
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-top: 10px;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   .boat-pdp-card-title {
@@ -901,8 +843,6 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   .boat-pdp-offer-card {
@@ -916,7 +856,6 @@
     cursor: pointer;
     transition: all 0.2s ease;
     user-select: none;
-    box-sizing: border-box;
   }
 
   .boat-pdp-offer-card:hover {
@@ -947,7 +886,6 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    box-sizing: border-box;
   }
 
   .boat-pdp-offer-qty {
@@ -973,7 +911,6 @@
     width: 100%;
     margin-top: 4px;
     transition: all 0.2s ease;
-    box-sizing: border-box;
   }
 
   .boat-pdp-offer-card:hover .boat-pdp-offer-code,
@@ -982,22 +919,18 @@
     border-style: solid;
   }
 
-  /* In-Page Action CTA Buttons */
+  /* Action CTA Buttons */
   .boat-pdp-cta-group {
     display: flex;
     align-items: center;
     gap: 12px;
     margin: 14px 0 8px 0;
-    width: 100%;
-    box-sizing: border-box;
   }
 
   .boat-pdp-btn {
-    flex: 1 1 0;
-    width: 50%;
-    min-width: 0;
+    flex: 1;
     height: 48px;
-    border-radius: 26px;
+    border-radius: 10px;
     font-size: 0.95rem;
     font-weight: 800;
     border: none;
@@ -1007,7 +940,6 @@
     justify-content: center;
     transition: all 0.2s ease;
     font-family: inherit;
-    box-sizing: border-box;
   }
 
   .boat-pdp-btn--atc {
@@ -1028,11 +960,6 @@
   .boat-pdp-btn--buy:hover {
     background: #009944;
     transform: translateY(-1px);
-  }
-
-  /* Mobile Sticky Bottom Bar */
-  .boat-pdp-sticky-bar {
-    display: none;
   }
 
   /* ------------------------------------------------------------- */
@@ -1074,9 +1001,6 @@
   @media screen and (max-width: 640px) {
     .boat-pdp-container {
       padding: 10px 12px 32px 12px;
-      overflow-x: hidden;
-      width: 100%;
-      max-width: 100vw;
     }
 
     .boat-pdp-breadcrumb {
@@ -1117,8 +1041,6 @@
     .boat-pdp-subtotal-wrapper {
       padding: 8px 12px;
       margin-top: 8px;
-      width: 100%;
-      box-sizing: border-box;
     }
 
     .boat-pdp-subtotal-label {
@@ -1129,35 +1051,13 @@
       font-size: 1.1rem;
     }
 
-    /* DEAL Touch Carousel Slider on Mobile (Zero Horizontal Page Scroll) */
     .boat-pdp-offers-grid {
-      display: flex;
-      width: 100%;
-      max-width: 100%;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      gap: 8px;
-      padding: 2px 2px 8px 2px;
-      box-sizing: border-box;
-      scrollbar-width: none;
-    }
-
-    .boat-pdp-offers-grid::-webkit-scrollbar {
-      display: none;
-    }
-
-    .boat-pdp-offer-card {
-      flex: 0 0 135px;
-      width: 135px;
-      min-width: 135px;
-      max-width: 135px;
-      scroll-snap-align: start;
-      box-sizing: border-box;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
     }
 
     .boat-pdp-offer-inner {
-      padding: 8px 6px;
+      padding: 6px 4px;
       gap: 2px;
     }
 
@@ -1167,146 +1067,26 @@
     }
 
     .boat-pdp-offer-qty {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
     }
 
     .boat-pdp-offer-disc {
-      font-size: 0.76rem;
+      font-size: 0.72rem;
     }
 
     .boat-pdp-offer-code {
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       padding: 2px 4px;
     }
 
-    /* In-Page Action CTA Buttons on Mobile (100% Fit, No Cutoff) */
     .boat-pdp-cta-group {
-      display: flex;
-      width: 100%;
-      max-width: 100%;
       gap: 8px;
       margin: 12px 0 6px 0;
-      box-sizing: border-box;
-    }
-
-    .boat-pdp-cta-group--hide-mobile {
-      display: none !important;
     }
 
     .boat-pdp-btn {
-      flex: 1 1 0;
-      width: calc(50% - 4px);
-      min-width: 0;
-      height: 44px;
+      height: 46px;
       font-size: 0.88rem;
-      border-radius: 24px;
-      padding: 0 4px;
-      white-space: nowrap;
-      box-sizing: border-box;
-    }
-
-    /* Sticky Bottom Bar on Mobile */
-    .boat-pdp-sticky-bar {
-      display: block;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      background: #ffffff;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
-      border-top: 1px solid #e2e8f0;
-      padding: 6px 12px calc(6px + env(safe-area-inset-bottom)) 12px;
-      box-sizing: border-box;
-      animation: slideUpSticky 0.25s ease;
-    }
-
-    @keyframes slideUpSticky {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-
-    .boat-pdp-sticky-deal-strip {
-      background: #00875a;
-      color: #ffffff;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-align: center;
-      padding: 3px 6px;
-      border-radius: 6px;
-      margin-bottom: 6px;
-    }
-
-    .boat-pdp-sticky-inner {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .boat-pdp-sticky-price-row {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .boat-pdp-sticky-price {
-      font-size: 1.15rem;
-      font-weight: 900;
-      color: #0f172a;
-    }
-
-    .boat-pdp-sticky-compare {
-      font-size: 0.8rem;
-      text-decoration: line-through;
-      color: #94a3b8;
-      font-weight: 600;
-    }
-
-    .boat-pdp-sticky-discount {
-      font-size: 0.8rem;
-      font-weight: 800;
-      color: #00b853;
-    }
-
-    .boat-pdp-sticky-tax {
-      font-size: 0.65rem;
-      color: #94a3b8;
-      margin-left: auto;
-    }
-
-    .boat-pdp-sticky-cta-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      width: 100%;
-    }
-
-    .boat-pdp-sticky-btn {
-      flex: 1 1 0;
-      min-width: 0;
-      height: 44px;
-      border-radius: 22px;
-      font-size: 0.9rem;
-      font-weight: 800;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: inherit;
-      transition: all 0.2s ease;
-      box-sizing: border-box;
-    }
-
-    .boat-pdp-sticky-btn--atc {
-      background: #0f172a;
-      color: #ffffff;
-    }
-
-    .boat-pdp-sticky-btn--buy {
-      background: #00b853;
-      color: #ffffff;
     }
   }
 </style>
@@ -1421,14 +1201,6 @@
     const compareElem = document.getElementById('BoatPdpSubtotalCompare');
     const discountTag = document.getElementById('BoatPdpSubtotalDiscountTag');
 
-    // Sticky bar elements
-    const stickyPrice = document.getElementById('BoatPdpStickyPrice');
-    const stickyCompare = document.getElementById('BoatPdpStickyCompare');
-    const stickyDisc = document.getElementById('BoatPdpStickyDiscount');
-    const stickyDealStrip = document.getElementById('BoatPdpStickyDealStrip');
-    const stickyDealPrice = document.getElementById('BoatPdpStickyDealPrice');
-    const stickyDealCode = document.getElementById('BoatPdpStickyDealCode');
-
     if (discountPercent > 0) {
       if (subtotalElem) subtotalElem.textContent = formatMoneyWithoutDecimals(discountedCents);
       if (compareElem) {
@@ -1439,29 +1211,10 @@
         discountTag.textContent = discountPercent + '% OFF (' + activeCode + ')';
         discountTag.style.display = 'inline-flex';
       }
-
-      if (stickyPrice) stickyPrice.textContent = formatMoneyWithoutDecimals(discountedCents);
-      if (stickyCompare) {
-        stickyCompare.textContent = formatMoneyWithoutDecimals(originalCents);
-        stickyCompare.style.display = 'inline';
-      }
-      if (stickyDisc) {
-        stickyDisc.textContent = discountPercent + '% Off';
-        stickyDisc.style.display = 'inline';
-      }
-      if (stickyDealStrip && stickyDealPrice && stickyDealCode) {
-        stickyDealPrice.textContent = formatMoneyWithoutDecimals(discountedCents);
-        stickyDealCode.textContent = activeCode;
-        stickyDealStrip.style.display = 'block';
-      }
     } else {
       if (subtotalElem) subtotalElem.textContent = formatMoneyWithoutDecimals(originalCents);
       if (compareElem) compareElem.style.display = 'none';
       if (discountTag) discountTag.style.display = 'none';
-
-      if (stickyPrice) stickyPrice.textContent = formatMoneyWithoutDecimals(originalCents);
-      if (stickyCompare) stickyCompare.style.display = 'none';
-      if (stickyDealStrip) stickyDealStrip.style.display = 'none';
     }
 
     // Highlight active card
@@ -1545,7 +1298,7 @@
       const priceElem = document.getElementById('BoatPdpPrice');
       if (priceElem) priceElem.textContent = formatMoneyWithoutDecimals(matchedVariant.price);
 
-      // Recalculate Subtotal & Sticky Price
+      // Recalculate Subtotal
       updateBoatSubtotal();
 
       // Update Compare Price & Discount
@@ -1661,22 +1414,6 @@
 {
   "name": "boAt Product Page",
   "settings": [
-    {
-      "type": "header",
-      "content": "📱 Mobile Sticky Bottom Bar Settings"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_mobile_sticky_bar",
-      "label": "Enable Sticky Bottom CTA Bar on Mobile",
-      "default": false
-    },
-    {
-      "type": "checkbox",
-      "id": "hide_in_page_buttons_mobile",
-      "label": "Hide In-Page Buttons on Mobile (When Sticky Bar is ON)",
-      "default": false
-    },
     {
       "type": "header",
       "content": "🔥 DEAL Section Settings"
