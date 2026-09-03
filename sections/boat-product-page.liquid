@@ -11,43 +11,43 @@
 
   assign form_id = 'BoatProductPageForm-' | append: product.id
 
-  # Dynamic realistic rating unique per product (so every product has a distinct realistic rating like Top Picks)
-  assign id_mod_10 = product.id | modulo: 10
-  case id_mod_10
+  # Exact Synchronized Deterministic Product Rating matching Top Picks Card Item
+  assign id_num = product.id | modulo: 15
+  case id_num
     when 0
-      assign auto_rating = '4.9'
+      assign display_rating = '4.9'
     when 1
-      assign auto_rating = '4.7'
+      assign display_rating = '4.7'
     when 2
-      assign auto_rating = '4.8'
+      assign display_rating = '4.2'
     when 3
-      assign auto_rating = '4.6'
+      assign display_rating = '4.8'
     when 4
-      assign auto_rating = '4.9'
+      assign display_rating = '3.9'
     when 5
-      assign auto_rating = '4.8'
+      assign display_rating = '4.5'
     when 6
-      assign auto_rating = '5.0'
+      assign display_rating = '5.0'
     when 7
-      assign auto_rating = '4.7'
+      assign display_rating = '4.1'
     when 8
-      assign auto_rating = '4.8'
+      assign display_rating = '4.6'
+    when 9
+      assign display_rating = '3.8'
+    when 10
+      assign display_rating = '4.4'
+    when 11
+      assign display_rating = '4.9'
+    when 12
+      assign display_rating = '4.3'
+    when 13
+      assign display_rating = '4.8'
     else
-      assign auto_rating = '4.9'
+      assign display_rating = '3.7'
   endcase
 
-  assign id_mod_500 = product.id | modulo: 480 | plus: 125
-  assign auto_reviews_count = id_mod_500
-
-  assign display_rating = auto_rating
-  if section.settings.custom_rating != blank
-    assign display_rating = section.settings.custom_rating
-  endif
-
-  assign display_reviews_count = auto_reviews_count
-  if section.settings.custom_reviews_count != blank and section.settings.custom_reviews_count > 0
-    assign display_reviews_count = section.settings.custom_reviews_count
-  endif
+  assign id_count_seed = product.id | modulo: 380 | plus: 142
+  assign display_reviews_count = id_count_seed
 
   assign show_rating = section.settings.show_rating
   if show_rating == nil
@@ -1613,18 +1613,6 @@
       "id": "show_rating",
       "label": "Show Rating Badge",
       "default": true
-    },
-    {
-      "type": "text",
-      "id": "custom_rating",
-      "label": "Custom Rating (e.g. 4.8)",
-      "info": "Leave blank to generate realistic unique ratings automatically per product"
-    },
-    {
-      "type": "number",
-      "id": "custom_reviews_count",
-      "label": "Custom Reviews Count (e.g. 528)",
-      "info": "Leave blank to generate realistic unique review counts automatically"
     },
     {
       "type": "header",
