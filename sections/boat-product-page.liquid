@@ -39,7 +39,7 @@
     <div class="boat-pdp-gallery-col">
       <div class="boat-pdp-gallery-inner">
         
-        {% comment %} Left Vertical Thumbnails {% endcomment %}
+        {% comment %} Left Vertical / Mobile Horizontal Thumbnails {% endcomment %}
         {% if product.media.size > 1 %}
           <div class="boat-pdp-thumbs" id="BoatPdpThumbs">
             {% for media in product.media %}
@@ -295,7 +295,7 @@
 
 <style>
   /* ------------------------------------------------------------- */
-  /* boAt Authentic Product Page Styling                           */
+  /* boAt Authentic Product Page Styling (100% Mobile Responsive)  */
   /* ------------------------------------------------------------- */
 
   .boat-pdp-container {
@@ -347,13 +347,6 @@
     align-items: start;
   }
 
-  @media screen and (max-width: 989px) {
-    .boat-pdp-layout {
-      grid-template-columns: 1fr;
-      gap: 28px;
-    }
-  }
-
   /* Gallery Inner Layout */
   .boat-pdp-gallery-inner {
     display: flex;
@@ -362,16 +355,7 @@
     top: 90px;
   }
 
-  @media screen and (max-width: 749px) {
-    .boat-pdp-gallery-inner {
-      flex-direction: column-reverse;
-      position: relative;
-      top: 0;
-      gap: 12px;
-    }
-  }
-
-  /* Vertical Thumbnails */
+  /* Vertical Thumbnails (Desktop) */
   .boat-pdp-thumbs {
     display: flex;
     flex-direction: column;
@@ -385,16 +369,6 @@
 
   .boat-pdp-thumbs::-webkit-scrollbar {
     display: none;
-  }
-
-  @media screen and (max-width: 749px) {
-    .boat-pdp-thumbs {
-      flex-direction: row;
-      width: 100%;
-      max-height: none;
-      overflow-x: auto;
-      padding-bottom: 4px;
-    }
   }
 
   .boat-pdp-thumb-btn {
@@ -429,6 +403,7 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    min-width: 0;
   }
 
   .boat-pdp-main-image-box {
@@ -456,8 +431,8 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: #0f172a;
     color: #ffffff;
@@ -465,7 +440,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 700;
     cursor: pointer;
     opacity: 0.85;
@@ -478,8 +453,8 @@
     transform: translateY(-50%) scale(1.08);
   }
 
-  .boat-pdp-arrow-btn--prev { left: 12px; }
-  .boat-pdp-arrow-btn--next { right: 12px; }
+  .boat-pdp-arrow-btn--prev { left: 10px; }
+  .boat-pdp-arrow-btn--next { right: 10px; }
 
   /* Flash Sale Countdown Timer Bar */
   .boat-pdp-timer-bar {
@@ -508,6 +483,7 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
+    min-width: 0;
   }
 
   /* Rating Row */
@@ -632,6 +608,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
   }
 
   .boat-pdp-swatch-box img {
@@ -696,13 +673,13 @@
   }
 
   .boat-pdp-qty-btn {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: #ffffff;
     border: 1px solid #cbd5e1;
     color: #0f172a;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 800;
     display: flex;
     align-items: center;
@@ -755,12 +732,6 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-  }
-
-  @media screen and (max-width: 600px) {
-    .boat-pdp-offers-grid {
-      grid-template-columns: 1fr;
-    }
   }
 
   .boat-pdp-offer-card {
@@ -863,6 +834,121 @@
   .boat-pdp-btn--buy:hover {
     background: #009944;
     transform: translateY(-1px);
+  }
+
+  /* ------------------------------------------------------------- */
+  /* Mobile Responsive Breakpoints (Tablets & Phones)              */
+  /* ------------------------------------------------------------- */
+
+  @media screen and (max-width: 989px) {
+    .boat-pdp-container {
+      padding: 12px 16px 36px 16px;
+    }
+
+    .boat-pdp-layout {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .boat-pdp-gallery-inner {
+      flex-direction: column-reverse;
+      position: relative;
+      top: 0;
+      gap: 12px;
+    }
+
+    .boat-pdp-thumbs {
+      flex-direction: row;
+      width: 100%;
+      max-height: none;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      gap: 8px;
+    }
+
+    .boat-pdp-thumb-btn {
+      width: 56px;
+      height: 56px;
+    }
+  }
+
+  @media screen and (max-width: 640px) {
+    .boat-pdp-container {
+      padding: 10px 12px 32px 12px;
+    }
+
+    .boat-pdp-breadcrumb {
+      font-size: 0.75rem;
+      margin-bottom: 12px;
+      gap: 4px;
+    }
+
+    .boat-pdp-title {
+      font-size: 1.35rem;
+      letter-spacing: -0.3px;
+    }
+
+    .boat-pdp-subtitle {
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .boat-pdp-price {
+      font-size: 1.4rem;
+    }
+
+    .boat-pdp-compare-price,
+    .boat-pdp-discount {
+      font-size: 0.85rem;
+    }
+
+    .boat-pdp-swatch-box {
+      width: 46px;
+      height: 46px;
+    }
+
+    .boat-pdp-pill-btn {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+
+    .boat-pdp-offers-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .boat-pdp-offer-inner {
+      padding: 6px 4px;
+      gap: 2px;
+    }
+
+    .boat-pdp-offer-badge {
+      font-size: 0.55rem;
+      padding: 2px 4px;
+    }
+
+    .boat-pdp-offer-qty {
+      font-size: 0.68rem;
+    }
+
+    .boat-pdp-offer-disc {
+      font-size: 0.72rem;
+    }
+
+    .boat-pdp-offer-code {
+      font-size: 0.65rem;
+      padding: 2px 4px;
+    }
+
+    .boat-pdp-cta-group {
+      gap: 8px;
+      margin: 12px 0 6px 0;
+    }
+
+    .boat-pdp-btn {
+      height: 46px;
+      font-size: 0.88rem;
+    }
   }
 </style>
 
@@ -1011,7 +1097,7 @@
     }
   }
 
-  // Real-Time Ajax Add To Cart with Instant Header Cart & Drawer Sync
+  // Smooth, Flicker-Free Ajax Add To Cart & Cart Drawer Sync
   async function handleBoatPdpAddToCart(event, form) {
     event.preventDefault();
     const btn = form.querySelector('.boat-pdp-btn--atc');
@@ -1064,7 +1150,7 @@
           });
         } catch(e) {}
 
-        // 2. Update Cart Drawer Inner DOM safely
+        // 2. Smoothly Update Cart Drawer Inner DOM FIRST before opening to prevent any flicker
         const drawerHtml = data.sections ? data.sections['cart-drawer-section'] : null;
         if (drawerHtml) {
           const parser = new DOMParser();
@@ -1072,16 +1158,14 @@
           const newInner = doc.querySelector('.cart-drawer__inner');
           const currentInner = document.querySelector('#cart-drawer .cart-drawer__inner');
           if (newInner && currentInner) {
-            currentInner.replaceWith(newInner);
+            currentInner.innerHTML = newInner.innerHTML;
+            currentInner.className = newInner.className;
           }
         }
 
-        // 3. Open Cart Drawer
-        const drawerTrigger = document.querySelector('[data-testid="cart-drawer-trigger"], [on\\:click*="#cart-drawer/toggle"]');
+        // 3. Smooth Open Cart Drawer
         const drawer = document.getElementById('cart-drawer');
-        if (drawerTrigger && !drawer?.hasAttribute('open')) {
-          drawerTrigger.click();
-        } else if (drawer) {
+        if (drawer) {
           if (typeof drawer.open === 'function') {
             drawer.open();
           } else {
@@ -1101,7 +1185,7 @@
           btn.disabled = false;
           btn.style.background = '';
           btn.innerHTML = originalText;
-        }, 2500);
+        }, 2200);
       } else {
         btn.disabled = false;
         btn.innerHTML = originalText;
