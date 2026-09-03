@@ -16,7 +16,7 @@
         "custom_rating": "",
         "show_timer": true,
         "timer_label": "Flash Sale Ends In:",
-        "timer_hours": 2,
+        "timer_hours": 100,
         "timer_minutes": 2,
         "title_font_size": 28,
         "title_color": "#0f172a",
