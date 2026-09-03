@@ -205,41 +205,45 @@
           </div>
         </div>
 
-        {% comment %} Dynamic Real-Time Subtotal Row {% endcomment %}
+        {% comment %} Dynamic Real-Time Subtotal Row with Discount Tag {% endcomment %}
         <div class="boat-pdp-subtotal-wrapper">
-          <span class="boat-pdp-subtotal-label">Subtotal :</span>
-          <span class="boat-pdp-subtotal-val" id="BoatPdpSubtotal">{{ price | money_without_trailing_zeros }}</span>
+          <div class="boat-pdp-subtotal-left">
+            <span class="boat-pdp-subtotal-label">Subtotal :</span>
+            <span class="boat-pdp-subtotal-val" id="BoatPdpSubtotal">{{ price | money_without_trailing_zeros }}</span>
+            <span class="boat-pdp-subtotal-compare" id="BoatPdpSubtotalCompare" style="display: none;"></span>
+          </div>
+          <span class="boat-pdp-subtotal-discount-tag" id="BoatPdpSubtotalDiscountTag" style="display: none;"></span>
         </div>
 
-        {% comment %} 5. DEAL Section (Above Buttons) {% endcomment %}
+        {% comment %} 5. DEAL Section with Interactive Auto-Quantity & Discount Calculation {% endcomment %}
         <div class="boat-pdp-offers-section">
           <div class="boat-pdp-card-title">🔥 DEAL</div>
           <div class="boat-pdp-offers-grid">
             
-            <div class="boat-pdp-offer-card">
+            <div class="boat-pdp-offer-card" id="BoatDealCard-2" onclick="applyBoatDeal(2, 6, 'DEAL6', this)">
               <div class="boat-pdp-offer-badge">MOST POPULAR</div>
               <div class="boat-pdp-offer-inner">
                 <div class="boat-pdp-offer-qty">Buy 2 or more</div>
                 <div class="boat-pdp-offer-disc">Get 6% Off</div>
-                <div class="boat-pdp-offer-code" onclick="copyBoatCoupon('BOAT6', this)">Code: <strong>BOAT6</strong></div>
+                <div class="boat-pdp-offer-code" id="BoatDealCode-2">Code: <strong>DEAL6</strong></div>
               </div>
             </div>
 
-            <div class="boat-pdp-offer-card">
+            <div class="boat-pdp-offer-card" id="BoatDealCard-5" onclick="applyBoatDeal(5, 7, 'DEAL7', this)">
               <div class="boat-pdp-offer-badge">BEST VALUE</div>
               <div class="boat-pdp-offer-inner">
                 <div class="boat-pdp-offer-qty">Buy 5 or more</div>
                 <div class="boat-pdp-offer-disc">Get 7% Off</div>
-                <div class="boat-pdp-offer-code" onclick="copyBoatCoupon('BOAT7', this)">Code: <strong>BOAT7</strong></div>
+                <div class="boat-pdp-offer-code" id="BoatDealCode-5">Code: <strong>DEAL7</strong></div>
               </div>
             </div>
 
-            <div class="boat-pdp-offer-card">
+            <div class="boat-pdp-offer-card" id="BoatDealCard-10" onclick="applyBoatDeal(10, 10, 'DEAL10', this)">
               <div class="boat-pdp-offer-badge">MOST SAVINGS</div>
               <div class="boat-pdp-offer-inner">
                 <div class="boat-pdp-offer-qty">Buy 10 or more</div>
                 <div class="boat-pdp-offer-disc">Get 10% Off</div>
-                <div class="boat-pdp-offer-code" onclick="copyBoatCoupon('BOAT10', this)">Code: <strong>BOAT10</strong></div>
+                <div class="boat-pdp-offer-code" id="BoatDealCode-10">Code: <strong>DEAL10</strong></div>
               </div>
             </div>
 
@@ -719,17 +723,27 @@
     margin: 0;
   }
 
-  /* Subtotal Row */
+  /* Dynamic Subtotal Row with Discount Tag */
   .boat-pdp-subtotal-wrapper {
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 10px;
     margin-top: 10px;
-    padding: 8px 14px;
+    padding: 10px 16px;
     background: #f8fafc;
-    border-radius: 10px;
+    border-radius: 12px;
     border: 1.5px dashed #cbd5e1;
-    width: fit-content;
+    width: 100%;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+  }
+
+  .boat-pdp-subtotal-left {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 
   .boat-pdp-subtotal-label {
@@ -739,10 +753,34 @@
   }
 
   .boat-pdp-subtotal-val {
-    font-size: 1.15rem;
+    font-size: 1.25rem;
     font-weight: 900;
     color: #0f172a;
     letter-spacing: -0.3px;
+  }
+
+  .boat-pdp-subtotal-compare {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    text-decoration: line-through;
+    font-weight: 600;
+  }
+
+  .boat-pdp-subtotal-discount-tag {
+    background: #e6fcf5;
+    color: #00875a;
+    font-size: 0.76rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid #b2f2bb;
+    white-space: nowrap;
+    animation: popInBadge 0.2s ease;
+  }
+
+  @keyframes popInBadge {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
   }
 
   /* DEAL Section (Above Buttons) */
@@ -774,6 +812,21 @@
     display: flex;
     flex-direction: column;
     text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .boat-pdp-offer-card:hover {
+    border-color: #00a651;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 166, 81, 0.15);
+  }
+
+  .boat-pdp-offer-card.active {
+    border-color: #00a651;
+    background: #d3f9e8;
+    box-shadow: 0 0 0 2px #00a651, 0 4px 14px rgba(0, 166, 81, 0.2);
   }
 
   .boat-pdp-offer-badge {
@@ -814,13 +867,13 @@
     font-size: 0.72rem;
     font-weight: 700;
     color: #0f172a;
-    cursor: pointer;
     width: 100%;
     margin-top: 4px;
     transition: all 0.2s ease;
   }
 
-  .boat-pdp-offer-code:hover {
+  .boat-pdp-offer-card:hover .boat-pdp-offer-code,
+  .boat-pdp-offer-card.active .boat-pdp-offer-code {
     background: #ffffff;
     border-style: solid;
   }
@@ -945,16 +998,16 @@
     }
 
     .boat-pdp-subtotal-wrapper {
-      padding: 6px 12px;
+      padding: 8px 12px;
       margin-top: 8px;
     }
 
     .boat-pdp-subtotal-label {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
     }
 
     .boat-pdp-subtotal-val {
-      font-size: 1rem;
+      font-size: 1.1rem;
     }
 
     .boat-pdp-offers-grid {
@@ -1053,6 +1106,8 @@
   // Master Variant Resolver & Multi-Option Matching
   const variantsData = JSON.parse(document.getElementById('BoatPdpVariantsData').textContent);
   let currentVariantPrice = {{ selected_variant.price }};
+  let activeCouponCode = '';
+
   let selectedOptions = [
     {% for option in product.options_with_values %}
       {{ option.selected_value | json }}{% unless forloop.last %},{% endunless %}
@@ -1064,15 +1119,82 @@
     return 'Rs.' + amount.toLocaleString();
   }
 
-  // Dynamic Subtotal Calculator (Price x Quantity)
+  // Dynamic Subtotal Calculator with Automatic Tier Discounts (DEAL6, DEAL7, DEAL10)
   function updateBoatSubtotal() {
     const qtyInput = document.getElementById('BoatPdpQuantity');
     const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
-    const totalCents = currentVariantPrice * qty;
-    const subtotalElem = document.getElementById('BoatPdpSubtotal');
-    if (subtotalElem) {
-      subtotalElem.textContent = formatMoneyWithoutDecimals(totalCents);
+    const originalCents = currentVariantPrice * qty;
+
+    let discountPercent = 0;
+    let activeCode = '';
+
+    if (qty >= 10) {
+      discountPercent = 10;
+      activeCode = 'DEAL10';
+    } else if (qty >= 5) {
+      discountPercent = 7;
+      activeCode = 'DEAL7';
+    } else if (qty >= 2) {
+      discountPercent = 6;
+      activeCode = 'DEAL6';
     }
+
+    activeCouponCode = activeCode;
+
+    const discountedCents = Math.round(originalCents * (1 - (discountPercent / 100)));
+
+    const subtotalElem = document.getElementById('BoatPdpSubtotal');
+    const compareElem = document.getElementById('BoatPdpSubtotalCompare');
+    const discountTag = document.getElementById('BoatPdpSubtotalDiscountTag');
+
+    if (discountPercent > 0) {
+      if (subtotalElem) subtotalElem.textContent = formatMoneyWithoutDecimals(discountedCents);
+      if (compareElem) {
+        compareElem.textContent = formatMoneyWithoutDecimals(originalCents);
+        compareElem.style.display = 'inline';
+      }
+      if (discountTag) {
+        discountTag.textContent = discountPercent + '% OFF (' + activeCode + ')';
+        discountTag.style.display = 'inline-flex';
+      }
+    } else {
+      if (subtotalElem) subtotalElem.textContent = formatMoneyWithoutDecimals(originalCents);
+      if (compareElem) compareElem.style.display = 'none';
+      if (discountTag) discountTag.style.display = 'none';
+    }
+
+    // Highlight active card
+    document.querySelectorAll('.boat-pdp-offer-card').forEach(c => c.classList.remove('active'));
+    if (qty >= 10) {
+      document.getElementById('BoatDealCard-10')?.classList.add('active');
+    } else if (qty >= 5) {
+      document.getElementById('BoatDealCard-5')?.classList.add('active');
+    } else if (qty >= 2) {
+      document.getElementById('BoatDealCard-2')?.classList.add('active');
+    }
+  }
+
+  // Click on Deal Card -> Auto-Set Quantity + Copy Coupon + Recalculate Subtotal
+  function applyBoatDeal(qty, discount, code, cardElem) {
+    const qtyInput = document.getElementById('BoatPdpQuantity');
+    if (qtyInput) {
+      qtyInput.value = qty;
+    }
+
+    try {
+      navigator.clipboard.writeText(code);
+    } catch(e) {}
+
+    const codeElem = cardElem.querySelector('.boat-pdp-offer-code');
+    if (codeElem) {
+      const originalHtml = codeElem.innerHTML;
+      codeElem.innerHTML = '✓ ' + code + ' (Qty ' + qty + ')';
+      setTimeout(() => {
+        codeElem.innerHTML = 'Code: <strong>' + code + '</strong>';
+      }, 1500);
+    }
+
+    updateBoatSubtotal();
   }
 
   // Quantity Stepper Handler
@@ -1167,7 +1289,7 @@
     }
   }
 
-  // Direct Checkout for Buy Now Button
+  // Direct Checkout for Buy Now Button with Active Coupon Applied
   async function buyNowBoatPdp(formId) {
     const variantId = document.getElementById('BoatPdpSelectedVariantId').value;
     if (!variantId) return;
@@ -1181,26 +1303,21 @@
       buyBtn.innerHTML = '<span>Proceeding to Checkout...</span>';
     }
 
+    let checkoutUrl = '/checkout';
+    if (activeCouponCode) {
+      checkoutUrl += '?discount=' + encodeURIComponent(activeCouponCode);
+    }
+
     try {
       await fetch('/cart/add.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ id: variantId, quantity: quantity })
       });
-      window.location.href = '/checkout';
+      window.location.href = checkoutUrl;
     } catch(e) {
-      window.location.href = '/checkout';
+      window.location.href = checkoutUrl;
     }
-  }
-
-  // Copy Coupon Code
-  function copyBoatCoupon(code, elem) {
-    navigator.clipboard.writeText(code);
-    const originalText = elem.innerHTML;
-    elem.innerHTML = '✓ Copied ' + code;
-    setTimeout(() => {
-      elem.innerHTML = originalText;
-    }, 1500);
   }
 
   // Global Delegated Click Listener to Ensure Cart Drawer (X) Close & Backdrop Always Works 100%
@@ -1222,6 +1339,9 @@
       }
     }
   });
+
+  // Initial subtotal calculation on page load
+  document.addEventListener('DOMContentLoaded', updateBoatSubtotal);
 </script>
 
 {% schema %}
