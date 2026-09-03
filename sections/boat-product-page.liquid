@@ -63,7 +63,7 @@
           </div>
         {% endif %}
 
-        {% comment %} Main Featured Image Display {% endcomment %}
+        {% comment %} Main Featured Image Display with Infinite Loop Navigation {% endcomment %}
         <div class="boat-pdp-main-image-wrapper">
           <div class="boat-pdp-main-image-box">
             {% assign initial_img = selected_variant.featured_image | default: product.featured_image %}
@@ -203,6 +203,12 @@
             <input type="number" id="BoatPdpQuantity" name="quantity" value="1" min="1" class="boat-pdp-qty-input" readonly>
             <button type="button" class="boat-pdp-qty-btn" onclick="changePdpQty(1)" aria-label="Increase quantity">+</button>
           </div>
+        </div>
+
+        {% comment %} Dynamic Real-Time Subtotal Row {% endcomment %}
+        <div class="boat-pdp-subtotal-wrapper">
+          <span class="boat-pdp-subtotal-label">Subtotal :</span>
+          <span class="boat-pdp-subtotal-val" id="BoatPdpSubtotal">{{ price | money_without_trailing_zeros }}</span>
         </div>
 
         {% comment %} 5. DEAL Section (Above Buttons) {% endcomment %}
@@ -424,7 +430,7 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    transition: transform 0.3s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
   .boat-pdp-arrow-btn {
@@ -713,6 +719,32 @@
     margin: 0;
   }
 
+  /* Subtotal Row */
+  .boat-pdp-subtotal-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 8px 14px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1.5px dashed #cbd5e1;
+    width: fit-content;
+  }
+
+  .boat-pdp-subtotal-label {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #475569;
+  }
+
+  .boat-pdp-subtotal-val {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -0.3px;
+  }
+
   /* DEAL Section (Above Buttons) */
   .boat-pdp-offers-section {
     display: flex;
@@ -912,6 +944,19 @@
       font-size: 0.8rem;
     }
 
+    .boat-pdp-subtotal-wrapper {
+      padding: 6px 12px;
+      margin-top: 8px;
+    }
+
+    .boat-pdp-subtotal-label {
+      font-size: 0.8rem;
+    }
+
+    .boat-pdp-subtotal-val {
+      font-size: 1rem;
+    }
+
     .boat-pdp-offers-grid {
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
@@ -953,11 +998,17 @@
 </style>
 
 <script>
-  // Image Thumbnail Switcher
+  // Image Thumbnail Switcher with Smooth Animation
   function switchBoatPdpImage(btn, imgSrc) {
     const mainImg = document.getElementById('BoatPdpMainImage');
     if (mainImg && imgSrc) {
-      mainImg.src = imgSrc;
+      mainImg.style.opacity = '0.35';
+      mainImg.style.transform = 'scale(0.98)';
+      setTimeout(() => {
+        mainImg.src = imgSrc;
+        mainImg.style.opacity = '1';
+        mainImg.style.transform = 'scale(1)';
+      }, 120);
     }
 
     const allThumbs = document.querySelectorAll('.boat-pdp-thumb-btn');
@@ -965,21 +1016,23 @@
     btn.classList.add('active');
   }
 
-  // Previous & Next Arrow Handlers
+  // Infinite Loop Previous & Next Arrow Handlers
   function prevBoatPdpImage() {
-    const activeThumb = document.querySelector('.boat-pdp-thumb-btn.active');
-    if (activeThumb && activeThumb.previousElementSibling) {
-      activeThumb.previousElementSibling.click();
-      activeThumb.previousElementSibling.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
+    const allThumbs = Array.from(document.querySelectorAll('.boat-pdp-thumb-btn'));
+    if (allThumbs.length <= 1) return;
+    const activeIdx = allThumbs.findIndex(t => t.classList.contains('active'));
+    const nextIdx = (activeIdx - 1 + allThumbs.length) % allThumbs.length;
+    allThumbs[nextIdx].click();
+    allThumbs[nextIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
   }
 
   function nextBoatPdpImage() {
-    const activeThumb = document.querySelector('.boat-pdp-thumb-btn.active');
-    if (activeThumb && activeThumb.nextElementSibling) {
-      activeThumb.nextElementSibling.click();
-      activeThumb.nextElementSibling.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
+    const allThumbs = Array.from(document.querySelectorAll('.boat-pdp-thumb-btn'));
+    if (allThumbs.length <= 1) return;
+    const activeIdx = allThumbs.findIndex(t => t.classList.contains('active'));
+    const nextIdx = (activeIdx + 1) % allThumbs.length;
+    allThumbs[nextIdx].click();
+    allThumbs[nextIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
   }
 
   // Live Flash Sale Countdown Timer
@@ -997,17 +1050,9 @@
     }, 1000);
   })();
 
-  // Quantity Stepper Handler
-  function changePdpQty(delta) {
-    const input = document.getElementById('BoatPdpQuantity');
-    if (!input) return;
-    let val = parseInt(input.value, 10) || 1;
-    val = Math.max(1, val + delta);
-    input.value = val;
-  }
-
   // Master Variant Resolver & Multi-Option Matching
   const variantsData = JSON.parse(document.getElementById('BoatPdpVariantsData').textContent);
+  let currentVariantPrice = {{ selected_variant.price }};
   let selectedOptions = [
     {% for option in product.options_with_values %}
       {{ option.selected_value | json }}{% unless forloop.last %},{% endunless %}
@@ -1017,6 +1062,27 @@
   function formatMoneyWithoutDecimals(cents) {
     const amount = Math.floor(cents / 100);
     return 'Rs.' + amount.toLocaleString();
+  }
+
+  // Dynamic Subtotal Calculator (Price x Quantity)
+  function updateBoatSubtotal() {
+    const qtyInput = document.getElementById('BoatPdpQuantity');
+    const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+    const totalCents = currentVariantPrice * qty;
+    const subtotalElem = document.getElementById('BoatPdpSubtotal');
+    if (subtotalElem) {
+      subtotalElem.textContent = formatMoneyWithoutDecimals(totalCents);
+    }
+  }
+
+  // Quantity Stepper Handler
+  function changePdpQty(delta) {
+    const input = document.getElementById('BoatPdpQuantity');
+    if (!input) return;
+    let val = parseInt(input.value, 10) || 1;
+    val = Math.max(1, val + delta);
+    input.value = val;
+    updateBoatSubtotal();
   }
 
   function handleOptionSelect(btn) {
@@ -1049,9 +1115,13 @@
       const idInput = document.getElementById('BoatPdpSelectedVariantId');
       if (idInput) idInput.value = matchedVariant.id;
 
-      // Update Price
+      // Update Price & Current Unit Price
+      currentVariantPrice = matchedVariant.price;
       const priceElem = document.getElementById('BoatPdpPrice');
       if (priceElem) priceElem.textContent = formatMoneyWithoutDecimals(matchedVariant.price);
+
+      // Recalculate Subtotal
+      updateBoatSubtotal();
 
       // Update Compare Price & Discount
       const compElem = document.getElementById('BoatPdpCompare');
