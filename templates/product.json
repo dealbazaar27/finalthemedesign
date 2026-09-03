@@ -1,8 +1,34 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
       "type": "boat-product-page",
-      "settings": {}
+      "settings": {
+        "enable_deals": true,
+        "deal_title": "🔥 BEST DEAL",
+        "deals_tag_filter": "",
+        "deals_collection_filter": "",
+        "tier_1_qty": 2,
+        "tier_1_discount": 6,
+        "tier_1_code": "DEAL6",
+        "tier_1_badge": "MOST POPULAR",
+        "tier_2_qty": 5,
+        "tier_2_discount": 7,
+        "tier_2_code": "DEAL7",
+        "tier_2_badge": "BEST VALUE",
+        "tier_3_qty": 10,
+        "tier_3_discount": 10,
+        "tier_3_code": "DEAL10",
+        "tier_3_badge": "MOST SAVINGS"
+      }
     }
   },
   "order": [
