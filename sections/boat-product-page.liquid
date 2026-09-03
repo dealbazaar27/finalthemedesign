@@ -78,7 +78,7 @@
     <div class="boat-pdp-gallery-col">
       <div class="boat-pdp-gallery-inner">
         
-        {% comment %} Left Vertical / Mobile Horizontal Thumbnails {% endcomment %}
+        {% comment %} Left Vertical (Desktop) / Smooth Horizontal Carousel (Mobile) Thumbnails {% endcomment %}
         {% if product.media.size > 1 %}
           <div class="boat-pdp-thumbs" id="BoatPdpThumbs">
             {% for media in product.media %}
@@ -104,7 +104,7 @@
 
         {% comment %} Main Featured Image Display with Infinite Loop Navigation {% endcomment %}
         <div class="boat-pdp-main-image-wrapper">
-          <div class="boat-pdp-main-image-box">
+          <div class="boat-pdp-main-image-box" id="BoatPdpMainImageBox">
             {% assign initial_img = selected_variant.featured_image | default: product.featured_image %}
             <img 
               id="BoatPdpMainImage"
@@ -254,7 +254,7 @@
           <span class="boat-pdp-subtotal-discount-tag" id="BoatPdpSubtotalDiscountTag" style="display: none;"></span>
         </div>
 
-        {% comment %} 5. Dynamic DEAL Section with Interactive Auto-Quantity & Discount Calculation {% endcomment %}
+        {% comment %} 5. Dynamic DEAL Section {% endcomment %}
         {% if show_deal %}
           <div class="boat-pdp-offers-section">
             <div class="boat-pdp-card-title">{{ section.settings.deal_title | default: '🔥 DEAL' }}</div>
@@ -291,7 +291,7 @@
           </div>
         {% endif %}
 
-        {% comment %} 6. Action Buttons (Add to Cart + Buy Now to Checkout) {% endcomment %}
+        {% comment %} 6. Action Buttons (Add to Cart + Buy Now) {% endcomment %}
         <div class="boat-pdp-cta-group">
           <button 
             type="submit" 
@@ -325,6 +325,33 @@
 
 </div>
 
+{% comment %} Mobile Sticky Bottom Bar (Always Accessible for Mobile Shoppers) {% endcomment %}
+<div class="boat-pdp-mobile-sticky-bar" id="BoatPdpMobileStickyBar">
+  <div class="boat-pdp-mobile-sticky-inner">
+    <div class="boat-pdp-mobile-sticky-price-row">
+      <span class="boat-pdp-mobile-sticky-price" id="BoatPdpMobileStickyPrice">{{ price | money_without_trailing_zeros }}</span>
+      <span class="boat-pdp-mobile-sticky-compare" id="BoatPdpMobileStickyCompare" style="{% unless compare_price > price %}display: none;{% endunless %}">{{ compare_price | money_without_trailing_zeros }}</span>
+      <span class="boat-pdp-mobile-sticky-disc" id="BoatPdpMobileStickyDisc" style="{% unless compare_price > price %}display: none;{% endunless %}">{{ discount_percent }}% Off</span>
+    </div>
+    <div class="boat-pdp-mobile-sticky-actions">
+      <button 
+        type="button" 
+        class="boat-pdp-mobile-sticky-btn boat-pdp-mobile-sticky-btn--atc" 
+        onclick="document.getElementById('BoatPdpAtcBtn').click()"
+      >
+        <span>Add To Cart</span>
+      </button>
+      <button 
+        type="button" 
+        class="boat-pdp-mobile-sticky-btn boat-pdp-mobile-sticky-btn--buy" 
+        onclick="document.getElementById('BoatPdpBuyBtn').click()"
+      >
+        <span>Buy Now</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 {% comment %} Output Master Product Variants JSON {% endcomment %}
 <script type="application/json" id="BoatPdpVariantsData">
   [
@@ -351,6 +378,7 @@
 
   .boat-pdp-container {
     max-width: 1320px;
+    width: 100%;
     margin: 0 auto;
     padding: 16px 20px 48px 20px;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -396,6 +424,8 @@
     grid-template-columns: 1.05fr 1fr;
     gap: 48px;
     align-items: start;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   /* Gallery Inner Layout */
@@ -469,6 +499,7 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    touch-action: pan-y;
   }
 
   .boat-pdp-main-image {
@@ -535,6 +566,8 @@
     flex-direction: column;
     gap: 14px;
     min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   /* Rating Row */
@@ -824,12 +857,14 @@
     to { transform: scale(1); opacity: 1; }
   }
 
-  /* DEAL Section (Above Buttons) */
+  /* DEAL Section */
   .boat-pdp-offers-section {
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .boat-pdp-card-title {
@@ -843,6 +878,8 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .boat-pdp-offer-card {
@@ -856,6 +893,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     user-select: none;
+    box-sizing: border-box;
   }
 
   .boat-pdp-offer-card:hover {
@@ -886,6 +924,7 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
+    box-sizing: border-box;
   }
 
   .boat-pdp-offer-qty {
@@ -911,6 +950,7 @@
     width: 100%;
     margin-top: 4px;
     transition: all 0.2s ease;
+    box-sizing: border-box;
   }
 
   .boat-pdp-offer-card:hover .boat-pdp-offer-code,
@@ -925,12 +965,16 @@
     align-items: center;
     gap: 12px;
     margin: 14px 0 8px 0;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .boat-pdp-btn {
-    flex: 1;
+    flex: 1 1 0;
+    width: 50%;
+    min-width: 0;
     height: 48px;
-    border-radius: 10px;
+    border-radius: 26px;
     font-size: 0.95rem;
     font-weight: 800;
     border: none;
@@ -940,6 +984,7 @@
     justify-content: center;
     transition: all 0.2s ease;
     font-family: inherit;
+    box-sizing: border-box;
   }
 
   .boat-pdp-btn--atc {
@@ -962,13 +1007,18 @@
     transform: translateY(-1px);
   }
 
+  /* Mobile Sticky Bottom Bar (Hidden on Desktop) */
+  .boat-pdp-mobile-sticky-bar {
+    display: none;
+  }
+
   /* ------------------------------------------------------------- */
   /* Mobile Responsive Breakpoints (Tablets & Phones)              */
   /* ------------------------------------------------------------- */
 
   @media screen and (max-width: 989px) {
     .boat-pdp-container {
-      padding: 12px 16px 36px 16px;
+      padding: 12px 16px 80px 16px;
     }
 
     .boat-pdp-layout {
@@ -983,24 +1033,38 @@
       gap: 12px;
     }
 
+    /* Horizontal Thumbnail Slider on Mobile (Matching User SS) */
     .boat-pdp-thumbs {
+      display: flex;
       flex-direction: row;
       width: 100%;
+      max-width: 100%;
       max-height: none;
       overflow-x: auto;
-      padding-bottom: 4px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 6px;
       gap: 8px;
+      scrollbar-width: none;
+      box-sizing: border-box;
+    }
+
+    .boat-pdp-thumbs::-webkit-scrollbar {
+      display: none;
     }
 
     .boat-pdp-thumb-btn {
-      width: 56px;
-      height: 56px;
+      flex: 0 0 58px;
+      width: 58px;
+      height: 58px;
+      scroll-snap-align: start;
+      border-radius: 10px;
     }
   }
 
   @media screen and (max-width: 640px) {
     .boat-pdp-container {
-      padding: 10px 12px 32px 12px;
+      padding: 10px 12px 85px 12px;
     }
 
     .boat-pdp-breadcrumb {
@@ -1041,6 +1105,8 @@
     .boat-pdp-subtotal-wrapper {
       padding: 8px 12px;
       margin-top: 8px;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .boat-pdp-subtotal-label {
@@ -1080,19 +1146,111 @@
     }
 
     .boat-pdp-cta-group {
+      display: flex;
+      width: 100%;
       gap: 8px;
       margin: 12px 0 6px 0;
+      box-sizing: border-box;
     }
 
     .boat-pdp-btn {
-      height: 46px;
+      flex: 1 1 0;
+      width: calc(50% - 4px);
+      min-width: 0;
+      height: 44px;
       font-size: 0.88rem;
+      border-radius: 24px;
+      box-sizing: border-box;
+    }
+
+    /* Clean Mobile Sticky Bottom Bar (Zero Overflow) */
+    .boat-pdp-mobile-sticky-bar {
+      display: block;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 1000;
+      background: #ffffff;
+      box-shadow: 0 -3px 16px rgba(0, 0, 0, 0.08);
+      border-top: 1px solid #e2e8f0;
+      padding: 8px 12px calc(8px + env(safe-area-inset-bottom)) 12px;
+      box-sizing: border-box;
+    }
+
+    .boat-pdp-mobile-sticky-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .boat-pdp-mobile-sticky-price-row {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      line-height: 1.15;
+    }
+
+    .boat-pdp-mobile-sticky-price {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #0f172a;
+    }
+
+    .boat-pdp-mobile-sticky-compare {
+      font-size: 0.75rem;
+      text-decoration: line-through;
+      color: #94a3b8;
+    }
+
+    .boat-pdp-mobile-sticky-disc {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #00b853;
+    }
+
+    .boat-pdp-mobile-sticky-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .boat-pdp-mobile-sticky-btn {
+      flex: 1 1 0;
+      min-width: 0;
+      height: 42px;
+      border-radius: 22px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+
+    .boat-pdp-mobile-sticky-btn--atc {
+      background: #0f172a;
+      color: #ffffff;
+    }
+
+    .boat-pdp-mobile-sticky-btn--buy {
+      background: #00b853;
+      color: #ffffff;
     }
   }
 </style>
 
 <script>
-  // Image Thumbnail Switcher with Smooth Animation
+  // Image Thumbnail Switcher with Smooth Center Scrolling
   function switchBoatPdpImage(btn, imgSrc) {
     const mainImg = document.getElementById('BoatPdpMainImage');
     if (mainImg && imgSrc) {
@@ -1108,6 +1266,11 @@
     const allThumbs = document.querySelectorAll('.boat-pdp-thumb-btn');
     allThumbs.forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
+
+    // Smooth scroll thumbnail into center of slider
+    if (typeof btn.scrollIntoView === 'function') {
+      btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
   }
 
   // Infinite Loop Previous & Next Arrow Handlers
@@ -1117,7 +1280,6 @@
     const activeIdx = allThumbs.findIndex(t => t.classList.contains('active'));
     const nextIdx = (activeIdx - 1 + allThumbs.length) % allThumbs.length;
     allThumbs[nextIdx].click();
-    allThumbs[nextIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
   }
 
   function nextBoatPdpImage() {
@@ -1126,8 +1288,35 @@
     const activeIdx = allThumbs.findIndex(t => t.classList.contains('active'));
     const nextIdx = (activeIdx + 1) % allThumbs.length;
     allThumbs[nextIdx].click();
-    allThumbs[nextIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
   }
+
+  // Touch Swipe on Main Image Box for Mobile
+  (function() {
+    const box = document.getElementById('BoatPdpMainImageBox');
+    if (!box) return;
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    box.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    box.addEventListener('touchend', function(e) {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const swipeDistance = touchEndX - touchStartX;
+      if (Math.abs(swipeDistance) > 40) {
+        if (swipeDistance < 0) {
+          nextBoatPdpImage(); // Swiped left -> next
+        } else {
+          prevBoatPdpImage(); // Swiped right -> prev
+        }
+      }
+    }
+  })();
 
   // Live Flash Sale Countdown Timer
   (function() {
@@ -1201,6 +1390,10 @@
     const compareElem = document.getElementById('BoatPdpSubtotalCompare');
     const discountTag = document.getElementById('BoatPdpSubtotalDiscountTag');
 
+    const stickyPrice = document.getElementById('BoatPdpMobileStickyPrice');
+    const stickyCompare = document.getElementById('BoatPdpMobileStickyCompare');
+    const stickyDisc = document.getElementById('BoatPdpMobileStickyDisc');
+
     if (discountPercent > 0) {
       if (subtotalElem) subtotalElem.textContent = formatMoneyWithoutDecimals(discountedCents);
       if (compareElem) {
@@ -1211,10 +1404,24 @@
         discountTag.textContent = discountPercent + '% OFF (' + activeCode + ')';
         discountTag.style.display = 'inline-flex';
       }
+
+      if (stickyPrice) stickyPrice.textContent = formatMoneyWithoutDecimals(discountedCents);
+      if (stickyCompare) {
+        stickyCompare.textContent = formatMoneyWithoutDecimals(originalCents);
+        stickyCompare.style.display = 'inline';
+      }
+      if (stickyDisc) {
+        stickyDisc.textContent = discountPercent + '% Off';
+        stickyDisc.style.display = 'inline';
+      }
     } else {
       if (subtotalElem) subtotalElem.textContent = formatMoneyWithoutDecimals(originalCents);
       if (compareElem) compareElem.style.display = 'none';
       if (discountTag) discountTag.style.display = 'none';
+
+      if (stickyPrice) stickyPrice.textContent = formatMoneyWithoutDecimals(originalCents);
+      if (stickyCompare) stickyCompare.style.display = 'none';
+      if (stickyDisc) stickyDisc.style.display = 'none';
     }
 
     // Highlight active card
@@ -1298,7 +1505,7 @@
       const priceElem = document.getElementById('BoatPdpPrice');
       if (priceElem) priceElem.textContent = formatMoneyWithoutDecimals(matchedVariant.price);
 
-      // Recalculate Subtotal
+      // Recalculate Subtotal & Sticky Price
       updateBoatSubtotal();
 
       // Update Compare Price & Discount
