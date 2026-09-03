@@ -78,7 +78,7 @@
     <div class="boat-pdp-gallery-col">
       <div class="boat-pdp-gallery-inner">
         
-        {% comment %} Left Vertical (Desktop) / Smooth Horizontal Carousel (Mobile) Thumbnails {% endcomment %}
+        {% comment %} Left Vertical (Desktop) / Contained Smooth Slider (Mobile) Thumbnails {% endcomment %}
         {% if product.media.size > 1 %}
           <div class="boat-pdp-thumbs" id="BoatPdpThumbs">
             {% for media in product.media %}
@@ -94,8 +94,8 @@
                   src="{{ media | image_url: width: 140, height: 140 }}" 
                   alt="{{ media.alt | default: product.title | escape }}"
                   loading="lazy"
-                  width="64"
-                  height="64"
+                  width="54"
+                  height="54"
                 >
               </button>
             {% endfor %}
@@ -325,33 +325,6 @@
 
 </div>
 
-{% comment %} Mobile Sticky Bottom Bar (Always Accessible for Mobile Shoppers) {% endcomment %}
-<div class="boat-pdp-mobile-sticky-bar" id="BoatPdpMobileStickyBar">
-  <div class="boat-pdp-mobile-sticky-inner">
-    <div class="boat-pdp-mobile-sticky-price-row">
-      <span class="boat-pdp-mobile-sticky-price" id="BoatPdpMobileStickyPrice">{{ price | money_without_trailing_zeros }}</span>
-      <span class="boat-pdp-mobile-sticky-compare" id="BoatPdpMobileStickyCompare" style="{% unless compare_price > price %}display: none;{% endunless %}">{{ compare_price | money_without_trailing_zeros }}</span>
-      <span class="boat-pdp-mobile-sticky-disc" id="BoatPdpMobileStickyDisc" style="{% unless compare_price > price %}display: none;{% endunless %}">{{ discount_percent }}% Off</span>
-    </div>
-    <div class="boat-pdp-mobile-sticky-actions">
-      <button 
-        type="button" 
-        class="boat-pdp-mobile-sticky-btn boat-pdp-mobile-sticky-btn--atc" 
-        onclick="document.getElementById('BoatPdpAtcBtn').click()"
-      >
-        <span>Add To Cart</span>
-      </button>
-      <button 
-        type="button" 
-        class="boat-pdp-mobile-sticky-btn boat-pdp-mobile-sticky-btn--buy" 
-        onclick="document.getElementById('BoatPdpBuyBtn').click()"
-      >
-        <span>Buy Now</span>
-      </button>
-    </div>
-  </div>
-</div>
-
 {% comment %} Output Master Product Variants JSON {% endcomment %}
 <script type="application/json" id="BoatPdpVariantsData">
   [
@@ -384,6 +357,7 @@
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: #0f172a;
     box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   /* Breadcrumb */
@@ -425,15 +399,28 @@
     gap: 48px;
     align-items: start;
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     box-sizing: border-box;
   }
 
-  /* Gallery Inner Layout */
+  /* Gallery Column & Inner */
+  .boat-pdp-gallery-col {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
   .boat-pdp-gallery-inner {
     display: flex;
     gap: 16px;
     position: sticky;
     top: 90px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   /* Vertical Thumbnails (Desktop) */
@@ -446,6 +433,7 @@
     max-height: 520px;
     overflow-y: auto;
     scrollbar-width: none;
+    box-sizing: border-box;
   }
 
   .boat-pdp-thumbs::-webkit-scrollbar {
@@ -463,6 +451,7 @@
     overflow: hidden;
     transition: all 0.2s ease;
     flex-shrink: 0;
+    box-sizing: border-box;
   }
 
   .boat-pdp-thumb-btn img {
@@ -485,6 +474,8 @@
     flex-direction: column;
     gap: 12px;
     min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .boat-pdp-main-image-box {
@@ -500,6 +491,7 @@
     justify-content: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     touch-action: pan-y;
+    box-sizing: border-box;
   }
 
   .boat-pdp-main-image {
@@ -551,6 +543,7 @@
     font-size: 0.85rem;
     font-weight: 800;
     color: #0f172a;
+    box-sizing: border-box;
   }
 
   .boat-pdp-timer-digits {
@@ -567,6 +560,7 @@
     gap: 14px;
     min-width: 0;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
   }
 
@@ -603,6 +597,7 @@
     margin: 0;
     line-height: 1.25;
     letter-spacing: -0.5px;
+    word-break: break-word;
   }
 
   .boat-pdp-subtitle {
@@ -619,6 +614,7 @@
     justify-content: flex-start;
     padding-bottom: 12px;
     border-bottom: 1px solid #f1f5f9;
+    box-sizing: border-box;
   }
 
   .boat-pdp-price-main {
@@ -659,6 +655,8 @@
     flex-direction: column;
     gap: 8px;
     margin-top: 6px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .boat-pdp-variant-label {
@@ -677,6 +675,8 @@
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .boat-pdp-swatch-box {
@@ -693,6 +693,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    box-sizing: border-box;
   }
 
   .boat-pdp-swatch-box img {
@@ -719,6 +720,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: inherit;
+    box-sizing: border-box;
   }
 
   .boat-pdp-pill-btn:hover {
@@ -739,6 +741,8 @@
     align-items: center;
     gap: 12px;
     margin-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .boat-pdp-qty-label {
@@ -754,6 +758,7 @@
     border-radius: 24px;
     padding: 3px 6px;
     border: 1px solid #e2e8f0;
+    box-sizing: border-box;
   }
 
   .boat-pdp-qty-btn {
@@ -771,6 +776,7 @@
     cursor: pointer;
     transition: all 0.15s ease;
     padding: 0;
+    box-sizing: border-box;
   }
 
   .boat-pdp-qty-btn:hover {
@@ -894,6 +900,8 @@
     transition: all 0.2s ease;
     user-select: none;
     box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
   }
 
   .boat-pdp-offer-card:hover {
@@ -925,6 +933,7 @@
     align-items: center;
     gap: 4px;
     box-sizing: border-box;
+    width: 100%;
   }
 
   .boat-pdp-offer-qty {
@@ -959,7 +968,7 @@
     border-style: solid;
   }
 
-  /* Action CTA Buttons */
+  /* In-Page Action CTA Buttons */
   .boat-pdp-cta-group {
     display: flex;
     align-items: center;
@@ -1007,43 +1016,40 @@
     transform: translateY(-1px);
   }
 
-  /* Mobile Sticky Bottom Bar (Hidden on Desktop) */
-  .boat-pdp-mobile-sticky-bar {
-    display: none;
-  }
-
   /* ------------------------------------------------------------- */
   /* Mobile Responsive Breakpoints (Tablets & Phones)              */
   /* ------------------------------------------------------------- */
 
   @media screen and (max-width: 989px) {
     .boat-pdp-container {
-      padding: 12px 16px 80px 16px;
+      padding: 12px 16px 36px 16px;
     }
 
     .boat-pdp-layout {
       grid-template-columns: 1fr;
-      gap: 24px;
+      gap: 20px;
     }
 
     .boat-pdp-gallery-inner {
       flex-direction: column-reverse;
       position: relative;
       top: 0;
-      gap: 12px;
+      gap: 10px;
     }
 
-    /* Horizontal Thumbnail Slider on Mobile (Matching User SS) */
+    /* Contained Thumbnail Slider on Mobile (Zero Horizontal Spilling) */
     .boat-pdp-thumbs {
       display: flex;
       flex-direction: row;
       width: 100%;
       max-width: 100%;
+      min-width: 0;
       max-height: none;
       overflow-x: auto;
+      overflow-y: hidden;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
-      padding-bottom: 6px;
+      padding: 2px 2px 6px 2px;
       gap: 8px;
       scrollbar-width: none;
       box-sizing: border-box;
@@ -1054,27 +1060,34 @@
     }
 
     .boat-pdp-thumb-btn {
-      flex: 0 0 58px;
-      width: 58px;
-      height: 58px;
+      flex: 0 0 54px;
+      width: 54px;
+      height: 54px;
+      min-width: 54px;
+      max-width: 54px;
       scroll-snap-align: start;
       border-radius: 10px;
+      box-sizing: border-box;
     }
   }
 
   @media screen and (max-width: 640px) {
     .boat-pdp-container {
-      padding: 10px 12px 85px 12px;
+      padding: 10px 12px 32px 12px;
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100vw;
+      box-sizing: border-box;
     }
 
     .boat-pdp-breadcrumb {
       font-size: 0.75rem;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       gap: 4px;
     }
 
     .boat-pdp-title {
-      font-size: 1.35rem;
+      font-size: 1.3rem;
       letter-spacing: -0.3px;
     }
 
@@ -1084,7 +1097,7 @@
     }
 
     .boat-pdp-price {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
     }
 
     .boat-pdp-compare-price,
@@ -1093,8 +1106,8 @@
     }
 
     .boat-pdp-swatch-box {
-      width: 46px;
-      height: 46px;
+      width: 44px;
+      height: 44px;
     }
 
     .boat-pdp-pill-btn {
@@ -1117,19 +1130,24 @@
       font-size: 1.1rem;
     }
 
+    /* 3-Column Contained Responsive DEAL Grid */
     .boat-pdp-offers-grid {
+      display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
     .boat-pdp-offer-inner {
-      padding: 6px 4px;
+      padding: 6px 3px;
       gap: 2px;
     }
 
     .boat-pdp-offer-badge {
-      font-size: 0.55rem;
-      padding: 2px 4px;
+      font-size: 0.52rem;
+      padding: 2px 2px;
     }
 
     .boat-pdp-offer-qty {
@@ -1141,13 +1159,15 @@
     }
 
     .boat-pdp-offer-code {
-      font-size: 0.65rem;
-      padding: 2px 4px;
+      font-size: 0.62rem;
+      padding: 2px 2px;
     }
 
+    /* 100% Fit Dual Action Buttons */
     .boat-pdp-cta-group {
       display: flex;
       width: 100%;
+      max-width: 100%;
       gap: 8px;
       margin: 12px 0 6px 0;
       box-sizing: border-box;
@@ -1160,91 +1180,8 @@
       height: 44px;
       font-size: 0.88rem;
       border-radius: 24px;
+      padding: 0 4px;
       box-sizing: border-box;
-    }
-
-    /* Clean Mobile Sticky Bottom Bar (Zero Overflow) */
-    .boat-pdp-mobile-sticky-bar {
-      display: block;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      width: 100%;
-      z-index: 1000;
-      background: #ffffff;
-      box-shadow: 0 -3px 16px rgba(0, 0, 0, 0.08);
-      border-top: 1px solid #e2e8f0;
-      padding: 8px 12px calc(8px + env(safe-area-inset-bottom)) 12px;
-      box-sizing: border-box;
-    }
-
-    .boat-pdp-mobile-sticky-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    .boat-pdp-mobile-sticky-price-row {
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      line-height: 1.15;
-    }
-
-    .boat-pdp-mobile-sticky-price {
-      font-size: 1.15rem;
-      font-weight: 900;
-      color: #0f172a;
-    }
-
-    .boat-pdp-mobile-sticky-compare {
-      font-size: 0.75rem;
-      text-decoration: line-through;
-      color: #94a3b8;
-    }
-
-    .boat-pdp-mobile-sticky-disc {
-      font-size: 0.75rem;
-      font-weight: 800;
-      color: #00b853;
-    }
-
-    .boat-pdp-mobile-sticky-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex: 1;
-      min-width: 0;
-    }
-
-    .boat-pdp-mobile-sticky-btn {
-      flex: 1 1 0;
-      min-width: 0;
-      height: 42px;
-      border-radius: 22px;
-      font-size: 0.85rem;
-      font-weight: 800;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: inherit;
-      box-sizing: border-box;
-    }
-
-    .boat-pdp-mobile-sticky-btn--atc {
-      background: #0f172a;
-      color: #ffffff;
-    }
-
-    .boat-pdp-mobile-sticky-btn--buy {
-      background: #00b853;
-      color: #ffffff;
     }
   }
 </style>
@@ -1390,10 +1327,6 @@
     const compareElem = document.getElementById('BoatPdpSubtotalCompare');
     const discountTag = document.getElementById('BoatPdpSubtotalDiscountTag');
 
-    const stickyPrice = document.getElementById('BoatPdpMobileStickyPrice');
-    const stickyCompare = document.getElementById('BoatPdpMobileStickyCompare');
-    const stickyDisc = document.getElementById('BoatPdpMobileStickyDisc');
-
     if (discountPercent > 0) {
       if (subtotalElem) subtotalElem.textContent = formatMoneyWithoutDecimals(discountedCents);
       if (compareElem) {
@@ -1404,24 +1337,10 @@
         discountTag.textContent = discountPercent + '% OFF (' + activeCode + ')';
         discountTag.style.display = 'inline-flex';
       }
-
-      if (stickyPrice) stickyPrice.textContent = formatMoneyWithoutDecimals(discountedCents);
-      if (stickyCompare) {
-        stickyCompare.textContent = formatMoneyWithoutDecimals(originalCents);
-        stickyCompare.style.display = 'inline';
-      }
-      if (stickyDisc) {
-        stickyDisc.textContent = discountPercent + '% Off';
-        stickyDisc.style.display = 'inline';
-      }
     } else {
       if (subtotalElem) subtotalElem.textContent = formatMoneyWithoutDecimals(originalCents);
       if (compareElem) compareElem.style.display = 'none';
       if (discountTag) discountTag.style.display = 'none';
-
-      if (stickyPrice) stickyPrice.textContent = formatMoneyWithoutDecimals(originalCents);
-      if (stickyCompare) stickyCompare.style.display = 'none';
-      if (stickyDisc) stickyDisc.style.display = 'none';
     }
 
     // Highlight active card
@@ -1505,7 +1424,7 @@
       const priceElem = document.getElementById('BoatPdpPrice');
       if (priceElem) priceElem.textContent = formatMoneyWithoutDecimals(matchedVariant.price);
 
-      // Recalculate Subtotal & Sticky Price
+      // Recalculate Subtotal
       updateBoatSubtotal();
 
       // Update Compare Price & Discount
