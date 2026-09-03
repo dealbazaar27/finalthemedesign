@@ -13,11 +13,11 @@
       "type": "boat-product-page",
       "settings": {
         "show_rating": true,
-        "custom_rating": "",
         "show_timer": true,
         "timer_label": "Flash Sale Ends In:",
         "timer_hours": 100,
         "timer_minutes": 2,
+        "enable_mobile_sticky": true,
         "title_font_size": 28,
         "title_color": "#0f172a",
         "price_color": "#0f172a",
@@ -43,9 +43,22 @@
         "tier_3_code": "DEAL10",
         "tier_3_badge": "MOST SAVINGS"
       }
+    },
+    "quick_order_list_mCkCUU": {
+      "type": "quick-order-list",
+      "name": "t:names.quick_order_list",
+      "settings": {
+        "variants_per_page": 50,
+        "show_image": false,
+        "show_sku": false,
+        "background_color": "",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "quick_order_list_mCkCUU"
   ]
 }
