@@ -1761,188 +1761,28 @@
     }
   }
 
-  // Dedicated Rock-Solid AJAX Add to Cart Handler for Product Page
+  // Smooth Submit Handler supporting auto coupon session sync
   async function handleBoatPdpSubmit(event, form) {
-    if (event && typeof event.preventDefault === 'function') {
-      event.preventDefault();
-    }
-
-    const atcBtn = document.getElementById('BoatPdpAtcBtn');
-    const stickyAtcBtn = document.querySelector('.boat-pdp-sticky-btn--atc');
-    const originalText = atcBtn ? atcBtn.innerHTML : '<span>Add to Cart</span>';
-
-    if (atcBtn) {
-      atcBtn.disabled = true;
-      atcBtn.innerHTML = '<span>Adding...</span>';
-    }
-    if (stickyAtcBtn) {
-      stickyAtcBtn.disabled = true;
-      stickyAtcBtn.innerHTML = '<span>Adding...</span>';
-    }
-
-    // Auto-apply discount session if active coupon exists
     if (activeCouponCode) {
       try {
         fetch('/discount/' + encodeURIComponent(activeCouponCode));
       } catch(e) {}
     }
-
-    const variantId = document.getElementById('BoatPdpSelectedVariantId')?.value;
-    const qtyInput = document.getElementById('BoatPdpQuantity');
-    const quantity = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
-
-    try {
-      // 1. Post to Cart API with cart-drawer section rendering
-      let drawerSectionId = 'cart-drawer';
-      const drawerEl = document.querySelector('cart-drawer, #cart-drawer, .cart-drawer');
-      if (drawerEl && drawerEl.dataset.sectionId) {
-        drawerSectionId = drawerEl.dataset.sectionId;
-      }
-
-      const postData = {
-        id: variantId,
-        quantity: quantity,
-        sections: drawerSectionId,
-        sections_url: window.location.pathname
-      };
-
-      const res = await fetch('/cart/add.js', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(postData)
-      });
-
-      const responseData = await res.json();
-
-      if (res.ok) {
-        // 2. Update Cart Drawer contents if returned
-        if (responseData.sections && responseData.sections[drawerSectionId]) {
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(responseData.sections[drawerSectionId], 'text/html');
-          
-          const liveDrawer = document.getElementById('cart-drawer') || document.querySelector('cart-drawer');
-          const newDrawer = doc.getElementById('cart-drawer') || doc.querySelector('cart-drawer');
-          
-          if (liveDrawer && newDrawer) {
-            const liveItems = liveDrawer.querySelector('.cart-drawer__items, #CartDrawer-Items, .cart-items');
-            const newItems = newDrawer.querySelector('.cart-drawer__items, #CartDrawer-Items, .cart-items');
-            if (liveItems && newItems) liveItems.innerHTML = newItems.innerHTML;
-
-            const liveSummary = liveDrawer.querySelector('.cart-drawer__summary, #CartDrawer-Summary, .cart-drawer__footer');
-            const newSummary = newDrawer.querySelector('.cart-drawer__summary, #CartDrawer-Summary, .cart-drawer__footer');
-            if (liveSummary && newSummary) liveSummary.innerHTML = newSummary.innerHTML;
-          }
-        }
-
-        // 3. Update Header Cart Bubble
-        try {
-          const cartRes = await fetch('/cart.js');
-          const cart = await cartRes.json();
-          const count = cart.item_count;
-
-          const bubbles = document.querySelectorAll('.cart-bubble, [ref="cartBubble"], .cart-bubble-count, .cart-count-bubble, [data-cart-count], .theme-drawer__badge');
-          bubbles.forEach(b => {
-            if (count > 0) {
-              b.classList.remove('visually-hidden', 'hidden');
-              b.removeAttribute('hidden');
-              b.style.display = 'inline-flex';
-              b.style.visibility = 'visible';
-              b.style.opacity = '1';
-            }
-          });
-
-          const countTexts = document.querySelectorAll('.cart-bubble__text-count, [ref="cartBubbleCount"], #cart-bubble-text, .cart-count-bubble, [data-cart-count], .theme-drawer__badge');
-          countTexts.forEach(ct => {
-            ct.textContent = count > 0 ? count : '';
-          });
-
-          // Dispatch theme events
-          const detail = { cart: cart, items: cart.items, itemCount: count, totalQuantity: count };
-          document.dispatchEvent(new CustomEvent('cart-lines-update', { bubbles: true, detail }));
-          document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true, detail }));
-          document.dispatchEvent(new CustomEvent('cart:updated', { bubbles: true, detail }));
-        } catch(e) {}
-
-        // 4. Open Cart Drawer smoothly if available
-        const cartDrawer = document.getElementById('cart-drawer') || document.querySelector('cart-drawer');
-        if (cartDrawer) {
-          if (typeof cartDrawer.open === 'function') {
-            cartDrawer.open();
-          } else {
-            cartDrawer.setAttribute('open', '');
-            const dialog = cartDrawer.querySelector('dialog');
-            if (dialog && typeof dialog.showModal === 'function' && !dialog.open) {
-              dialog.showModal();
-            }
-          }
-        }
-
-        // 5. Button success feedback
-        if (atcBtn) {
-          atcBtn.innerHTML = '<span>Added ✓</span>';
-          atcBtn.style.background = '#00875a';
-        }
-        if (stickyAtcBtn) {
-          stickyAtcBtn.innerHTML = '<span>Added ✓</span>';
-          stickyAtcBtn.style.background = '#00875a';
-        }
-
-        setTimeout(() => {
-          if (atcBtn) {
-            atcBtn.disabled = false;
-            atcBtn.style.background = '';
-            atcBtn.innerHTML = originalText;
-          }
-          if (stickyAtcBtn) {
-            stickyAtcBtn.disabled = false;
-            stickyAtcBtn.style.background = '';
-            stickyAtcBtn.innerHTML = '<span>Add To Cart</span>';
-          }
-        }, 1200);
-
-      } else {
-        throw new Error(responseData.description || responseData.message || 'Error adding to cart');
-      }
-
-    } catch(err) {
-      console.error('PDP Add to cart error:', err);
-      if (atcBtn) {
-        atcBtn.disabled = false;
-        atcBtn.style.background = '';
-        atcBtn.innerHTML = originalText;
-      }
-      if (stickyAtcBtn) {
-        stickyAtcBtn.disabled = false;
-        stickyAtcBtn.style.background = '';
-        stickyAtcBtn.innerHTML = '<span>Add To Cart</span>';
-      }
-      if (form && typeof form.submit === 'function') {
-        form.submit();
-      }
-    }
+    handleBoatAddToCart(event, form);
   }
 
   // Direct Checkout for Buy Now Button with Active Coupon Applied
   async function buyNowBoatPdp(formId) {
-    const variantId = document.getElementById('BoatPdpSelectedVariantId')?.value;
+    const variantId = document.getElementById('BoatPdpSelectedVariantId').value;
     if (!variantId) return;
 
     const qtyInput = document.getElementById('BoatPdpQuantity');
     const quantity = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
 
     const buyBtn = document.getElementById('BoatPdpBuyBtn');
-    const stickyBuyBtn = document.querySelector('.boat-pdp-sticky-btn--buy');
-
     if (buyBtn) {
       buyBtn.disabled = true;
       buyBtn.innerHTML = '<span>Proceeding to Checkout...</span>';
-    }
-    if (stickyBuyBtn) {
-      stickyBuyBtn.disabled = true;
-      stickyBuyBtn.innerHTML = '<span>Proceeding...</span>';
     }
 
     let checkoutUrl = '/checkout';
