@@ -46,6 +46,7 @@
     },
     "quick_order_list_mCkCUU": {
       "type": "quick-order-list",
+      "disabled": true,
       "name": "t:names.quick_order_list",
       "settings": {
         "variants_per_page": 50,
