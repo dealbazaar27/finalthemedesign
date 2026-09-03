@@ -300,11 +300,77 @@
   .boat-pick-card__swatches {
     display: flex !important;
     align-items: center !important;
-    gap: 3px !important;
+    gap: 4px !important;
     font-size: 0.68rem !important;
     font-weight: 700 !important;
     color: #64748b !important;
-    min-height: 16px !important;
+    min-height: 18px !important;
+    margin-top: 2px !important;
+  }
+
+  .boat-swatch-dot {
+    width: 15px !important;
+    height: 15px !important;
+    min-width: 15px !important;
+    min-height: 15px !important;
+    max-width: 15px !important;
+    max-height: 15px !important;
+    border-radius: 50% !important;
+    border: 1.5px solid #cbd5e1 !important;
+    cursor: pointer !important;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    outline: none !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    display: inline-block !important;
+    box-sizing: border-box !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .boat-swatch-dot:hover {
+    transform: scale(1.25) !important;
+    border-color: #0f172a !important;
+  }
+
+  .boat-swatch-dot.active {
+    border-color: #0f172a !important;
+    box-shadow: 0 0 0 1.5px #ffffff, 0 0 0 3px #0f172a !important;
+    transform: scale(1.15) !important;
+  }
+
+  .boat-swatch-pill {
+    font-size: 0.65rem !important;
+    font-weight: 800 !important;
+    padding: 2px 7px !important;
+    border-radius: 10px !important;
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+    border: 1px solid #cbd5e1 !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    outline: none !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .boat-swatch-pill.active,
+  .boat-swatch-pill:hover {
+    background: #0f172a !important;
+    color: #ffffff !important;
+    border-color: #0f172a !important;
+  }
+
+  .boat-swatch-more {
+    font-size: 0.68rem !important;
+    font-weight: 800 !important;
+    color: #64748b !important;
+    margin-left: 2px !important;
   }
 
   @media screen and (max-width: 400px) {
@@ -377,7 +443,6 @@
 
   <div class="boat-pick-card__details">
     <a href="{{ product.url }}" class="boat-pick-card__title">{{ product.title }}</a>
-    <div class="boat-pick-card__divider"></div>
 
     <div class="boat-pick-card__footer">
       <div class="boat-pick-card__price-row">
@@ -401,8 +466,8 @@
           {% for option in product.options_with_values %}
             {% assign downcased_option = option.name | downcase %}
             
-            {% if downcased_option contains 'color' or downcased_option contains 'colour' or downcased_option contains 'shade' or downcased_option contains 'finish' %}
-              {% for value in option.values limit: 3 %}
+            {% if downcased_option contains 'color' or downcased_option contains 'colour' or downcased_option contains 'shade' or downcased_option contains 'finish' or downcased_option contains 'style' or downcased_option contains 'pattern' or forloop.first %}
+              {% for value in option.values limit: 4 %}
                 {% assign variant_match = product.variants | where: option.name, value | first %}
                 {% if variant_match == blank %}
                   {% assign variant_match = product.variants[forloop.index0] %}
@@ -415,15 +480,49 @@
                   {% assign var_discount = var_diff | times: 100 | divided_by: variant_match.compare_at_price %}
                 {% endif %}
 
+                {% assign val_down = value | downcase | strip %}
+                {% assign swatch_bg = '#0f172a' %}
+                {% if value.swatch.color %}
+                  {% assign swatch_bg = value.swatch.color %}
+                {% elsif val_down contains 'white' %}
+                  {% assign swatch_bg = '#ffffff' %}
+                {% elsif val_down contains 'black' %}
+                  {% assign swatch_bg = '#111827' %}
+                {% elsif val_down contains 'pink' or val_down contains 'rose' %}
+                  {% assign swatch_bg = '#f472b6' %}
+                {% elsif val_down contains 'cyan' or val_down contains 'teal' or val_down contains 'mint' %}
+                  {% assign swatch_bg = '#2dd4bf' %}
+                {% elsif val_down contains 'blue' or val_down contains 'navy' or val_down contains 'sky' %}
+                  {% assign swatch_bg = '#38bdf8' %}
+                {% elsif val_down contains 'green' or val_down contains 'olive' %}
+                  {% assign swatch_bg = '#4ade80' %}
+                {% elsif val_down contains 'yellow' %}
+                  {% assign swatch_bg = '#facc15' %}
+                {% elsif val_down contains 'red' or val_down contains 'maroon' or val_down contains 'wine' %}
+                  {% assign swatch_bg = '#ef4444' %}
+                {% elsif val_down contains 'purple' or val_down contains 'violet' or val_down contains 'lavender' %}
+                  {% assign swatch_bg = '#c084fc' %}
+                {% elsif val_down contains 'grey' or val_down contains 'gray' or val_down contains 'silver' %}
+                  {% assign swatch_bg = '#94a3b8' %}
+                {% elsif val_down contains 'orange' %}
+                  {% assign swatch_bg = '#fb923c' %}
+                {% elsif val_down contains 'gold' %}
+                  {% assign swatch_bg = '#fbbf24' %}
+                {% elsif val_down contains 'brown' or val_down contains 'chocolate' %}
+                  {% assign swatch_bg = '#854d0e' %}
+                {% else %}
+                  {% assign swatch_bg = '#0284c7' %}
+                {% endif %}
+
                 <button 
                   type="button"
                   class="boat-swatch-dot{% if variant_match.id == selected_variant.id %} active{% endif %}"
-                  style="{% if value.swatch.color %}background-color: {{ value.swatch.color }};{% else %}background-color: {% cycle '#0f172a', '#0284c7', '#16a34a' %};{% endif %}"
+                  style="background-color: {{ swatch_bg }};"
                   title="{{ value }}"
                   data-variant-id="{{ variant_match.id }}"
                   data-variant-image="{{ var_img }}"
-                  data-variant-price="{{ variant_match.price | money }}"
-                  data-variant-compare="{% if variant_match.compare_at_price > variant_match.price %}{{ variant_match.compare_at_price | money }}{% endif %}"
+                  data-variant-price="{{ variant_match.price | money_without_trailing_zeros }}"
+                  data-variant-compare="{% if variant_match.compare_at_price > variant_match.price %}{{ variant_match.compare_at_price | money_without_trailing_zeros }}{% endif %}"
                   data-variant-discount="{% if variant_match.compare_at_price > variant_match.price %}{{ var_discount }}% off{% endif %}"
                   data-variant-available="{{ variant_match.available }}"
                   onclick="selectBoatVariant(this)"
@@ -451,8 +550,8 @@
                   title="{{ value }}"
                   data-variant-id="{{ variant_match.id }}"
                   data-variant-image="{{ var_img }}"
-                  data-variant-price="{{ variant_match.price | money }}"
-                  data-variant-compare="{% if variant_match.compare_at_price > variant_match.price %}{{ variant_match.compare_at_price | money }}{% endif %}"
+                  data-variant-price="{{ variant_match.price | money_without_trailing_zeros }}"
+                  data-variant-compare="{% if variant_match.compare_at_price > variant_match.price %}{{ variant_match.compare_at_price | money_without_trailing_zeros }}{% endif %}"
                   data-variant-discount="{% if variant_match.compare_at_price > variant_match.price %}{{ var_discount }}% off{% endif %}"
                   data-variant-available="{{ variant_match.available }}"
                   onclick="selectBoatVariant(this)"
@@ -464,8 +563,8 @@
             {% endif %}
           {% endfor %}
 
-          {% if product.variants.size > 3 %}
-            <span class="boat-swatch-more">+{{ product.variants.size | minus: 3 }}</span>
+          {% if product.variants.size > 4 %}
+            <span class="boat-swatch-more">+{{ product.variants.size | minus: 4 }}</span>
           {% endif %}
         {% endif %}
       </div>
