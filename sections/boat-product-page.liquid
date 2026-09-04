@@ -867,7 +867,7 @@
         </div>
       </div>
 
-      <button type="button" class="boat-desktop-sticky-btn" onclick="document.getElementById('BoatPdpAtcBtn').click()" {% unless selected_variant.available %}disabled{% endunless %}>
+      <button type="button" class="boat-desktop-sticky-btn" onclick="triggerBoatDesktopAtc()" {% unless selected_variant.available %}disabled{% endunless %}>
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
           <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -3201,27 +3201,44 @@
     }
   }
 
+  // Desktop Floating Sticky Bar Add to Cart Action
+  function triggerBoatDesktopAtc() {
+    const atc = document.getElementById('BoatPdpAtcBtn');
+    if (atc) {
+      atc.click();
+    } else {
+      const form = document.getElementById('BoatProductPageForm-{{ product.id }}');
+      if (form) form.submit();
+    }
+  }
+
   // Desktop Floating Sticky Pill Bar Scroll Trigger Observer
   function initBoatDesktopSticky() {
     const desktopSticky = document.getElementById('BoatPdpDesktopStickyBar');
     if (!desktopSticky) return;
 
     function checkStickyVisibility() {
-      // Only for desktop / laptop displays
+      // Only show on desktop screens (> 768px)
       if (window.innerWidth <= 768) {
         desktopSticky.classList.remove('visible');
         return;
       }
 
       const atcBtn = document.getElementById('BoatPdpAtcBtn') || document.querySelector('.boat-pdp-cta-group');
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
+
       if (!atcBtn) {
-        desktopSticky.classList.remove('visible');
+        if (scrollY > 350) {
+          desktopSticky.classList.add('visible');
+        } else {
+          desktopSticky.classList.remove('visible');
+        }
         return;
       }
 
       const rect = atcBtn.getBoundingClientRect();
-      // Strictly show only when main Add to Cart button has scrolled completely above the viewport
-      if (rect.bottom <= 0) {
+      // Show when user scrolls past the main in-page Add to Cart button or scrolled down >= 350px
+      if (rect.bottom <= 100 || scrollY > 450) {
         desktopSticky.classList.add('visible');
       } else {
         desktopSticky.classList.remove('visible');
@@ -3229,9 +3246,13 @@
     }
 
     window.addEventListener('scroll', checkStickyVisibility, { passive: true });
+    window.addEventListener('touchmove', checkStickyVisibility, { passive: true });
     document.addEventListener('scroll', checkStickyVisibility, { passive: true });
     window.addEventListener('resize', checkStickyVisibility, { passive: true });
+    
+    // Initial check
     checkStickyVisibility();
+    setTimeout(checkStickyVisibility, 300);
   }
 
   if (document.readyState === 'loading') {
@@ -3240,6 +3261,7 @@
     initBoatDesktopSticky();
   }
   document.addEventListener('shopify:section:load', initBoatDesktopSticky);
+  document.addEventListener('shopify:section:select', initBoatDesktopSticky);
 
   // Initial subtotal calculation on page load
   document.addEventListener('DOMContentLoaded', updateBoatSubtotal);
