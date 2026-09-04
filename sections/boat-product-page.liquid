@@ -387,19 +387,22 @@
         </div>
 
         {% comment %} Direct WhatsApp Order Button {% endcomment %}
-        <div class="boat-pdp-whatsapp-row{% if hide_inline_buttons_mobile %} boat-pdp-cta-group--hide-mobile{% endif %}">
-          <button 
-            type="button" 
-            class="boat-pdp-btn boat-pdp-btn--whatsapp" 
-            id="BoatPdpWhatsappBtn"
-            onclick="orderBoatOnWhatsapp()"
-          >
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.586 1.761.881 2.796.881 3.179 0 5.766-2.587 5.767-5.766.001-3.181-2.585-5.768-5.767-5.768zm0-2.172c4.418 0 8 3.582 8 8 0 4.418-3.582 8-8 8-1.408 0-2.73-.367-3.875-1.009l-4.156 1.009 1.109-3.992c-.696-1.164-1.078-2.525-1.078-4.008 0-4.418 3.582-8 8-8z"/>
-            </svg>
-            <span>Order via WhatsApp</span>
-          </button>
-        </div>
+        {% if section.settings.enable_whatsapp_order == nil or section.settings.enable_whatsapp_order == true %}
+          <div class="boat-pdp-whatsapp-row{% if hide_inline_buttons_mobile %} boat-pdp-cta-group--hide-mobile{% endif %}">
+            <button 
+              type="button" 
+              class="boat-pdp-btn boat-pdp-btn--whatsapp" 
+              id="BoatPdpWhatsappBtn"
+              onclick="orderBoatOnWhatsapp()"
+              style="{% if section.settings.whatsapp_btn_bg != blank %}background: {{ section.settings.whatsapp_btn_bg }};{% endif %}"
+            >
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.586 1.761.881 2.796.881 3.179 0 5.766-2.587 5.767-5.766.001-3.181-2.585-5.768-5.767-5.768zm0-2.172c4.418 0 8 3.582 8 8 0 4.418-3.582 8-8 8-1.408 0-2.73-.367-3.875-1.009l-4.156 1.009 1.109-3.992c-.696-1.164-1.078-2.525-1.078-4.008 0-4.418 3.582-8 8-8z"/>
+              </svg>
+              <span>{{ section.settings.whatsapp_btn_label | default: 'Order via WhatsApp' }}</span>
+            </button>
+          </div>
+        {% endif %}
 
       </form>
 
@@ -2278,6 +2281,34 @@
       "id": "tier_3_badge",
       "label": "Tier 3 Badge Text",
       "default": "MOST SAVINGS"
+    },
+    {
+      "type": "header",
+      "content": "💬 WhatsApp Order Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_whatsapp_order",
+      "label": "Show WhatsApp Order Button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_phone",
+      "label": "WhatsApp Phone Number (without + or spaces)",
+      "default": "923102492119"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_btn_label",
+      "label": "WhatsApp Button Label",
+      "default": "Order via WhatsApp"
+    },
+    {
+      "type": "color",
+      "id": "whatsapp_btn_bg",
+      "label": "WhatsApp Button Background Color",
+      "default": "#25d366"
     }
   ],
   "presets": [
