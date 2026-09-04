@@ -60,10 +60,9 @@
     "related_products": {
       "type": "boat-related-products",
       "settings": {
-        "heading": "Customers Also Viewed",
-        "subheading": "Handpicked recommendations matching your lifestyle",
-        "products_to_show": 8,
-        "columns_desktop": 4,
+        "heading": "Related Products",
+        "subheading": "Explore products matching your choice",
+        "products_to_show": 10,
         "show_view_all": true
       }
     }
