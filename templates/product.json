@@ -17,7 +17,17 @@
         "timer_label": "Flash Sale Ends In:",
         "timer_hours": 100,
         "timer_minutes": 2,
+        "hide_inline_buttons_mobile": true,
         "enable_mobile_sticky": true,
+        "show_sticky_deal_strip": true,
+        "sticky_atc_text": "Add To Cart",
+        "sticky_buy_text": "Buy Now",
+        "sticky_strip_bg": "#00875a",
+        "sticky_strip_text": "#ffffff",
+        "sticky_atc_bg": "#0f172a",
+        "sticky_atc_text_color": "#ffffff",
+        "sticky_buy_bg": "#00b853",
+        "sticky_buy_text_color": "#ffffff",
         "title_font_size": 28,
         "title_color": "#0f172a",
         "price_color": "#0f172a",
@@ -41,7 +51,21 @@
         "tier_3_qty": 10,
         "tier_3_discount": 10,
         "tier_3_code": "DEAL10",
-        "tier_3_badge": "MOST SAVINGS"
+        "tier_3_badge": "MOST SAVINGS",
+        "enable_whatsapp_order": true,
+        "whatsapp_phone": "923102492119",
+        "whatsapp_btn_label": "Order via WhatsApp",
+        "whatsapp_btn_bg": "#25d366"
+      }
+    },
+    "related_products": {
+      "type": "boat-related-products",
+      "settings": {
+        "heading": "Related Products",
+        "subheading": "",
+        "collection": "",
+        "products_to_show": 10,
+        "show_view_all": true
       }
     },
     "quick_order_list_mCkCUU": {
@@ -55,15 +79,6 @@
         "background_color": "",
         "padding-block-start": 48,
         "padding-block-end": 48
-      }
-    },
-    "related_products": {
-      "type": "boat-related-products",
-      "settings": {
-        "heading": "Related Products",
-        "subheading": "Explore products matching your choice",
-        "products_to_show": 10,
-        "show_view_all": true
       }
     }
   },
