@@ -65,6 +65,36 @@
     assign show_deal = true
   endif
 
+  assign enable_desktop_sticky = section.settings.enable_desktop_sticky
+  if enable_desktop_sticky == nil
+    assign enable_desktop_sticky = true
+  endif
+
+  assign enable_pdp_tabs = section.settings.enable_pdp_tabs
+  if enable_pdp_tabs == nil
+    assign enable_pdp_tabs = true
+  endif
+
+  assign show_tab_overview = section.settings.show_tab_overview
+  if show_tab_overview == nil
+    assign show_tab_overview = true
+  endif
+
+  assign show_tab_specs = section.settings.show_tab_specs
+  if show_tab_specs == nil
+    assign show_tab_specs = true
+  endif
+
+  assign show_tab_faqs = section.settings.show_tab_faqs
+  if show_tab_faqs == nil
+    assign show_tab_faqs = true
+  endif
+
+  assign show_tab_reviews = section.settings.show_tab_reviews
+  if show_tab_reviews == nil
+    assign show_tab_reviews = true
+  endif
+
   assign show_mobile_sticky = section.settings.enable_mobile_sticky
   if show_mobile_sticky == nil
     assign show_mobile_sticky = true
@@ -412,337 +442,369 @@
   </div>
 
   {% comment %} --- boAt Style Tab Navigation Bar (Overview, Specs, FAQs, Reviews) --- {% endcomment %}
-  <div class="boat-pdp-nav-sticky-wrapper" id="BoatPdpNavStickyWrapper">
-    <div class="boat-pdp-nav-pill-bar" id="BoatPdpNavPillBar">
-      <button type="button" class="boat-nav-pill active" onclick="switchBoatTab('overview', this)">
-        <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-          <line x1="16" y1="13" x2="8" y2="13"></line>
-          <line x1="16" y1="17" x2="8" y2="17"></line>
-          <polyline points="10 9 9 9 8 9"></polyline>
-        </svg>
-        <span>Overview</span>
-      </button>
-      <button type="button" class="boat-nav-pill" onclick="switchBoatTab('specs', this)">
-        <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-          <line x1="3" y1="9" x2="21" y2="9"></line>
-          <line x1="9" y1="21" x2="9" y2="9"></line>
-        </svg>
-        <span>Specs</span>
-      </button>
-      <button type="button" class="boat-nav-pill" onclick="switchBoatTab('faqs', this)">
-        <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-          <line x1="12" y1="17" x2="12.01" y2="17"></line>
-        </svg>
-        <span>FAQ's</span>
-      </button>
-      <button type="button" class="boat-nav-pill" onclick="switchBoatTab('reviews', this)">
-        <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-        </svg>
-        <span>Reviews</span>
-      </button>
+  {% if enable_pdp_tabs and show_tab_overview or show_tab_specs or show_tab_faqs or show_tab_reviews %}
+    {% assign first_active_tab = '' %}
+    {% if show_tab_overview %}
+      {% assign first_active_tab = 'overview' %}
+    {% elsif show_tab_specs %}
+      {% assign first_active_tab = 'specs' %}
+    {% elsif show_tab_faqs %}
+      {% assign first_active_tab = 'faqs' %}
+    {% elsif show_tab_reviews %}
+      {% assign first_active_tab = 'reviews' %}
+    {% endif %}
+
+    <div class="boat-pdp-nav-sticky-wrapper" id="BoatPdpNavStickyWrapper">
+      <div class="boat-pdp-nav-pill-bar" id="BoatPdpNavPillBar">
+        {% if show_tab_overview %}
+          <button type="button" class="boat-nav-pill{% if first_active_tab == 'overview' %} active{% endif %}" onclick="switchBoatTab('overview', this)">
+            <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span>Overview</span>
+          </button>
+        {% endif %}
+
+        {% if show_tab_specs %}
+          <button type="button" class="boat-nav-pill{% if first_active_tab == 'specs' %} active{% endif %}" onclick="switchBoatTab('specs', this)">
+            <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="3" y1="9" x2="21" y2="9"></line>
+              <line x1="9" y1="21" x2="9" y2="9"></line>
+            </svg>
+            <span>Specs</span>
+          </button>
+        {% endif %}
+
+        {% if show_tab_faqs %}
+          <button type="button" class="boat-nav-pill{% if first_active_tab == 'faqs' %} active{% endif %}" onclick="switchBoatTab('faqs', this)">
+            <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span>FAQ's</span>
+          </button>
+        {% endif %}
+
+        {% if show_tab_reviews %}
+          <button type="button" class="boat-nav-pill{% if first_active_tab == 'reviews' %} active{% endif %}" onclick="switchBoatTab('reviews', this)">
+            <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Reviews</span>
+          </button>
+        {% endif %}
+      </div>
     </div>
-  </div>
 
-  {% comment %} --- Dynamic Product Tabs Content Panels (Tab Switching) --- {% endcomment %}
-  <div class="boat-pdp-tabs-content">
+    {% comment %} --- Dynamic Product Tabs Content Panels (Tab Switching) --- {% endcomment %}
+    <div class="boat-pdp-tabs-content">
 
-    {% comment %} Tab 1: Overview (Active by Default) {% endcomment %}
-    <section class="boat-tab-section active" id="boat-tab-overview">
-      <div class="boat-tab-section__header">
-        <h2 class="boat-tab-section__title">Product Overview & Features</h2>
-        <p class="boat-tab-section__subtitle">Explore everything that makes {{ product.title }} special</p>
-      </div>
-      
-      <div class="boat-tab-overview-grid">
-        <div class="boat-tab-feature-card">
-          <div class="boat-feature-icon">⚡</div>
-          <h3 class="boat-feature-title">Premium Performance</h3>
-          <p class="boat-feature-desc">Engineered for exceptional reliability, durability and effortless everyday use.</p>
-        </div>
-        <div class="boat-tab-feature-card">
-          <div class="boat-feature-icon">🛡️</div>
-          <h3 class="boat-feature-title">100% Original & Verified</h3>
-          <p class="boat-feature-desc">Guaranteed authentic product backed by strict quality control standards.</p>
-        </div>
-        <div class="boat-tab-feature-card">
-          <div class="boat-feature-icon">🚚</div>
-          <h3 class="boat-feature-title">Fast Express Delivery</h3>
-          <p class="boat-feature-desc">Quick doorstep dispatch with real-time tracking and Cash on Delivery available.</p>
-        </div>
-        <div class="boat-tab-feature-card">
-          <div class="boat-feature-icon">💎</div>
-          <h3 class="boat-feature-title">Superior Build Quality</h3>
-          <p class="boat-feature-desc">Crafted with high-grade, durable materials built to last long.</p>
-        </div>
-      </div>
+      {% comment %} Tab 1: Overview {% endcomment %}
+      {% if show_tab_overview %}
+        <section class="boat-tab-section{% if first_active_tab == 'overview' %} active{% endif %}" id="boat-tab-overview">
+          <div class="boat-tab-section__header">
+            <h2 class="boat-tab-section__title">Product Overview & Features</h2>
+            <p class="boat-tab-section__subtitle">Explore everything that makes {{ product.title }} special</p>
+          </div>
+          
+          <div class="boat-tab-overview-grid">
+            <div class="boat-tab-feature-card">
+              <div class="boat-feature-icon">⚡</div>
+              <h3 class="boat-feature-title">Premium Performance</h3>
+              <p class="boat-feature-desc">Engineered for exceptional reliability, durability and effortless everyday use.</p>
+            </div>
+            <div class="boat-tab-feature-card">
+              <div class="boat-feature-icon">🛡️</div>
+              <h3 class="boat-feature-title">100% Original & Verified</h3>
+              <p class="boat-feature-desc">Guaranteed authentic product backed by strict quality control standards.</p>
+            </div>
+            <div class="boat-tab-feature-card">
+              <div class="boat-feature-icon">🚚</div>
+              <h3 class="boat-feature-title">Fast Express Delivery</h3>
+              <p class="boat-feature-desc">Quick doorstep dispatch with real-time tracking and Cash on Delivery available.</p>
+            </div>
+            <div class="boat-tab-feature-card">
+              <div class="boat-feature-icon">💎</div>
+              <h3 class="boat-feature-title">Superior Build Quality</h3>
+              <p class="boat-feature-desc">Crafted with high-grade, durable materials built to last long.</p>
+            </div>
+          </div>
 
-      {% if product.description != blank %}
-        <div class="boat-tab-description-box">
-          <h3 class="boat-desc-heading">Detailed Description</h3>
-          <div class="boat-rte-content">
-            {{ product.description }}
-          </div>
-        </div>
-      {% endif %}
-    </section>
-
-    {% comment %} Tab 2: Specs (Dynamic extraction from Product Attributes & Details) {% endcomment %}
-    <section class="boat-tab-section" id="boat-tab-specs">
-      <div class="boat-tab-section__header">
-        <h2 class="boat-tab-section__title">Technical Specifications</h2>
-        <p class="boat-tab-section__subtitle">Detailed product attributes and specifications for {{ product.title }}</p>
-      </div>
-
-      <div class="boat-tab-specs-table-card">
-        <div class="boat-spec-row">
-          <span class="boat-spec-name">Product Name</span>
-          <span class="boat-spec-val">{{ product.title }}</span>
-        </div>
-        {% if product.vendor != blank and product.vendor != 'vendor-unknown' %}
-          <div class="boat-spec-row">
-            <span class="boat-spec-name">Brand / Vendor</span>
-            <span class="boat-spec-val">{{ product.vendor }}</span>
-          </div>
-        {% endif %}
-        {% if product.type != blank %}
-          <div class="boat-spec-row">
-            <span class="boat-spec-name">Category / Type</span>
-            <span class="boat-spec-val">{{ product.type }}</span>
-          </div>
-        {% elsif product.collections.size > 0 %}
-          <div class="boat-spec-row">
-            <span class="boat-spec-name">Category</span>
-            <span class="boat-spec-val">{{ product.collections.first.title }}</span>
-          </div>
-        {% endif %}
-        {% if selected_variant.sku != blank %}
-          <div class="boat-spec-row">
-            <span class="boat-spec-name">SKU / Model Number</span>
-            <span class="boat-spec-val">{{ selected_variant.sku }}</span>
-          </div>
-        {% endif %}
-        {% if selected_variant.barcode != blank %}
-          <div class="boat-spec-row">
-            <span class="boat-spec-name">Barcode / UPC</span>
-            <span class="boat-spec-val">{{ selected_variant.barcode }}</span>
-          </div>
-        {% endif %}
-        {% if selected_variant.weight > 0 %}
-          <div class="boat-spec-row">
-            <span class="boat-spec-name">Product Weight</span>
-            <span class="boat-spec-val">{{ selected_variant.weight | weight_with_unit }}</span>
-          </div>
-        {% endif %}
-        {% unless product.has_only_default_variant %}
-          {% for option in product.options_with_values %}
-            {% unless option.name == 'Title' and option.values.first == 'Default Title' %}
-              <div class="boat-spec-row">
-                <span class="boat-spec-name">Available {{ option.name }}</span>
-                <span class="boat-spec-val">
-                  {% for val in option.values %}
-                    {{ val }}{% unless forloop.last %}, {% endunless %}
-                  {% endfor %}
-                </span>
-              </div>
-            {% endunless %}
-          {% endfor %}
-        {% endunless %}
-        <div class="boat-spec-row">
-          <span class="boat-spec-name">Quality Standard</span>
-          <span class="boat-spec-val">100% Brand New, Tested & Quality Checked</span>
-        </div>
-        <div class="boat-spec-row">
-          <span class="boat-spec-name">Delivery Speed</span>
-          <span class="boat-spec-val">2 to 4 Business Days Across Pakistan</span>
-        </div>
-        <div class="boat-spec-row">
-          <span class="boat-spec-name">Payment Options</span>
-          <span class="boat-spec-val">Cash on Delivery (COD) / Bank Transfer</span>
-        </div>
-        <div class="boat-spec-row">
-          <span class="boat-spec-name">Warranty / Guarantee</span>
-          <span class="boat-spec-val">7-Day Replacement Guarantee</span>
-        </div>
-        <div class="boat-spec-row">
-          <span class="boat-spec-name">Package Contents</span>
-          <span class="boat-spec-val">1x {{ product.title }} in Secure Packing</span>
-        </div>
-      </div>
-    </section>
-
-    {% comment %} Tab 3: FAQ's (Dynamic Blocks with Fallback Defaults) {% endcomment %}
-    <section class="boat-tab-section" id="boat-tab-faqs">
-      <div class="boat-tab-section__header">
-        <h2 class="boat-tab-section__title">Frequently Asked Questions</h2>
-        <p class="boat-tab-section__subtitle">Got questions? We've got answers for you</p>
-      </div>
-
-      <div class="boat-faqs-accordion">
-        {% assign faq_block_count = 0 %}
-        {% for block in section.blocks %}
-          {% if block.type == 'faq' %}
-            {% assign faq_block_count = faq_block_count | plus: 1 %}
-            <div class="boat-faq-item" {{ block.shopify_attributes }} onclick="toggleBoatFaq(this)">
-              <div class="boat-faq-question">
-                <span>{{ block.settings.question }}</span>
-                <span class="boat-faq-arrow">▾</span>
-              </div>
-              <div class="boat-faq-answer">
-                <p>{{ block.settings.answer }}</p>
+          {% if product.description != blank %}
+            <div class="boat-tab-description-box">
+              <h3 class="boat-desc-heading">Detailed Description</h3>
+              <div class="boat-rte-content">
+                {{ product.description }}
               </div>
             </div>
           {% endif %}
-        {% endfor %}
+        </section>
+      {% endif %}
 
-        {% if faq_block_count == 0 %}
-          <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
-            <div class="boat-faq-question">
-              <span>What is the estimated delivery time for my order?</span>
-              <span class="boat-faq-arrow">▾</span>
-            </div>
-            <div class="boat-faq-answer">
-              <p>Orders are dispatched within 24 hours. Delivery typically takes 2 to 4 business days across all major cities in Pakistan with active tracking updates.</p>
-            </div>
+      {% comment %} Tab 2: Specs (Filtered out default title) {% endcomment %}
+      {% if show_tab_specs %}
+        <section class="boat-tab-section{% if first_active_tab == 'specs' %} active{% endif %}" id="boat-tab-specs">
+          <div class="boat-tab-section__header">
+            <h2 class="boat-tab-section__title">Technical Specifications</h2>
+            <p class="boat-tab-section__subtitle">Complete details and technical parameters</p>
           </div>
 
-          <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
-            <div class="boat-faq-question">
-              <span>Is Cash on Delivery (COD) available?</span>
-              <span class="boat-faq-arrow">▾</span>
+          <div class="boat-tab-specs-table-card">
+            <div class="boat-spec-row">
+              <span class="boat-spec-name">Product Name</span>
+              <span class="boat-spec-val">{{ product.title }}</span>
             </div>
-            <div class="boat-faq-answer">
-              <p>Yes! We offer 100% Cash on Delivery across Pakistan. You can pay conveniently when the parcel arrives at your doorstep.</p>
+            {% if product.vendor != blank and product.vendor != 'vendor-unknown' %}
+              <div class="boat-spec-row">
+                <span class="boat-spec-name">Brand / Vendor</span>
+                <span class="boat-spec-val">{{ product.vendor }}</span>
+              </div>
+            {% endif %}
+            {% if product.type != blank %}
+              <div class="boat-spec-row">
+                <span class="boat-spec-name">Category / Type</span>
+                <span class="boat-spec-val">{{ product.type }}</span>
+              </div>
+            {% elsif product.collections.size > 0 %}
+              <div class="boat-spec-row">
+                <span class="boat-spec-name">Category</span>
+                <span class="boat-spec-val">{{ product.collections.first.title }}</span>
+              </div>
+            {% endif %}
+            {% if selected_variant.sku != blank %}
+              <div class="boat-spec-row">
+                <span class="boat-spec-name">SKU / Model Number</span>
+                <span class="boat-spec-val">{{ selected_variant.sku }}</span>
+              </div>
+            {% endif %}
+            {% if selected_variant.barcode != blank %}
+              <div class="boat-spec-row">
+                <span class="boat-spec-name">Barcode / UPC</span>
+                <span class="boat-spec-val">{{ selected_variant.barcode }}</span>
+              </div>
+            {% endif %}
+            {% if selected_variant.weight > 0 %}
+              <div class="boat-spec-row">
+                <span class="boat-spec-name">Product Weight</span>
+                <span class="boat-spec-val">{{ selected_variant.weight | weight_with_unit }}</span>
+              </div>
+            {% endif %}
+            {% unless product.has_only_default_variant %}
+              {% for option in product.options_with_values %}
+                {% unless option.name == 'Title' and option.values.first == 'Default Title' %}
+                  <div class="boat-spec-row">
+                    <span class="boat-spec-name">Available {{ option.name }}</span>
+                    <span class="boat-spec-val">
+                      {% for val in option.values %}
+                        {{ val }}{% unless forloop.last %}, {% endunless %}
+                      {% endfor %}
+                    </span>
+                  </div>
+                {% endunless %}
+              {% endfor %}
+            {% endunless %}
+            <div class="boat-spec-row">
+              <span class="boat-spec-name">Quality Standard</span>
+              <span class="boat-spec-val">100% Brand New, Tested & Quality Checked</span>
             </div>
-          </div>
-
-          <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
-            <div class="boat-faq-question">
-              <span>What if I receive a damaged or wrong product?</span>
-              <span class="boat-faq-arrow">▾</span>
+            <div class="boat-spec-row">
+              <span class="boat-spec-name">Delivery Speed</span>
+              <span class="boat-spec-val">2 to 4 Business Days Across Pakistan</span>
             </div>
-            <div class="boat-faq-answer">
-              <p>We provide a hassle-free 7-day replacement guarantee. Simply contact our support on WhatsApp at +92 310 2492119 and we will swiftly arrange a replacement for you.</p>
+            <div class="boat-spec-row">
+              <span class="boat-spec-name">Payment Options</span>
+              <span class="boat-spec-val">Cash on Delivery (COD) / Bank Transfer</span>
             </div>
-          </div>
-
-          <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
-            <div class="boat-faq-question">
-              <span>How can I place an order directly on WhatsApp?</span>
-              <span class="boat-faq-arrow">▾</span>
+            <div class="boat-spec-row">
+              <span class="boat-spec-name">Warranty / Guarantee</span>
+              <span class="boat-spec-val">7-Day Replacement Guarantee</span>
             </div>
-            <div class="boat-faq-answer">
-              <p>You can click the green "Order via WhatsApp" button on this product page. It will automatically generate a message with the product name and price for instant confirmation.</p>
-            </div>
-          </div>
-        {% endif %}
-      </div>
-    </section>
-
-    {% comment %} Tab 4: Reviews (Clean Score, Form & Native Integration, No Hardcoded Fake Cards) {% endcomment %}
-    <section class="boat-tab-section" id="boat-tab-reviews">
-      <div class="boat-tab-section__header">
-        <div class="boat-reviews-header-flex">
-          <div>
-            <h2 class="boat-tab-section__title">Customer Reviews & Ratings</h2>
-            <p class="boat-tab-section__subtitle">Verified feedback from real customers</p>
-          </div>
-          <button type="button" class="boat-write-review-btn" onclick="toggleBoatReviewForm()">
-            <span>✍️ Write a Review</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="boat-reviews-summary-card">
-        <div class="boat-reviews-score-box">
-          <div class="boat-reviews-score-big">{{ display_rating }}</div>
-          <div class="boat-reviews-stars">★★★★★</div>
-          <div class="boat-reviews-count-text">Based on {{ display_reviews_count }} Verified Reviews</div>
-        </div>
-
-        <div class="boat-reviews-breakdown">
-          <div class="boat-rating-bar-row">
-            <span>5 Star</span>
-            <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 88%;"></div></div>
-            <span>88%</span>
-          </div>
-          <div class="boat-rating-bar-row">
-            <span>4 Star</span>
-            <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 9%;"></div></div>
-            <span>9%</span>
-          </div>
-          <div class="boat-rating-bar-row">
-            <span>3 Star</span>
-            <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 3%;"></div></div>
-            <span>3%</span>
-          </div>
-          <div class="boat-rating-bar-row">
-            <span>2 Star</span>
-            <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 0%;"></div></div>
-            <span>0%</span>
-          </div>
-          <div class="boat-rating-bar-row">
-            <span>1 Star</span>
-            <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 0%;"></div></div>
-            <span>0%</span>
-          </div>
-        </div>
-      </div>
-
-      {% comment %} Interactive Review Submission Form {% endcomment %}
-      <div class="boat-review-form-wrapper" id="BoatReviewFormWrapper" style="display: none;">
-        <form class="boat-review-form" onsubmit="handleBoatReviewSubmit(event, this)">
-          <h3 class="boat-form-title">Write your review for {{ product.title }}</h3>
-          
-          <div class="boat-form-row">
-            <label class="boat-form-label">Rating</label>
-            <div class="boat-form-star-select">
-              <span class="boat-star-option" onclick="setBoatFormRating(1, this)">★</span>
-              <span class="boat-star-option" onclick="setBoatFormRating(2, this)">★</span>
-              <span class="boat-star-option" onclick="setBoatFormRating(3, this)">★</span>
-              <span class="boat-star-option" onclick="setBoatFormRating(4, this)">★</span>
-              <span class="boat-star-option active" onclick="setBoatFormRating(5, this)">★</span>
-            </div>
-            <input type="hidden" name="rating" id="BoatFormRatingVal" value="5">
-          </div>
-
-          <div class="boat-form-grid">
-            <div class="boat-form-field">
-              <label class="boat-form-label">Your Name *</label>
-              <input type="text" class="boat-form-input" placeholder="e.g. Ali Ahmed" required>
-            </div>
-            <div class="boat-form-field">
-              <label class="boat-form-label">Your Phone / Email *</label>
-              <input type="text" class="boat-form-input" placeholder="e.g. 0310-XXXXXXX" required>
+            <div class="boat-spec-row">
+              <span class="boat-spec-name">Package Contents</span>
+              <span class="boat-spec-val">1x {{ product.title }} in Secure Packing</span>
             </div>
           </div>
+        </section>
+      {% endif %}
 
-          <div class="boat-form-field">
-            <label class="boat-form-label">Your Review *</label>
-            <textarea class="boat-form-textarea" rows="3" placeholder="Share your experience with this product..." required></textarea>
+      {% comment %} Tab 3: FAQ's (Dynamic Blocks with Fallback Defaults) {% endcomment %}
+      {% if show_tab_faqs %}
+        <section class="boat-tab-section{% if first_active_tab == 'faqs' %} active{% endif %}" id="boat-tab-faqs">
+          <div class="boat-tab-section__header">
+            <h2 class="boat-tab-section__title">Frequently Asked Questions</h2>
+            <p class="boat-tab-section__subtitle">Got questions? We've got answers for you</p>
           </div>
 
-          <button type="submit" class="boat-form-submit-btn">
-            <span>Submit Review</span>
-          </button>
-          <div class="boat-review-success-msg" id="BoatReviewSuccessMsg" style="display: none;">
-            ✓ Thank you! Your review has been submitted and will appear after verification.
+          <div class="boat-faqs-accordion">
+            {% assign faq_block_count = 0 %}
+            {% for block in section.blocks %}
+              {% if block.type == 'faq' %}
+                {% assign faq_block_count = faq_block_count | plus: 1 %}
+                <div class="boat-faq-item" {{ block.shopify_attributes }} onclick="toggleBoatFaq(this)">
+                  <div class="boat-faq-question">
+                    <span>{{ block.settings.question }}</span>
+                    <span class="boat-faq-arrow">▾</span>
+                  </div>
+                  <div class="boat-faq-answer">
+                    <p>{{ block.settings.answer }}</p>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+
+            {% if faq_block_count == 0 %}
+              <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
+                <div class="boat-faq-question">
+                  <span>What is the estimated delivery time for my order?</span>
+                  <span class="boat-faq-arrow">▾</span>
+                </div>
+                <div class="boat-faq-answer">
+                  <p>Orders are dispatched within 24 hours. Delivery typically takes 2 to 4 business days across all major cities in Pakistan with active tracking updates.</p>
+                </div>
+              </div>
+
+              <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
+                <div class="boat-faq-question">
+                  <span>Is Cash on Delivery (COD) available?</span>
+                  <span class="boat-faq-arrow">▾</span>
+                </div>
+                <div class="boat-faq-answer">
+                  <p>Yes! We offer 100% Cash on Delivery across Pakistan. You can pay conveniently when the parcel arrives at your doorstep.</p>
+                </div>
+              </div>
+
+              <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
+                <div class="boat-faq-question">
+                  <span>What if I receive a damaged or wrong product?</span>
+                  <span class="boat-faq-arrow">▾</span>
+                </div>
+                <div class="boat-faq-answer">
+                  <p>We provide a hassle-free 7-day replacement guarantee. Simply contact our support on WhatsApp at +92 310 2492119 and we will swiftly arrange a replacement for you.</p>
+                </div>
+              </div>
+
+              <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
+                <div class="boat-faq-question">
+                  <span>How can I place an order directly on WhatsApp?</span>
+                  <span class="boat-faq-arrow">▾</span>
+                </div>
+                <div class="boat-faq-answer">
+                  <p>You can click the green "Order via WhatsApp" button on this product page. It will automatically generate a message with the product name and price for instant confirmation.</p>
+                </div>
+              </div>
+            {% endif %}
           </div>
-        </form>
-      </div>
+        </section>
+      {% endif %}
 
-      {% comment %} Shopify Product Review App Container Hook {% endcomment %}
-      <div id="shopify-product-reviews" data-id="{{ product.id }}">
-        {{ product.metafields.spr.reviews }}
-      </div>
-    </section>
+      {% comment %} Tab 4: Reviews {% endcomment %}
+      {% if show_tab_reviews %}
+        <section class="boat-tab-section{% if first_active_tab == 'reviews' %} active{% endif %}" id="boat-tab-reviews">
+          <div class="boat-tab-section__header">
+            <div class="boat-reviews-header-flex">
+              <div>
+                <h2 class="boat-tab-section__title">Customer Reviews & Ratings</h2>
+                <p class="boat-tab-section__subtitle">Verified feedback from real customers</p>
+              </div>
+              <button type="button" class="boat-write-review-btn" onclick="toggleBoatReviewForm()">
+                <span>✍️ Write a Review</span>
+              </button>
+            </div>
+          </div>
 
-  </div>
+          <div class="boat-reviews-summary-card">
+            <div class="boat-reviews-score-box">
+              <div class="boat-reviews-score-big">{{ display_rating }}</div>
+              <div class="boat-reviews-stars">★★★★★</div>
+              <div class="boat-reviews-count-text">Based on {{ display_reviews_count }} Verified Reviews</div>
+            </div>
+
+            <div class="boat-reviews-breakdown">
+              <div class="boat-rating-bar-row">
+                <span>5 Star</span>
+                <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 88%;"></div></div>
+                <span>88%</span>
+              </div>
+              <div class="boat-rating-bar-row">
+                <span>4 Star</span>
+                <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 9%;"></div></div>
+                <span>9%</span>
+              </div>
+              <div class="boat-rating-bar-row">
+                <span>3 Star</span>
+                <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 3%;"></div></div>
+                <span>3%</span>
+              </div>
+              <div class="boat-rating-bar-row">
+                <span>2 Star</span>
+                <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 0%;"></div></div>
+                <span>0%</span>
+              </div>
+              <div class="boat-rating-bar-row">
+                <span>1 Star</span>
+                <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 0%;"></div></div>
+                <span>0%</span>
+              </div>
+            </div>
+          </div>
+
+          {% comment %} Interactive Review Submission Form {% endcomment %}
+          <div class="boat-review-form-wrapper" id="BoatReviewFormWrapper" style="display: none;">
+            <form class="boat-review-form" onsubmit="handleBoatReviewSubmit(event, this)">
+              <h3 class="boat-form-title">Write your review for {{ product.title }}</h3>
+              
+              <div class="boat-form-row">
+                <label class="boat-form-label">Rating</label>
+                <div class="boat-form-star-select">
+                  <span class="boat-star-option" onclick="setBoatFormRating(1, this)">★</span>
+                  <span class="boat-star-option" onclick="setBoatFormRating(2, this)">★</span>
+                  <span class="boat-star-option" onclick="setBoatFormRating(3, this)">★</span>
+                  <span class="boat-star-option" onclick="setBoatFormRating(4, this)">★</span>
+                  <span class="boat-star-option active" onclick="setBoatFormRating(5, this)">★</span>
+                </div>
+                <input type="hidden" name="rating" id="BoatFormRatingVal" value="5">
+              </div>
+
+              <div class="boat-form-grid">
+                <div class="boat-form-field">
+                  <label class="boat-form-label">Your Name *</label>
+                  <input type="text" class="boat-form-input" placeholder="e.g. Ali Ahmed" required>
+                </div>
+                <div class="boat-form-field">
+                  <label class="boat-form-label">Your Phone / Email *</label>
+                  <input type="text" class="boat-form-input" placeholder="e.g. 0310-XXXXXXX" required>
+                </div>
+              </div>
+
+              <div class="boat-form-field">
+                <label class="boat-form-label">Your Review *</label>
+                <textarea class="boat-form-textarea" rows="3" placeholder="Share your experience with this product..." required></textarea>
+              </div>
+
+              <button type="submit" class="boat-form-submit-btn">
+                <span>Submit Review</span>
+              </button>
+              <div class="boat-review-success-msg" id="BoatReviewSuccessMsg" style="display: none;">
+                ✓ Thank you! Your review has been submitted and will appear after verification.
+              </div>
+            </form>
+          </div>
+
+          {% comment %} Shopify Product Review App Container Hook {% endcomment %}
+          <div id="shopify-product-reviews" data-id="{{ product.id }}">
+            {{ product.metafields.spr.reviews }}
+          </div>
+        </section>
+      {% endif %}
+
+    </div>
+  {% endif %}
 
 </div>
 
@@ -804,36 +866,38 @@
 {% endif %}
 
 {% comment %} Desktop Floating Sticky Pill Bar (Matching Exact Screenshot UI from Ronin/boAt) {% endcomment %}
-<div class="boat-pdp-desktop-sticky-bar" id="BoatPdpDesktopStickyBar">
-  <div class="boat-desktop-sticky-pill">
-    {% if featured_img != blank %}
-      <img class="boat-desktop-sticky-img" id="BoatDesktopStickyImg" src="{{ featured_img | image_url: width: 140 }}" alt="{{ product.title | escape }}">
-    {% elsif product.featured_image != blank %}
-      <img class="boat-desktop-sticky-img" id="BoatDesktopStickyImg" src="{{ product.featured_image | image_url: width: 140 }}" alt="{{ product.title | escape }}">
-    {% elsif product.media.first != blank %}
-      <img class="boat-desktop-sticky-img" id="BoatDesktopStickyImg" src="{{ product.media.first | image_url: width: 140 }}" alt="{{ product.title | escape }}">
-    {% endif %}
-    
-    <div class="boat-desktop-sticky-info">
-      <span class="boat-desktop-sticky-title">{{ product.title }}</span>
-      <div class="boat-desktop-sticky-pricing">
-        <span class="boat-desktop-sticky-price" id="BoatDesktopStickyPrice">{{ price | money_without_trailing_zeros }}</span>
-        <span class="boat-desktop-sticky-compare" id="BoatDesktopStickyCompare" style="{% unless compare_price > price %}display: none;{% endunless %}">
-          {{ compare_price | money_without_trailing_zeros }}
-        </span>
+{% if enable_desktop_sticky %}
+  <div class="boat-pdp-desktop-sticky-bar" id="BoatPdpDesktopStickyBar">
+    <div class="boat-desktop-sticky-pill">
+      {% if featured_img != blank %}
+        <img class="boat-desktop-sticky-img" id="BoatDesktopStickyImg" src="{{ featured_img | image_url: width: 140 }}" alt="{{ product.title | escape }}">
+      {% elsif product.featured_image != blank %}
+        <img class="boat-desktop-sticky-img" id="BoatDesktopStickyImg" src="{{ product.featured_image | image_url: width: 140 }}" alt="{{ product.title | escape }}">
+      {% elsif product.media.first != blank %}
+        <img class="boat-desktop-sticky-img" id="BoatDesktopStickyImg" src="{{ product.media.first | image_url: width: 140 }}" alt="{{ product.title | escape }}">
+      {% endif %}
+      
+      <div class="boat-desktop-sticky-info">
+        <span class="boat-desktop-sticky-title">{{ product.title }}</span>
+        <div class="boat-desktop-sticky-pricing">
+          <span class="boat-desktop-sticky-price" id="BoatDesktopStickyPrice">{{ price | money_without_trailing_zeros }}</span>
+          <span class="boat-desktop-sticky-compare" id="BoatDesktopStickyCompare" style="{% unless compare_price > price %}display: none;{% endunless %}">
+            {{ compare_price | money_without_trailing_zeros }}
+          </span>
+        </div>
       </div>
-    </div>
 
-    <button type="button" class="boat-desktop-sticky-btn" onclick="document.getElementById('BoatPdpAtcBtn').click()" {% unless selected_variant.available %}disabled{% endunless %}>
-      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-        <line x1="3" y1="6" x2="21" y2="6"></line>
-        <path d="M16 10a4 4 0 0 1-8 0"></path>
-      </svg>
-      <span>Add to cart</span>
-    </button>
+      <button type="button" class="boat-desktop-sticky-btn" onclick="document.getElementById('BoatPdpAtcBtn').click()" {% unless selected_variant.available %}disabled{% endunless %}>
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <path d="M16 10a4 4 0 0 1-8 0"></path>
+        </svg>
+        <span>Add to cart</span>
+      </button>
+    </div>
   </div>
-</div>
+{% endif %}
 
 {% comment %} Output Master Product Variants JSON {% endcomment %}
 <script type="application/json" id="BoatPdpVariantsData">
@@ -3205,6 +3269,50 @@
 {
   "name": "Deal Bazaar Product Page",
   "settings": [
+    {
+      "type": "header",
+      "content": "💻 Desktop Floating Sticky Bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_desktop_sticky",
+      "label": "Enable Desktop Sticky Pill Bar (SS 2)",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "📂 Product Tabs Settings (SS 1)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_pdp_tabs",
+      "label": "Enable Tabs Section",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tab_overview",
+      "label": "Show 'Overview' Tab",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tab_specs",
+      "label": "Show 'Specs' Tab",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tab_faqs",
+      "label": "Show 'FAQ's' Tab",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tab_reviews",
+      "label": "Show 'Reviews' Tab",
+      "default": true
+    },
     {
       "type": "header",
       "content": "⭐ Product Rating Settings"
