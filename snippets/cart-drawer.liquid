@@ -137,25 +137,6 @@
                 aria-label="{{ 'accessibility.cart' | t }}"
                 style="--header-height: 60px;"
               >
-                {% comment %} --- Dynamic Free Express Delivery Bar --- {% endcomment %}
-                <div class="boat-cart-shipping-bar">
-                  {% if current_total >= free_shipping_threshold %}
-                    <div class="boat-cart-shipping-text unlocked">
-                      🎉 <strong>Awesome!</strong> You unlocked <strong>FREE FAST DELIVERY ⚡</strong>
-                    </div>
-                    <div class="boat-cart-progress-track">
-                      <div class="boat-cart-progress-fill unlocked" style="width: 100%;"></div>
-                    </div>
-                  {% else %}
-                    <div class="boat-cart-shipping-text">
-                      ⚡ Add <strong>{{ remaining_amount | money_without_trailing_zeros }}</strong> more to get <strong>FREE FAST DELIVERY 🚚</strong>
-                    </div>
-                    <div class="boat-cart-progress-track">
-                      <div class="boat-cart-progress-fill" style="width: {{ progress_percent }}%;"></div>
-                    </div>
-                  {% endif %}
-                </div>
-
                 {% comment %} --- Savings Banner --- {% endcomment %}
                 {% if total_savings > 0 %}
                   <div class="boat-cart-savings-banner">
@@ -301,40 +282,121 @@
     color: #854d0e !important;
   }
 
-  .boat-cart-breakdown-row {
+  /* --- Collapsible Bill Breakdown Card (SS 3) --- */
+  .boat-bill-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 10px 14px 10px 14px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
+    margin-top: 4px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    transition: all 0.25s ease !important;
+  }
+
+  .boat-bill-collapse-body {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    overflow: hidden !important;
+    transition: max-height 0.35s ease, opacity 0.25s ease, margin 0.25s ease !important;
+    max-height: 250px !important;
+    opacity: 1 !important;
+  }
+
+  .boat-bill-collapse-body.collapsed {
+    max-height: 0 !important;
+    opacity: 0 !important;
+    margin: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .boat-bill-row {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    font-size: 0.82rem !important;
+    font-size: 0.84rem !important;
     font-weight: 700 !important;
-    color: #475569 !important;
-    padding-block: 2px !important;
+    color: #1e293b !important;
+    line-height: 1.3 !important;
   }
 
-  .savings-green {
+  .boat-bill-label {
+    color: #334155 !important;
+    font-weight: 700 !important;
+  }
+
+  .boat-bill-value {
+    color: #0f172a !important;
+    font-weight: 800 !important;
+  }
+
+  .boat-bill-value.text-green {
     color: #16a34a !important;
     font-weight: 800 !important;
   }
 
-  .boat-total-row {
-    font-size: 1.05rem !important;
-    font-weight: 900 !important;
-    color: #0f172a !important;
-    border-top: 1px dashed #e2e8f0 !important;
-    padding-top: 8px !important;
-    margin-top: 4px !important;
+  .boat-bill-dashed-divider {
+    border-bottom: 1px dashed #cbd5e1 !important;
+    margin: 6px 0 4px 0 !important;
+    width: 100% !important;
   }
 
-  .boat-total-label {
-    font-size: 1rem !important;
+  .boat-bill-main-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding-top: 4px !important;
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+
+  .boat-bill-to-pay-left {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 8px !important;
+  }
+
+  .boat-to-pay-label {
+    font-size: 0.95rem !important;
     font-weight: 900 !important;
     color: #0f172a !important;
   }
 
-  .boat-total-val {
-    font-size: 1.15rem !important;
+  .boat-to-pay-value {
+    font-size: 1.12rem !important;
     font-weight: 900 !important;
     color: #0f172a !important;
+  }
+
+  .boat-bill-toggle-btn {
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 50% !important;
+    width: 26px !important;
+    height: 26px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    color: #0f172a !important;
+    transition: background 0.15s ease, transform 0.25s ease !important;
+  }
+
+  .boat-bill-toggle-btn:hover {
+    background: #e2e8f0 !important;
+  }
+
+  .boat-bill-arrow {
+    transition: transform 0.25s ease !important;
+    transform: rotate(0deg);
+  }
+
+  .boat-bill-toggle-btn.collapsed .boat-bill-arrow,
+  .boat-bill-collapse-body.collapsed ~ .boat-bill-main-row .boat-bill-arrow {
+    transform: rotate(180deg) !important;
   }
 
   .cart-drawer__content {
