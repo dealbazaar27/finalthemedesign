@@ -1,17 +1,14 @@
 {
   "categories": {
     "banners": "Banners",
-    // Category for fundamental content blocks (text, images, buttons)
     "basic": "Basic",
     "blog_post": "Blog post",
     "collection": "Collection",
     "collections": "Collections",
     "collection_list": "Collection list",
-    // Category label for custom/advanced blocks in theme editor
     "custom": "Custom",
     "decorative": "Decorative",
     "footer": "Footer",
-    // Theme component category for contact forms, email signups, etc.
     "forms": "Forms",
     "header": "Header",
     "layout": "Layout",
