@@ -234,6 +234,39 @@
             can_add_to_cart: can_add_to_cart,
             form_obj: form
           %}
+
+          <button
+            type="button"
+            class="button boat-pdp-whatsapp-btn"
+            style="width: 100% !important; background: #25d366 !important; color: #ffffff !important; border-radius: 28px !important; height: 48px !important; font-weight: 800 !important; font-size: 0.95rem !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35) !important; margin-top: 6px !important; border: none !important; cursor: pointer !important;"
+            onclick="orderProductOnWhatsappDirect()"
+          >
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.586 1.761.881 2.796.881 3.179 0 5.766-2.587 5.767-5.766.001-3.181-2.585-5.768-5.767-5.768zm0-2.172c4.418 0 8 3.582 8 8 0 4.418-3.582 8-8 8-1.408 0-2.73-.367-3.875-1.009l-4.156 1.009 1.109-3.992c-.696-1.164-1.078-2.525-1.078-4.008 0-4.418 3.582-8 8-8z"/>
+            </svg>
+            <span>Order via WhatsApp</span>
+          </button>
+
+          <script>
+            if (typeof window.orderProductOnWhatsappDirect !== 'function') {
+              window.orderProductOnWhatsappDirect = function() {
+                const phone = '923102492119';
+                const title = {{ product.title | json }};
+                const priceElem = document.querySelector('[data-testid="price"]') || document.querySelector('.price');
+                const price = priceElem ? priceElem.innerText.trim() : '{{ product.price | money }}';
+                const url = window.location.href;
+
+                let msg = `Hello DealBazaar! I want to order this product:\n\n`;
+                msg += `📌 *Product:* ${title}\n`;
+                msg += `💰 *Price:* ${price}\n`;
+                msg += `🔗 *Link:* ${url}\n\n`;
+                msg += `Please confirm my order. Thank you!`;
+
+                const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+                window.open(waUrl, '_blank');
+              };
+            }
+          </script>
         </div>
         {%- if block_settings.gift_card_form and product.gift_card? -%}
           </span>

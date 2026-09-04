@@ -360,7 +360,7 @@
           </div>
         {% endif %}
 
-        {% comment %} 6. Action Buttons (Add to Cart + Buy Now) {% endcomment %}
+        {% comment %} 6. Action Buttons (Add to Cart + Buy Now + WhatsApp) {% endcomment %}
         <div class="boat-pdp-cta-group{% if hide_inline_buttons_mobile %} boat-pdp-cta-group--hide-mobile{% endif %}">
           <button 
             type="submit" 
@@ -383,6 +383,21 @@
             {% unless selected_variant.available %}disabled{% endunless %}
           >
             <span>Buy Now</span>
+          </button>
+        </div>
+
+        {% comment %} Direct WhatsApp Order Button {% endcomment %}
+        <div class="boat-pdp-whatsapp-row{% if hide_inline_buttons_mobile %} boat-pdp-cta-group--hide-mobile{% endif %}">
+          <button 
+            type="button" 
+            class="boat-pdp-btn boat-pdp-btn--whatsapp" 
+            id="BoatPdpWhatsappBtn"
+            onclick="orderBoatOnWhatsapp()"
+          >
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.586 1.761.881 2.796.881 3.179 0 5.766-2.587 5.767-5.766.001-3.181-2.585-5.768-5.767-5.768zm0-2.172c4.418 0 8 3.582 8 8 0 4.418-3.582 8-8 8-1.408 0-2.73-.367-3.875-1.009l-4.156 1.009 1.109-3.992c-.696-1.164-1.078-2.525-1.078-4.008 0-4.418 3.582-8 8-8z"/>
+            </svg>
+            <span>Order via WhatsApp</span>
           </button>
         </div>
 
@@ -435,6 +450,16 @@
           {% unless selected_variant.available %}disabled{% endunless %}
         >
           <span>{{ section.settings.sticky_buy_text | default: 'Buy Now' }}</span>
+        </button>
+        <button 
+          type="button" 
+          class="boat-pdp-sticky-btn boat-pdp-sticky-btn--whatsapp" 
+          onclick="orderBoatOnWhatsapp()"
+          aria-label="Order on WhatsApp"
+        >
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.586 1.761.881 2.796.881 3.179 0 5.766-2.587 5.767-5.766.001-3.181-2.585-5.768-5.767-5.768zm0-2.172c4.418 0 8 3.582 8 8 0 4.418-3.582 8-8 8-1.408 0-2.73-.367-3.875-1.009l-4.156 1.009 1.109-3.992c-.696-1.164-1.078-2.525-1.078-4.008 0-4.418 3.582-8 8-8z"/>
+          </svg>
         </button>
       </div>
     </div>
@@ -1150,6 +1175,35 @@
     transform: translateY(-1px);
   }
 
+  .boat-pdp-whatsapp-row {
+    width: 100% !important;
+    margin: 6px 0 10px 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .boat-pdp-btn--whatsapp {
+    width: 100% !important;
+    background: #25d366 !important;
+    color: #ffffff !important;
+    height: 48px !important;
+    border-radius: 26px !important;
+    font-size: 0.98rem !important;
+    font-weight: 800 !important;
+    gap: 8px !important;
+    box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35) !important;
+    transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease !important;
+  }
+
+  .boat-pdp-btn--whatsapp:hover {
+    background: #20ba59 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45) !important;
+  }
+
+  .boat-pdp-btn--whatsapp svg {
+    flex-shrink: 0;
+  }
+
   /* Mobile Sticky Bottom Bar (Exact SS match) */
   .boat-pdp-sticky-bar {
     display: none;
@@ -1489,10 +1543,42 @@
       background: var(--boat-pdp-sticky-buy-bg) !important;
       color: var(--boat-pdp-sticky-buy-text) !important;
     }
+
+    .boat-pdp-sticky-btn--whatsapp {
+      background: #25d366 !important;
+      color: #ffffff !important;
+      width: 40px !important;
+      flex: 0 0 40px !important;
+      padding: 0 !important;
+      border-radius: 20px !important;
+      box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
+    }
+
+    .boat-pdp-sticky-btn--whatsapp:active {
+      background: #20ba59 !important;
+    }
   }
 </style>
 
 <script>
+  // WhatsApp Order Direct Handler
+  function orderBoatOnWhatsapp() {
+    const phone = '923102492119';
+    const title = {{ product.title | json }};
+    const priceElem = document.getElementById('BoatPdpPrice') || document.getElementById('BoatPdpStickyPrice');
+    const price = priceElem ? priceElem.innerText.trim() : '{{ price | money_without_trailing_zeros }}';
+    const url = window.location.href;
+
+    let msg = `Hello DealBazaar! I want to order this product:\n\n`;
+    msg += `📌 *Product:* ${title}\n`;
+    msg += `💰 *Price:* ${price}\n`;
+    msg += `🔗 *Link:* ${url}\n\n`;
+    msg += `Please confirm my order. Thank you!`;
+
+    const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+    window.open(waUrl, '_blank');
+  }
+
   // Image Thumbnail Switcher with Smooth Center Scrolling
   function switchBoatPdpImage(btn, imgSrc) {
     const mainImg = document.getElementById('BoatPdpMainImage');
