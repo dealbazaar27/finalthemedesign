@@ -1,6 +1,6 @@
 {% liquid
-  assign heading = section.settings.heading | default: 'Related Products'
-  assign subheading = section.settings.subheading | default: 'Explore products matching your choice'
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
   assign products_limit = section.settings.products_to_show | default: 10
 
   assign target_collection = section.settings.collection
@@ -19,13 +19,20 @@
   <div class="boat-related-container">
     
     {% comment %} Section Header with Left/Right Arrow Controls {% endcomment %}
-    <div class="boat-related-header">
-      <div class="boat-related-header-left">
-        {% if subheading != blank %}
-          <span class="boat-related-subheading">{{ subheading }}</span>
-        {% endif %}
-        <h2 class="boat-related-title">{{ heading }}</h2>
-      </div>
+    {% if heading != blank or subheading != blank %}
+      <div class="boat-related-header">
+        <div class="boat-related-header-left">
+          {% if subheading != blank %}
+            <span class="boat-related-subheading">{{ subheading }}</span>
+          {% endif %}
+          {% if heading != blank %}
+            <h2 class="boat-related-title">{{ heading }}</h2>
+          {% endif %}
+        </div>
+    {% else %}
+      <div class="boat-related-header boat-related-header--no-title">
+        <div class="boat-related-header-left"></div>
+    {% endif %}
 
       <div class="boat-related-header-actions">
         {% if section.settings.show_view_all and target_collection != blank %}
