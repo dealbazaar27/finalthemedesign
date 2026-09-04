@@ -653,6 +653,14 @@ a.boat-megamenu-card,
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  cursor: grab !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+.category-hero__mobile-bar.is-dragging {
+  cursor: grabbing !important;
+  scroll-snap-type: none !important;
 }
 
 .category-hero__mobile-bar::-webkit-scrollbar {

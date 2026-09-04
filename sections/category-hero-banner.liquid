@@ -423,9 +423,9 @@
       }
     {% endif %}
 
-    {% if section.settings.enable_mobile_category_autoplay and show_categories_mobile %}
-      const catBar = document.getElementById('MobileCategoryBarContainer-{{ section.id }}');
-      if (catBar) {
+    const catBar = document.getElementById('MobileCategoryBarContainer-{{ section.id }}');
+    if (catBar) {
+      {% if section.settings.enable_mobile_category_autoplay and show_categories_mobile %}
         const catSpeed = ({{ section.settings.mobile_category_autoplay_speed | default: 3 }}) * 1000;
         let catTimer = setInterval(scrollNextCat, catSpeed);
 
@@ -443,8 +443,59 @@
           clearInterval(catTimer);
           catTimer = setInterval(scrollNextCat, catSpeed);
         }, {passive: true});
-      }
-    {% endif %}
+      {% endif %}
+
+      // --- Mouse Drag-to-Scroll & Mouse Wheel Horizontal Scroll ---
+      let isDown = false;
+      let startX;
+      let scrollLeft;
+      let hasDragged = false;
+
+      catBar.addEventListener('mousedown', (e) => {
+        isDown = true;
+        hasDragged = false;
+        catBar.classList.add('is-dragging');
+        startX = e.pageX - catBar.offsetLeft;
+        scrollLeft = catBar.scrollLeft;
+      });
+
+      catBar.addEventListener('mouseleave', () => {
+        isDown = false;
+        catBar.classList.remove('is-dragging');
+      });
+
+      catBar.addEventListener('mouseup', () => {
+        isDown = false;
+        catBar.classList.remove('is-dragging');
+      });
+
+      catBar.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        const x = e.pageX - catBar.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        if (Math.abs(walk) > 4) {
+          hasDragged = true;
+          e.preventDefault();
+          catBar.scrollLeft = scrollLeft - walk;
+        }
+      });
+
+      // Prevent link clicking only when dragged
+      catBar.addEventListener('click', (e) => {
+        if (hasDragged) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }, true);
+
+      // Mouse Wheel Horizontal Scroll
+      catBar.addEventListener('wheel', (e) => {
+        if (e.deltaY !== 0) {
+          e.preventDefault();
+          catBar.scrollLeft += e.deltaY;
+        }
+      }, { passive: false });
+    }
   })();
 </script>
 
