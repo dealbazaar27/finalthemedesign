@@ -538,16 +538,20 @@
             <span class="boat-spec-val">{{ selected_variant.weight | weight_with_unit }}</span>
           </div>
         {% endif %}
-        {% for option in product.options_with_values %}
-          <div class="boat-spec-row">
-            <span class="boat-spec-name">Available {{ option.name }}</span>
-            <span class="boat-spec-val">
-              {% for val in option.values %}
-                {{ val }}{% unless forloop.last %}, {% endunless %}
-              {% endfor %}
-            </span>
-          </div>
-        {% endfor %}
+        {% unless product.has_only_default_variant %}
+          {% for option in product.options_with_values %}
+            {% unless option.name == 'Title' and option.values.first == 'Default Title' %}
+              <div class="boat-spec-row">
+                <span class="boat-spec-name">Available {{ option.name }}</span>
+                <span class="boat-spec-val">
+                  {% for val in option.values %}
+                    {{ val }}{% unless forloop.last %}, {% endunless %}
+                  {% endfor %}
+                </span>
+              </div>
+            {% endunless %}
+          {% endfor %}
+        {% endunless %}
         <div class="boat-spec-row">
           <span class="boat-spec-name">Quality Standard</span>
           <span class="boat-spec-val">100% Brand New, Tested & Quality Checked</span>
@@ -571,7 +575,7 @@
       </div>
     </section>
 
-    {% comment %} Tab 3: FAQ's {% endcomment %}
+    {% comment %} Tab 3: FAQ's (Dynamic Blocks with Fallback Defaults) {% endcomment %}
     <section class="boat-tab-section" id="boat-tab-faqs">
       <div class="boat-tab-section__header">
         <h2 class="boat-tab-section__title">Frequently Asked Questions</h2>
@@ -579,45 +583,63 @@
       </div>
 
       <div class="boat-faqs-accordion">
-        <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
-          <div class="boat-faq-question">
-            <span>What is the estimated delivery time for my order?</span>
-            <span class="boat-faq-arrow">▾</span>
-          </div>
-          <div class="boat-faq-answer">
-            <p>Orders are dispatched within 24 hours. Delivery typically takes 2 to 4 business days across all major cities in Pakistan with active tracking updates.</p>
-          </div>
-        </div>
+        {% assign faq_block_count = 0 %}
+        {% for block in section.blocks %}
+          {% if block.type == 'faq' %}
+            {% assign faq_block_count = faq_block_count | plus: 1 %}
+            <div class="boat-faq-item" {{ block.shopify_attributes }} onclick="toggleBoatFaq(this)">
+              <div class="boat-faq-question">
+                <span>{{ block.settings.question }}</span>
+                <span class="boat-faq-arrow">▾</span>
+              </div>
+              <div class="boat-faq-answer">
+                <p>{{ block.settings.answer }}</p>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
 
-        <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
-          <div class="boat-faq-question">
-            <span>Is Cash on Delivery (COD) available?</span>
-            <span class="boat-faq-arrow">▾</span>
+        {% if faq_block_count == 0 %}
+          <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
+            <div class="boat-faq-question">
+              <span>What is the estimated delivery time for my order?</span>
+              <span class="boat-faq-arrow">▾</span>
+            </div>
+            <div class="boat-faq-answer">
+              <p>Orders are dispatched within 24 hours. Delivery typically takes 2 to 4 business days across all major cities in Pakistan with active tracking updates.</p>
+            </div>
           </div>
-          <div class="boat-faq-answer">
-            <p>Yes! We offer 100% Cash on Delivery across Pakistan. You can pay conveniently when the parcel arrives at your doorstep.</p>
-          </div>
-        </div>
 
-        <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
-          <div class="boat-faq-question">
-            <span>What if I receive a damaged or wrong product?</span>
-            <span class="boat-faq-arrow">▾</span>
+          <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
+            <div class="boat-faq-question">
+              <span>Is Cash on Delivery (COD) available?</span>
+              <span class="boat-faq-arrow">▾</span>
+            </div>
+            <div class="boat-faq-answer">
+              <p>Yes! We offer 100% Cash on Delivery across Pakistan. You can pay conveniently when the parcel arrives at your doorstep.</p>
+            </div>
           </div>
-          <div class="boat-faq-answer">
-            <p>We provide a hassle-free 7-day replacement guarantee. Simply contact our support on WhatsApp at +92 310 2492119 and we will swiftly arrange a replacement for you.</p>
-          </div>
-        </div>
 
-        <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
-          <div class="boat-faq-question">
-            <span>How can I place an order directly on WhatsApp?</span>
-            <span class="boat-faq-arrow">▾</span>
+          <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
+            <div class="boat-faq-question">
+              <span>What if I receive a damaged or wrong product?</span>
+              <span class="boat-faq-arrow">▾</span>
+            </div>
+            <div class="boat-faq-answer">
+              <p>We provide a hassle-free 7-day replacement guarantee. Simply contact our support on WhatsApp at +92 310 2492119 and we will swiftly arrange a replacement for you.</p>
+            </div>
           </div>
-          <div class="boat-faq-answer">
-            <p>You can click the green "Order via WhatsApp" button on this product page. It will automatically generate a message with the product name and price for instant confirmation.</p>
+
+          <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
+            <div class="boat-faq-question">
+              <span>How can I place an order directly on WhatsApp?</span>
+              <span class="boat-faq-arrow">▾</span>
+            </div>
+            <div class="boat-faq-answer">
+              <p>You can click the green "Order via WhatsApp" button on this product page. It will automatically generate a message with the product name and price for instant confirmation.</p>
+            </div>
           </div>
-        </div>
+        {% endif %}
       </div>
     </section>
 
@@ -779,6 +801,36 @@
     </div>
   </div>
 {% endif %}
+
+{% comment %} Desktop Floating Sticky Pill Bar (Matching Exact Screenshot UI from Ronin/boAt) {% endcomment %}
+<div class="boat-pdp-desktop-sticky-bar" id="BoatPdpDesktopStickyBar">
+  <div class="boat-desktop-sticky-pill">
+    {% if featured_img != blank %}
+      <img class="boat-desktop-sticky-img" id="BoatDesktopStickyImg" src="{{ featured_img | image_url: width: 100 }}" alt="{{ product.title | escape }}">
+    {% else %}
+      <div class="boat-desktop-sticky-img-placeholder"></div>
+    {% endif %}
+    
+    <div class="boat-desktop-sticky-info">
+      <span class="boat-desktop-sticky-title">{{ product.title }}</span>
+      <div class="boat-desktop-sticky-pricing">
+        <span class="boat-desktop-sticky-price" id="BoatDesktopStickyPrice">{{ price | money_without_trailing_zeros }}</span>
+        <span class="boat-desktop-sticky-compare" id="BoatDesktopStickyCompare" style="{% unless compare_price > price %}display: none;{% endunless %}">
+          {{ compare_price | money_without_trailing_zeros }}
+        </span>
+      </div>
+    </div>
+
+    <button type="button" class="boat-desktop-sticky-btn" onclick="document.getElementById('BoatPdpAtcBtn').click()" {% unless selected_variant.available %}disabled{% endunless %}>
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <path d="M16 10a4 4 0 0 1-8 0"></path>
+      </svg>
+      <span>Add to cart</span>
+    </button>
+  </div>
+</div>
 
 {% comment %} Output Master Product Variants JSON {% endcomment %}
 <script type="application/json" id="BoatPdpVariantsData">
@@ -2443,6 +2495,121 @@
       padding: 18px 16px;
     }
   }
+
+  /* Desktop Floating Sticky Pill Bar (SS 2 Matching Ronin/boAt) */
+  .boat-pdp-desktop-sticky-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    z-index: 99;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  }
+
+  .boat-pdp-desktop-sticky-bar.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  @media screen and (max-width: 768px) {
+    .boat-pdp-desktop-sticky-bar {
+      display: none !important;
+    }
+  }
+
+  .boat-desktop-sticky-pill {
+    display: flex;
+    align-items: center;
+    background: rgba(30, 41, 59, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+    padding: 6px 8px 6px 10px;
+    gap: 16px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+    min-width: 380px;
+    max-width: 520px;
+    box-sizing: border-box;
+  }
+
+  .boat-desktop-sticky-img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #0f172a;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .boat-desktop-sticky-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .boat-desktop-sticky-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #f8fafc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+    line-height: 1.2;
+  }
+
+  .boat-desktop-sticky-pricing {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .boat-desktop-sticky-price {
+    font-size: 0.94rem;
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  .boat-desktop-sticky-compare {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-decoration: line-through;
+  }
+
+  .boat-desktop-sticky-btn {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 0.88rem !important;
+    font-weight: 800 !important;
+    border-radius: 9999px !important;
+    padding: 10px 22px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    border: none !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    transition: all 0.2s ease !important;
+    font-family: inherit !important;
+  }
+
+  .boat-desktop-sticky-btn:hover {
+    background: #f1f5f9 !important;
+    transform: scale(1.03) !important;
+  }
+
+  .boat-desktop-sticky-btn:active {
+    transform: scale(0.97) !important;
+  }
 </style>
 
 <script>
@@ -2624,6 +2791,8 @@
     const stickyCompare = document.getElementById('BoatPdpStickyCompare');
     const stickyDisc = document.getElementById('BoatPdpStickyDiscount');
     const stickyDealStrip = document.getElementById('BoatPdpStickyDealStrip');
+    const deskStickyPrice = document.getElementById('BoatDesktopStickyPrice');
+    const deskStickyCompare = document.getElementById('BoatDesktopStickyCompare');
 
     if (discountPercent > 0) {
       if (subtotalElem) subtotalElem.textContent = formatMoneyWithoutDecimals(discountedCents);
@@ -2645,6 +2814,13 @@
       if (stickyDisc) {
         stickyDisc.textContent = discountPercent + '% Off';
         stickyDisc.style.display = 'inline';
+      }
+
+      // Desktop Sticky Pill
+      if (deskStickyPrice) deskStickyPrice.textContent = formatMoneyWithoutDecimals(discountedCents);
+      if (deskStickyCompare) {
+        deskStickyCompare.textContent = formatMoneyWithoutDecimals(originalCents);
+        deskStickyCompare.style.display = 'inline';
       }
       
       // Update top green strip dynamically when deal is applied
@@ -2669,6 +2845,15 @@
         stickyDisc.style.display = 'inline';
       } else if (stickyDisc) {
         stickyDisc.style.display = 'none';
+      }
+
+      // Desktop Sticky Pill
+      if (deskStickyPrice) deskStickyPrice.textContent = formatMoneyWithoutDecimals(originalCents);
+      if (deskStickyCompare && currentVariantComparePrice > currentVariantPrice) {
+        deskStickyCompare.textContent = formatMoneyWithoutDecimals(currentVariantComparePrice * qty);
+        deskStickyCompare.style.display = 'inline';
+      } else if (deskStickyCompare) {
+        deskStickyCompare.style.display = 'none';
       }
 
       // Default prompt before deal is clicked
@@ -2796,6 +2981,8 @@
       if (matchedVariant.featured_image) {
         const mainImg = document.getElementById('BoatPdpMainImage');
         if (mainImg) mainImg.src = matchedVariant.featured_image;
+        const deskStickyImg = document.getElementById('BoatDesktopStickyImg');
+        if (deskStickyImg) deskStickyImg.src = matchedVariant.featured_image;
       }
 
       // Update Buttons
@@ -2954,6 +3141,29 @@
       }, 3000);
     }
   }
+
+  // Desktop Floating Sticky Pill Bar Scroll Trigger Observer
+  (function() {
+    const desktopSticky = document.getElementById('BoatPdpDesktopStickyBar');
+    const atcBtn = document.getElementById('BoatPdpAtcBtn');
+    if (!desktopSticky || !atcBtn) return;
+
+    function checkStickyVisibility() {
+      if (window.innerWidth <= 768) {
+        desktopSticky.classList.remove('visible');
+        return;
+      }
+      const rect = atcBtn.getBoundingClientRect();
+      if (rect.bottom < 0) {
+        desktopSticky.classList.add('visible');
+      } else {
+        desktopSticky.classList.remove('visible');
+      }
+    }
+
+    window.addEventListener('scroll', checkStickyVisibility, { passive: true });
+    window.addEventListener('resize', checkStickyVisibility, { passive: true });
+  })();
 
   // Initial subtotal calculation on page load
   document.addEventListener('DOMContentLoaded', updateBoatSubtotal);
@@ -3269,10 +3479,61 @@
       "default": "#25d366"
     }
   ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "What is the estimated delivery time for my order?"
+        },
+        {
+          "type": "textarea",
+          "id": "answer",
+          "label": "Answer",
+          "default": "Orders are dispatched within 24 hours. Delivery typically takes 2 to 4 business days across all major cities in Pakistan with active tracking updates."
+        }
+      ]
+    }
+  ],
   "presets": [
     {
-      "name": "Deal Bazaar Product Page"
+      "name": "Deal Bazaar Product Page",
+      "blocks": [
+        {
+          "type": "faq",
+          "settings": {
+            "question": "What is the estimated delivery time for my order?",
+            "answer": "Orders are dispatched within 24 hours. Delivery typically takes 2 to 4 business days across all major cities in Pakistan with active tracking updates."
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "Is Cash on Delivery (COD) available?",
+            "answer": "Yes! We offer 100% Cash on Delivery across Pakistan. You can pay conveniently when the parcel arrives at your doorstep."
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "What if I receive a damaged or wrong product?",
+            "answer": "We provide a hassle-free 7-day replacement guarantee. Simply contact our support on WhatsApp at +92 310 2492119 and we will swiftly arrange a replacement for you."
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "How can I place an order directly on WhatsApp?",
+            "answer": "You can click the green 'Order via WhatsApp' button on this product page. It will automatically generate a message with the product name and price for instant confirmation."
+          }
+        }
+      ]
     }
   ]
 }
 {% endschema %}
+
