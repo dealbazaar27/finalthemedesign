@@ -56,10 +56,21 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "related_products": {
+      "type": "boat-related-products",
+      "settings": {
+        "heading": "Customers Also Viewed",
+        "subheading": "Handpicked recommendations matching your lifestyle",
+        "products_to_show": 8,
+        "columns_desktop": 4,
+        "show_view_all": true
+      }
     }
   },
   "order": [
     "main",
+    "related_products",
     "quick_order_list_mCkCUU"
   ]
 }

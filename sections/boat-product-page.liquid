@@ -410,6 +410,288 @@
 
   </div>
 
+  {% comment %} --- boAt Style Sticky Navigation Pill Bar (Overview, Specs, FAQs, Reviews) --- {% endcomment %}
+  <div class="boat-pdp-nav-sticky-wrapper" id="BoatPdpNavStickyWrapper">
+    <div class="boat-pdp-nav-pill-bar" id="BoatPdpNavPillBar">
+      <button type="button" class="boat-nav-pill active" onclick="scrollToBoatTab('overview', this)">
+        <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span>Overview</span>
+      </button>
+      <button type="button" class="boat-nav-pill" onclick="scrollToBoatTab('specs', this)">
+        <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="3" y1="9" x2="21" y2="9"></line>
+          <line x1="9" y1="21" x2="9" y2="9"></line>
+        </svg>
+        <span>Specs</span>
+      </button>
+      <button type="button" class="boat-nav-pill" onclick="scrollToBoatTab('faqs', this)">
+        <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <span>FAQ's</span>
+      </button>
+      <button type="button" class="boat-nav-pill" onclick="scrollToBoatTab('reviews', this)">
+        <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span>Reviews</span>
+      </button>
+    </div>
+  </div>
+
+  {% comment %} --- Detailed Product Tabs Content Sections --- {% endcomment %}
+  <div class="boat-pdp-tabs-content">
+
+    {% comment %} Tab 1: Overview {% endcomment %}
+    <section class="boat-tab-section" id="boat-tab-overview">
+      <div class="boat-tab-section__header">
+        <h2 class="boat-tab-section__title">Product Overview & Features</h2>
+        <p class="boat-tab-section__subtitle">Explore everything that makes {{ product.title }} special</p>
+      </div>
+      
+      <div class="boat-tab-overview-grid">
+        <div class="boat-tab-feature-card">
+          <div class="boat-feature-icon">⚡</div>
+          <h3 class="boat-feature-title">Premium Performance</h3>
+          <p class="boat-feature-desc">Engineered for exceptional reliability, durability and effortless everyday use.</p>
+        </div>
+        <div class="boat-tab-feature-card">
+          <div class="boat-feature-icon">🛡️</div>
+          <h3 class="boat-feature-title">100% Original & Verified</h3>
+          <p class="boat-feature-desc">Guaranteed authentic product backed by strict quality control standards.</p>
+        </div>
+        <div class="boat-tab-feature-card">
+          <div class="boat-feature-icon">🚚</div>
+          <h3 class="boat-feature-title">Fast Express Delivery</h3>
+          <p class="boat-feature-desc">Quick doorstep dispatch with real-time tracking and Cash on Delivery available.</p>
+        </div>
+        <div class="boat-tab-feature-card">
+          <div class="boat-feature-icon">💎</div>
+          <h3 class="boat-feature-title">Superior Build Quality</h3>
+          <p class="boat-feature-desc">Crafted with high-grade, food-safe and durable materials for long-lasting life.</p>
+        </div>
+      </div>
+
+      {% if product.description != blank %}
+        <div class="boat-tab-description-box">
+          <h3 class="boat-desc-heading">Detailed Description</h3>
+          <div class="boat-rte-content">
+            {{ product.description }}
+          </div>
+        </div>
+      {% endif %}
+    </section>
+
+    {% comment %} Tab 2: Specs {% endcomment %}
+    <section class="boat-tab-section" id="boat-tab-specs">
+      <div class="boat-tab-section__header">
+        <h2 class="boat-tab-section__title">Technical Specifications</h2>
+        <p class="boat-tab-section__subtitle">Complete details and specifications for {{ product.title }}</p>
+      </div>
+
+      <div class="boat-tab-specs-table-card">
+        <div class="boat-spec-row">
+          <span class="boat-spec-name">Product Name</span>
+          <span class="boat-spec-val">{{ product.title }}</span>
+        </div>
+        {% if product.vendor != blank %}
+          <div class="boat-spec-row">
+            <span class="boat-spec-name">Brand / Vendor</span>
+            <span class="boat-spec-val">{{ product.vendor }}</span>
+          </div>
+        {% endif %}
+        {% if product.type != blank %}
+          <div class="boat-spec-row">
+            <span class="boat-spec-name">Category</span>
+            <span class="boat-spec-val">{{ product.type }}</span>
+          </div>
+        {% endif %}
+        {% if selected_variant.sku != blank %}
+          <div class="boat-spec-row">
+            <span class="boat-spec-name">SKU / Model Code</span>
+            <span class="boat-spec-val">{{ selected_variant.sku }}</span>
+          </div>
+        {% endif %}
+        <div class="boat-spec-row">
+          <span class="boat-spec-name">Material & Finish</span>
+          <span class="boat-spec-val">High-Grade Heat Resistant, BPA Free, Ergonomic Grip</span>
+        </div>
+        <div class="boat-spec-row">
+          <span class="boat-spec-name">Warranty</span>
+          <span class="boat-spec-val">7-Day Replacement Guarantee & Quality Assurance</span>
+        </div>
+        <div class="boat-spec-row">
+          <span class="boat-spec-name">Package Contents</span>
+          <span class="boat-spec-val">1x {{ product.title }}, User Manual & Secure Packaging</span>
+        </div>
+      </div>
+    </section>
+
+    {% comment %} Tab 3: FAQ's {% endcomment %}
+    <section class="boat-tab-section" id="boat-tab-faqs">
+      <div class="boat-tab-section__header">
+        <h2 class="boat-tab-section__title">Frequently Asked Questions</h2>
+        <p class="boat-tab-section__subtitle">Got questions? We've got answers for you</p>
+      </div>
+
+      <div class="boat-faqs-accordion">
+        <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
+          <div class="boat-faq-question">
+            <span>What is the estimated delivery time for my order?</span>
+            <span class="boat-faq-arrow">▾</span>
+          </div>
+          <div class="boat-faq-answer">
+            <p>Orders are dispatched within 24 hours. Delivery typically takes 2 to 4 business days across all major cities in Pakistan with active tracking updates.</p>
+          </div>
+        </div>
+
+        <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
+          <div class="boat-faq-question">
+            <span>Is Cash on Delivery (COD) available?</span>
+            <span class="boat-faq-arrow">▾</span>
+          </div>
+          <div class="boat-faq-answer">
+            <p>Yes! We offer 100% Cash on Delivery across Pakistan. You can pay conveniently when the parcel arrives at your doorstep.</p>
+          </div>
+        </div>
+
+        <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
+          <div class="boat-faq-question">
+            <span>What if I receive a damaged or wrong product?</span>
+            <span class="boat-faq-arrow">▾</span>
+          </div>
+          <div class="boat-faq-answer">
+            <p>We provide a hassle-free 7-day replacement guarantee. Simply contact our support on WhatsApp at +92 310 2492119 and we will swiftly arrange a replacement for you.</p>
+          </div>
+        </div>
+
+        <div class="boat-faq-item" onclick="toggleBoatFaq(this)">
+          <div class="boat-faq-question">
+            <span>How can I place an order directly on WhatsApp?</span>
+            <span class="boat-faq-arrow">▾</span>
+          </div>
+          <div class="boat-faq-answer">
+            <p>You can click the green "Order via WhatsApp" button on this product page. It will automatically generate a message with the product name and price for instant confirmation.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {% comment %} Tab 4: Reviews {% endcomment %}
+    <section class="boat-tab-section" id="boat-tab-reviews">
+      <div class="boat-tab-section__header">
+        <h2 class="boat-tab-section__title">Customer Reviews & Ratings</h2>
+        <p class="boat-tab-section__subtitle">Verified feedback from real customers across Pakistan</p>
+      </div>
+
+      <div class="boat-reviews-summary-card">
+        <div class="boat-reviews-score-box">
+          <div class="boat-reviews-score-big">{{ display_rating }}</div>
+          <div class="boat-reviews-stars">★★★★★</div>
+          <div class="boat-reviews-count-text">Based on {{ display_reviews_count }} Verified Reviews</div>
+        </div>
+
+        <div class="boat-reviews-breakdown">
+          <div class="boat-rating-bar-row">
+            <span>5 Star</span>
+            <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 86%;"></div></div>
+            <span>86%</span>
+          </div>
+          <div class="boat-rating-bar-row">
+            <span>4 Star</span>
+            <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 11%;"></div></div>
+            <span>11%</span>
+          </div>
+          <div class="boat-rating-bar-row">
+            <span>3 Star</span>
+            <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 3%;"></div></div>
+            <span>3%</span>
+          </div>
+          <div class="boat-rating-bar-row">
+            <span>2 Star</span>
+            <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 0%;"></div></div>
+            <span>0%</span>
+          </div>
+          <div class="boat-rating-bar-row">
+            <span>1 Star</span>
+            <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 0%;"></div></div>
+            <span>0%</span>
+          </div>
+        </div>
+      </div>
+
+      {% comment %} Sample Verified Customer Reviews Cards {% endcomment %}
+      <div class="boat-reviews-list">
+        <div class="boat-review-card">
+          <div class="boat-review-card-top">
+            <div class="boat-review-author">
+              <span class="boat-author-avatar">MA</span>
+              <div>
+                <strong class="boat-author-name">Muhammad Ali</strong>
+                <span class="boat-verified-badge">✓ Verified Buyer</span>
+              </div>
+            </div>
+            <div class="boat-review-rating-date">
+              <span class="boat-stars-gold">★★★★★</span>
+              <span class="boat-review-date">2 days ago</span>
+            </div>
+          </div>
+          <p class="boat-review-body">
+            "Ordered this product and got delivered in just 2 days in Lahore. Build quality is 10/10 and exactly like the pictures shown. Highly recommended!"
+          </p>
+        </div>
+
+        <div class="boat-review-card">
+          <div class="boat-review-card-top">
+            <div class="boat-review-author">
+              <span class="boat-author-avatar">SF</span>
+              <div>
+                <strong class="boat-author-name">Sana Fatima</strong>
+                <span class="boat-verified-badge">✓ Verified Buyer</span>
+              </div>
+            </div>
+            <div class="boat-review-rating-date">
+              <span class="boat-stars-gold">★★★★★</span>
+              <span class="boat-review-date">5 days ago</span>
+            </div>
+          </div>
+          <p class="boat-review-body">
+            "Super useful and worth every single rupee. Packing was very secure. Customer support on WhatsApp answered all my questions instantly."
+          </p>
+        </div>
+
+        <div class="boat-review-card">
+          <div class="boat-review-card-top">
+            <div class="boat-review-author">
+              <span class="boat-author-avatar">HR</span>
+              <div>
+                <strong class="boat-author-name">Hamza R.</strong>
+                <span class="boat-verified-badge">✓ Verified Buyer</span>
+              </div>
+            </div>
+            <div class="boat-review-rating-date">
+              <span class="boat-stars-gold">★★★★☆</span>
+              <span class="boat-review-date">1 week ago</span>
+            </div>
+          </div>
+          <p class="boat-review-body">
+            "Great product, works as expected. Delivery was on time and COD was smooth. Will order more items from Deal Bazaar."
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
 </div>
 
 {% comment %} Mobile Floating Sticky Bottom Bar (Matching Exact Screenshot UI) {% endcomment %}
@@ -1561,6 +1843,499 @@
       background: #20ba59 !important;
     }
   }
+
+  /* ------------------------------------------------------------- */
+  /* boAt Sticky Navigation Pill Bar & Detailed Product Sections   */
+  /* ------------------------------------------------------------- */
+
+  .boat-pdp-nav-sticky-wrapper {
+    position: sticky;
+    top: 70px;
+    z-index: 25;
+    width: 100%;
+    padding: 16px 0 12px 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.9) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    margin-top: 36px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .boat-pdp-nav-pill-bar {
+    display: inline-flex;
+    align-items: center;
+    background: #f1f5f9;
+    padding: 5px;
+    border-radius: 9999px;
+    gap: 4px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .boat-pdp-nav-pill-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .boat-nav-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 18px;
+    border-radius: 9999px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #475569;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
+    user-select: none;
+  }
+
+  .boat-nav-pill:hover {
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  .boat-nav-pill.active {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .boat-nav-pill-icon {
+    flex-shrink: 0;
+    color: inherit;
+  }
+
+  /* Detailed Tabs Content Container */
+  .boat-pdp-tabs-content {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-top: 12px;
+  }
+
+  .boat-tab-section {
+    scroll-margin-top: 140px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 32px 36px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    transition: border-color 0.2s ease;
+  }
+
+  .boat-tab-section__header {
+    margin-bottom: 24px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 16px;
+  }
+
+  .boat-tab-section__title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.3px;
+  }
+
+  .boat-tab-section__subtitle {
+    font-size: 0.88rem;
+    color: #64748b;
+    margin: 0;
+  }
+
+  /* Overview Feature Cards Grid */
+  .boat-tab-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .boat-tab-feature-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px 16px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .boat-tab-feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .boat-feature-icon {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+  }
+
+  .boat-feature-title {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px 0;
+  }
+
+  .boat-feature-desc {
+    font-size: 0.8rem;
+    color: #64748b;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .boat-tab-description-box {
+    background: #ffffff;
+    border-radius: 12px;
+  }
+
+  .boat-desc-heading {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 14px 0;
+  }
+
+  .boat-rte-content {
+    font-size: 0.94rem;
+    line-height: 1.7;
+    color: #334155;
+  }
+
+  .boat-rte-content p {
+    margin-bottom: 14px;
+  }
+
+  /* Specs Table */
+  .boat-tab-specs-table-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+  }
+
+  .boat-spec-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 20px;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .boat-spec-row:nth-child(even) {
+    background: #f8fafc;
+  }
+
+  .boat-spec-row:last-child {
+    border-bottom: none;
+  }
+
+  .boat-spec-name {
+    font-weight: 700;
+    color: #475569;
+    flex: 0 0 35%;
+  }
+
+  .boat-spec-val {
+    font-weight: 600;
+    color: #0f172a;
+    flex: 1 1 auto;
+    text-align: right;
+  }
+
+  /* FAQs Accordion */
+  .boat-faqs-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .boat-faq-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .boat-faq-item.active {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  }
+
+  .boat-faq-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    font-size: 0.94rem;
+    font-weight: 700;
+    color: #0f172a;
+    user-select: none;
+  }
+
+  .boat-faq-arrow {
+    font-size: 0.9rem;
+    color: #64748b;
+    transition: transform 0.25s ease;
+  }
+
+  .boat-faq-item.active .boat-faq-arrow {
+    transform: rotate(180deg);
+  }
+
+  .boat-faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 20px;
+    color: #475569;
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  .boat-faq-item.active .boat-faq-answer {
+    max-height: 200px;
+    padding: 0 20px 16px 20px;
+  }
+
+  .boat-faq-answer p {
+    margin: 0;
+  }
+
+  /* Reviews Summary & Cards */
+  .boat-reviews-summary-card {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px 32px;
+    margin-bottom: 28px;
+  }
+
+  .boat-reviews-score-box {
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .boat-reviews-score-big {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #0f172a;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .boat-reviews-stars {
+    color: #f59e0b;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .boat-reviews-count-text {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #64748b;
+  }
+
+  .boat-reviews-breakdown {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .boat-rating-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #475569;
+  }
+
+  .boat-rating-bar-row span:first-child {
+    width: 48px;
+  }
+
+  .boat-rating-bar-row span:last-child {
+    width: 36px;
+    text-align: right;
+  }
+
+  .boat-rating-progress {
+    flex: 1;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+
+  .boat-rating-fill {
+    height: 100%;
+    background: #f59e0b;
+    border-radius: 9999px;
+  }
+
+  .boat-reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .boat-review-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  }
+
+  .boat-review-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .boat-review-author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .boat-author-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #0f172a;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .boat-author-name {
+    display: block;
+    font-size: 0.92rem;
+    color: #0f172a;
+  }
+
+  .boat-verified-badge {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #16a34a;
+    display: block;
+  }
+
+  .boat-review-rating-date {
+    text-align: right;
+  }
+
+  .boat-stars-gold {
+    color: #f59e0b;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    display: block;
+  }
+
+  .boat-review-date {
+    font-size: 0.76rem;
+    color: #94a3b8;
+  }
+
+  .boat-review-body {
+    font-size: 0.88rem;
+    color: #334155;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 768px) {
+    .boat-pdp-nav-sticky-wrapper {
+      top: 56px;
+      padding: 10px 0 8px 0;
+      margin-top: 24px;
+      margin-bottom: 16px;
+    }
+
+    .boat-nav-pill {
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      gap: 5px;
+    }
+
+    .boat-tab-section {
+      padding: 20px 16px;
+      border-radius: 16px;
+      scroll-margin-top: 110px;
+    }
+
+    .boat-tab-section__title {
+      font-size: 1.2rem;
+    }
+
+    .boat-tab-overview-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .boat-tab-feature-card {
+      padding: 14px 10px;
+    }
+
+    .boat-feature-icon {
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+    }
+
+    .boat-feature-title {
+      font-size: 0.84rem;
+    }
+
+    .boat-feature-desc {
+      font-size: 0.74rem;
+    }
+
+    .boat-spec-row {
+      flex-direction: column;
+      gap: 4px;
+      padding: 10px 14px;
+    }
+
+    .boat-spec-val {
+      text-align: left;
+    }
+
+    .boat-reviews-summary-card {
+      flex-direction: column;
+      gap: 20px;
+      padding: 18px 16px;
+    }
+  }
 </style>
 
 <script>
@@ -1996,6 +2771,52 @@
       }
     }
   });
+
+  // Smooth Scroll to PDP Content Tab (Overview, Specs, FAQs, Reviews)
+  function scrollToBoatTab(tabId, btnElem) {
+    const targetSection = document.getElementById('boat-tab-' + tabId);
+    if (!targetSection) return;
+
+    // Update active class on pill buttons
+    document.querySelectorAll('.boat-nav-pill').forEach(b => b.classList.remove('active'));
+    if (btnElem) btnElem.classList.add('active');
+
+    const yOffset = -120; // Header & sticky bar offset
+    const y = targetSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }
+
+  // Toggle FAQ Accordion Item
+  function toggleBoatFaq(item) {
+    const isActive = item.classList.contains('active');
+    // Close other FAQs
+    document.querySelectorAll('.boat-faq-item').forEach(f => f.classList.remove('active'));
+    if (!isActive) {
+      item.classList.add('active');
+    }
+  }
+
+  // ScrollSpy to Auto-Highlight Active Tab Pill during Scrolling
+  (function() {
+    window.addEventListener('scroll', function() {
+      const tabs = ['overview', 'specs', 'faqs', 'reviews'];
+      const scrollPos = window.scrollY + 180;
+
+      for (let i = tabs.length - 1; i >= 0; i--) {
+        const sec = document.getElementById('boat-tab-' + tabs[i]);
+        if (sec && sec.offsetTop <= scrollPos) {
+          document.querySelectorAll('.boat-nav-pill').forEach(btn => {
+            if (btn.getAttribute('onclick')?.includes(tabs[i])) {
+              btn.classList.add('active');
+            } else {
+              btn.classList.remove('active');
+            }
+          });
+          break;
+        }
+      }
+    }, { passive: true });
+  })();
 
   // Initial subtotal calculation on page load
   document.addEventListener('DOMContentLoaded', updateBoatSubtotal);
