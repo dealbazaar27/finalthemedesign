@@ -12,6 +12,12 @@
     "main": {
       "type": "boat-product-page",
       "settings": {
+        "enable_desktop_sticky": true,
+        "enable_pdp_tabs": true,
+        "show_tab_overview": true,
+        "show_tab_specs": true,
+        "show_tab_faqs": true,
+        "show_tab_reviews": true,
         "show_rating": true,
         "show_timer": true,
         "timer_label": "Flash Sale Ends In:",
