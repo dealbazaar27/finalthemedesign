@@ -2,6 +2,7 @@
   assign selected_variant = product.selected_or_first_available_variant
   assign price = selected_variant.price
   assign compare_price = selected_variant.compare_at_price
+  assign featured_img = selected_variant.featured_image | default: product.featured_image | default: product.media.first.preview_image
   
   if compare_price > price
     assign discount_percent = compare_price | minus: price | times: 100.0 | divided_by: compare_price | round
@@ -806,9 +807,11 @@
 <div class="boat-pdp-desktop-sticky-bar" id="BoatPdpDesktopStickyBar">
   <div class="boat-desktop-sticky-pill">
     {% if featured_img != blank %}
-      <img class="boat-desktop-sticky-img" id="BoatDesktopStickyImg" src="{{ featured_img | image_url: width: 100 }}" alt="{{ product.title | escape }}">
-    {% else %}
-      <div class="boat-desktop-sticky-img-placeholder"></div>
+      <img class="boat-desktop-sticky-img" id="BoatDesktopStickyImg" src="{{ featured_img | image_url: width: 140 }}" alt="{{ product.title | escape }}">
+    {% elsif product.featured_image != blank %}
+      <img class="boat-desktop-sticky-img" id="BoatDesktopStickyImg" src="{{ product.featured_image | image_url: width: 140 }}" alt="{{ product.title | escape }}">
+    {% elsif product.media.first != blank %}
+      <img class="boat-desktop-sticky-img" id="BoatDesktopStickyImg" src="{{ product.media.first | image_url: width: 140 }}" alt="{{ product.title | escape }}">
     {% endif %}
     
     <div class="boat-desktop-sticky-info">
@@ -2502,7 +2505,7 @@
     bottom: 24px;
     left: 50%;
     transform: translateX(-50%) translateY(120px);
-    z-index: 99;
+    z-index: 99999;
     opacity: 0;
     pointer-events: none;
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
@@ -2523,16 +2526,16 @@
   .boat-desktop-sticky-pill {
     display: flex;
     align-items: center;
-    background: rgba(30, 41, 59, 0.92);
+    background: rgba(30, 41, 59, 0.94);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 9999px;
-    padding: 6px 8px 6px 10px;
-    gap: 16px;
+    padding: 6px 8px 6px 8px;
+    gap: 12px;
     box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
     min-width: 380px;
-    max-width: 520px;
+    max-width: 540px;
     box-sizing: border-box;
   }
 
@@ -2540,10 +2543,12 @@
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    object-fit: cover;
-    background: #0f172a;
+    object-fit: contain;
+    background: transparent;
     flex-shrink: 0;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 2px;
+    box-sizing: border-box;
   }
 
   .boat-desktop-sticky-info {
@@ -3146,23 +3151,33 @@
   (function() {
     const desktopSticky = document.getElementById('BoatPdpDesktopStickyBar');
     const atcBtn = document.getElementById('BoatPdpAtcBtn');
-    if (!desktopSticky || !atcBtn) return;
+    if (!desktopSticky) return;
 
     function checkStickyVisibility() {
       if (window.innerWidth <= 768) {
         desktopSticky.classList.remove('visible');
         return;
       }
-      const rect = atcBtn.getBoundingClientRect();
-      if (rect.bottom < 0) {
-        desktopSticky.classList.add('visible');
+      if (atcBtn) {
+        const rect = atcBtn.getBoundingClientRect();
+        if (rect.bottom < 60) {
+          desktopSticky.classList.add('visible');
+        } else {
+          desktopSticky.classList.remove('visible');
+        }
       } else {
-        desktopSticky.classList.remove('visible');
+        if (window.pageYOffset > 350) {
+          desktopSticky.classList.add('visible');
+        } else {
+          desktopSticky.classList.remove('visible');
+        }
       }
     }
 
     window.addEventListener('scroll', checkStickyVisibility, { passive: true });
     window.addEventListener('resize', checkStickyVisibility, { passive: true });
+    document.addEventListener('DOMContentLoaded', checkStickyVisibility);
+    setTimeout(checkStickyVisibility, 400);
   })();
 
   // Initial subtotal calculation on page load
