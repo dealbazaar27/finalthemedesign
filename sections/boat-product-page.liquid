@@ -2501,20 +2501,21 @@
 
   /* Desktop Floating Sticky Pill Bar (SS 2 Matching Ronin/boAt) */
   .boat-pdp-desktop-sticky-bar {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(120px);
-    z-index: 99999;
+    position: fixed !important;
+    bottom: 24px !important;
+    left: 50% !important;
+    transform: translateX(-50%) translateY(140px);
+    z-index: 2147483646 !important;
     opacity: 0;
     pointer-events: none;
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease !important;
+    display: block !important;
   }
 
   .boat-pdp-desktop-sticky-bar.visible {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-    pointer-events: auto;
+    transform: translateX(-50%) translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
   }
 
   @media screen and (max-width: 768px) {
@@ -3148,37 +3149,52 @@
   }
 
   // Desktop Floating Sticky Pill Bar Scroll Trigger Observer
-  (function() {
+  function initBoatDesktopSticky() {
     const desktopSticky = document.getElementById('BoatPdpDesktopStickyBar');
-    const atcBtn = document.getElementById('BoatPdpAtcBtn');
     if (!desktopSticky) return;
+    const atcBtn = document.getElementById('BoatPdpAtcBtn');
 
     function checkStickyVisibility() {
+      // Only for desktop / laptop displays
       if (window.innerWidth <= 768) {
         desktopSticky.classList.remove('visible');
         return;
       }
+
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      
+      let shouldShow = false;
       if (atcBtn) {
         const rect = atcBtn.getBoundingClientRect();
-        if (rect.bottom < 60) {
-          desktopSticky.classList.add('visible');
-        } else {
-          desktopSticky.classList.remove('visible');
+        // Show as soon as inline ATC button moves past middle of screen or scrolled down 250px
+        if (rect.top < 150 || scrollY > 250) {
+          shouldShow = true;
         }
+      } else if (scrollY > 250) {
+        shouldShow = true;
+      }
+
+      if (shouldShow) {
+        desktopSticky.classList.add('visible');
       } else {
-        if (window.pageYOffset > 350) {
-          desktopSticky.classList.add('visible');
-        } else {
-          desktopSticky.classList.remove('visible');
-        }
+        desktopSticky.classList.remove('visible');
       }
     }
 
     window.addEventListener('scroll', checkStickyVisibility, { passive: true });
+    document.addEventListener('scroll', checkStickyVisibility, { passive: true });
     window.addEventListener('resize', checkStickyVisibility, { passive: true });
-    document.addEventListener('DOMContentLoaded', checkStickyVisibility);
-    setTimeout(checkStickyVisibility, 400);
-  })();
+    checkStickyVisibility();
+    setTimeout(checkStickyVisibility, 300);
+    setTimeout(checkStickyVisibility, 800);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBoatDesktopSticky);
+  } else {
+    initBoatDesktopSticky();
+  }
+  document.addEventListener('shopify:section:load', initBoatDesktopSticky);
 
   // Initial subtotal calculation on page load
   document.addEventListener('DOMContentLoaded', updateBoatSubtotal);
