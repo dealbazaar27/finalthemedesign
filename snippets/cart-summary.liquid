@@ -118,7 +118,7 @@
 
   {% comment %} --- Dedicated Collapsible Bill Breakdown (SS 3) --- {% endcomment %}
   <div class="boat-bill-card" id="BoatBillCard">
-    <div class="boat-bill-collapse-body" id="BoatBillCollapseBody">
+    <div class="boat-bill-collapse-body collapsed" id="BoatBillCollapseBody">
       <div class="boat-bill-row">
         <span class="boat-bill-label">MRP Total:</span>
         <span class="boat-bill-value">{{ total_compare_price | money_without_trailing_zeros }}</span>
@@ -164,9 +164,10 @@
         >
           {{ total_price }}
         </text-component>
+        <span class="boat-bill-view-tag">Check Bill Details</span>
       </div>
 
-      <button type="button" class="boat-bill-toggle-btn" id="BoatBillToggleBtn" aria-label="Toggle bill breakdown">
+      <button type="button" class="boat-bill-toggle-btn collapsed" id="BoatBillToggleBtn" aria-label="Toggle bill breakdown">
         <svg class="boat-bill-arrow" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
@@ -207,12 +208,6 @@
       PROCEED TO CHECKOUT ➔
     </span>
   </button>
-
-  <div class="boat-cart-trust-row">
-    <span>🚚 Free Delivery</span>
-    <span>🔒 100% Safe</span>
-    <span>⚡ Cash on Delivery</span>
-  </div>
 
   {% if additional_checkout_buttons and settings.show_accelerated_checkout_buttons %}
     <div
