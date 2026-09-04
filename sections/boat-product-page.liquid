@@ -3225,10 +3225,10 @@
       }
 
       const atcBtn = document.getElementById('BoatPdpAtcBtn') || document.querySelector('.boat-pdp-cta-group');
-      const scrollY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
+      const scrollY = window.pageYOffset || window.scrollY || document.documentElement.scrollTop || (document.body ? document.body.scrollTop : 0) || 0;
 
       if (!atcBtn) {
-        if (scrollY > 350) {
+        if (scrollY > 150) {
           desktopSticky.classList.add('visible');
         } else {
           desktopSticky.classList.remove('visible');
@@ -3237,8 +3237,8 @@
       }
 
       const rect = atcBtn.getBoundingClientRect();
-      // Show when user scrolls past the main in-page Add to Cart button or scrolled down >= 350px
-      if (rect.bottom <= 100 || scrollY > 450) {
+      // Show when user scrolls past the top add to cart button or scrolls down >= 250px
+      if (rect.bottom <= 200 || scrollY > 250) {
         desktopSticky.classList.add('visible');
       } else {
         desktopSticky.classList.remove('visible');
@@ -3252,7 +3252,9 @@
     
     // Initial check
     checkStickyVisibility();
-    setTimeout(checkStickyVisibility, 300);
+    setTimeout(checkStickyVisibility, 150);
+    setTimeout(checkStickyVisibility, 500);
+    setTimeout(checkStickyVisibility, 1200);
   }
 
   if (document.readyState === 'loading') {
@@ -3262,6 +3264,7 @@
   }
   document.addEventListener('shopify:section:load', initBoatDesktopSticky);
   document.addEventListener('shopify:section:select', initBoatDesktopSticky);
+  document.addEventListener('shopify:section:reorder', initBoatDesktopSticky);
 
   // Initial subtotal calculation on page load
   document.addEventListener('DOMContentLoaded', updateBoatSubtotal);
