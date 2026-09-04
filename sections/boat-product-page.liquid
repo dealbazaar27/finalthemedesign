@@ -2504,17 +2504,19 @@
     position: fixed !important;
     bottom: 24px !important;
     left: 50% !important;
-    transform: translateX(-50%) translateY(140px);
+    transform: translateX(-50%) translateY(160px) !important;
     z-index: 2147483646 !important;
-    opacity: 0;
-    pointer-events: none;
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, visibility 0.3s ease !important;
     display: block !important;
   }
 
   .boat-pdp-desktop-sticky-bar.visible {
     transform: translateX(-50%) translateY(0) !important;
     opacity: 1 !important;
+    visibility: visible !important;
     pointer-events: auto !important;
   }
 
@@ -2527,16 +2529,16 @@
   .boat-desktop-sticky-pill {
     display: flex;
     align-items: center;
-    background: rgba(30, 41, 59, 0.94);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1.5px solid rgba(255, 255, 255, 0.65);
     border-radius: 9999px;
     padding: 6px 8px 6px 8px;
-    gap: 12px;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
-    min-width: 380px;
-    max-width: 540px;
+    gap: 14px;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.05);
+    min-width: 390px;
+    max-width: 550px;
     box-sizing: border-box;
   }
 
@@ -2545,9 +2547,10 @@
     height: 44px;
     border-radius: 50%;
     object-fit: contain;
-    background: transparent;
+    background: #ffffff;
     flex-shrink: 0;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
     padding: 2px;
     box-sizing: border-box;
   }
@@ -2562,13 +2565,13 @@
 
   .boat-desktop-sticky-title {
     font-size: 0.88rem;
-    font-weight: 700;
-    color: #f8fafc;
+    font-weight: 800;
+    color: #0f172a;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 220px;
-    line-height: 1.2;
+    max-width: 230px;
+    line-height: 1.25;
   }
 
   .boat-desktop-sticky-pricing {
@@ -2578,39 +2581,45 @@
   }
 
   .boat-desktop-sticky-price {
-    font-size: 0.94rem;
-    font-weight: 800;
-    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 900;
+    color: #0f172a;
   }
 
   .boat-desktop-sticky-compare {
-    font-size: 0.8rem;
-    color: #94a3b8;
+    font-size: 0.82rem;
+    color: #64748b;
     text-decoration: line-through;
+    font-weight: 600;
   }
 
   .boat-desktop-sticky-btn {
     background: #ffffff !important;
     color: #0f172a !important;
-    font-size: 0.88rem !important;
+    font-size: 0.86rem !important;
     font-weight: 800 !important;
     border-radius: 9999px !important;
-    padding: 10px 22px !important;
+    padding: 9px 20px !important;
     display: inline-flex !important;
     align-items: center !important;
-    gap: 6px !important;
-    border: none !important;
+    gap: 7px !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
     cursor: pointer !important;
     white-space: nowrap !important;
     flex-shrink: 0 !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08) !important;
     transition: all 0.2s ease !important;
     font-family: inherit !important;
   }
 
   .boat-desktop-sticky-btn:hover {
-    background: #f1f5f9 !important;
-    transform: scale(1.03) !important;
+    background: #f8fafc !important;
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.14) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  .boat-desktop-sticky-btn:active {
+    transform: scale(0.97) !important;
   }
 
   .boat-desktop-sticky-btn:active {
@@ -3152,7 +3161,6 @@
   function initBoatDesktopSticky() {
     const desktopSticky = document.getElementById('BoatPdpDesktopStickyBar');
     if (!desktopSticky) return;
-    const atcBtn = document.getElementById('BoatPdpAtcBtn');
 
     function checkStickyVisibility() {
       // Only for desktop / laptop displays
@@ -3161,20 +3169,15 @@
         return;
       }
 
-      const scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-      
-      let shouldShow = false;
-      if (atcBtn) {
-        const rect = atcBtn.getBoundingClientRect();
-        // Show as soon as inline ATC button moves past middle of screen or scrolled down 250px
-        if (rect.top < 150 || scrollY > 250) {
-          shouldShow = true;
-        }
-      } else if (scrollY > 250) {
-        shouldShow = true;
+      const atcBtn = document.getElementById('BoatPdpAtcBtn') || document.querySelector('.boat-pdp-cta-group');
+      if (!atcBtn) {
+        desktopSticky.classList.remove('visible');
+        return;
       }
 
-      if (shouldShow) {
+      const rect = atcBtn.getBoundingClientRect();
+      // Strictly show only when main Add to Cart button has scrolled completely above the viewport
+      if (rect.bottom <= 0) {
         desktopSticky.classList.add('visible');
       } else {
         desktopSticky.classList.remove('visible');
@@ -3185,8 +3188,6 @@
     document.addEventListener('scroll', checkStickyVisibility, { passive: true });
     window.addEventListener('resize', checkStickyVisibility, { passive: true });
     checkStickyVisibility();
-    setTimeout(checkStickyVisibility, 300);
-    setTimeout(checkStickyVisibility, 800);
   }
 
   if (document.readyState === 'loading') {
