@@ -52,37 +52,36 @@
       width: 100% !important;
       max-width: 100% !important;
       border: none !important;
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100% !important;
     }
   }
 
   @media screen and (min-width: 750px) {
+    .product-grid--{{ section.id }} .product-grid__item {
+      grid-column: span 1 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      border: none !important;
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100% !important;
+    }
+
+    .product-grid--{{ section.id }} {
+      --product-grid-columns-desktop: repeat(auto-fill, minmax({{ product_card_size }}, 1fr)) !important;
+    }
+
     {% case section.settings.layout_type %}
       {% when 'grid' %}
         .product-grid--{{ section.id }}:is(.product-grid--grid) {
-          --product-grid-columns-desktop: repeat(auto-fill, minmax({{ product_card_size }}, 1fr));
+          --product-grid-columns-desktop: repeat(auto-fill, minmax({{ product_card_size }}, 1fr)) !important;
         }
-
 
       {% when 'organic' %}
-        {% assign large_span = 2 %}
-        {% assign row_cycle = 3 %}
-        {% assign product_cycle = row_cycle | times: 2 %}
-        {% assign right_large_start_col = 3 %}
-        .product-grid--{{ section.id }}:not([product-grid-view='zoom-out']):is(.product-grid--organic) .product-grid__item:nth-of-type({{ product_cycle }}n + 1) {
-          grid-column: 1 / span {{ large_span }};
-        }
-
-        .product-grid--{{ section.id }}:not([product-grid-view='zoom-out']):is(.product-grid--organic) .product-grid__item:nth-of-type({{ product_cycle }}n + 2),
-        .product-grid--{{ section.id }}:not([product-grid-view='zoom-out']):is(.product-grid--organic) .product-grid__item:nth-of-type({{ product_cycle }}n + 5) {
-          align-self: end;
-        }
-
-        .product-grid--{{ section.id }}:not([product-grid-view='zoom-out']):is(.product-grid--organic) .product-grid__item:nth-of-type({{ product_cycle }}n + {{ product_cycle }}) {
-          grid-column: {{ right_large_start_col }} / span {{ large_span }};
-        }
-
-        .product-grid--{{ section.id }}:not([product-grid-view='zoom-out']):is(.product-grid--organic) {
-          --product-grid-columns-desktop: repeat(4, 1fr);
+        .product-grid--{{ section.id }}:is(.product-grid--organic) {
+          --product-grid-columns-desktop: repeat(auto-fill, minmax({{ product_card_size }}, 1fr)) !important;
         }
     {% endcase %}
 
@@ -90,8 +89,8 @@
     {% case section.settings.product_card_size %}
       {% when 'extra-large' or 'large' %}
         @container product-grid (max-width: calc({{ product_card_size }} * 3 + {{ section.settings.columns_gap_horizontal }}px * 2)) {
-          .product-grid--{{ section.id }}:is(.product-grid--grid) {
-            --product-grid-columns-desktop: repeat(2, 1fr);
+          .product-grid--{{ section.id }} {
+            --product-grid-columns-desktop: repeat(2, 1fr) !important;
           }
         }
     {% endcase %}
