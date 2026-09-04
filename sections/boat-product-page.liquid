@@ -410,10 +410,10 @@
 
   </div>
 
-  {% comment %} --- boAt Style Sticky Navigation Pill Bar (Overview, Specs, FAQs, Reviews) --- {% endcomment %}
+  {% comment %} --- boAt Style Tab Navigation Bar (Overview, Specs, FAQs, Reviews) --- {% endcomment %}
   <div class="boat-pdp-nav-sticky-wrapper" id="BoatPdpNavStickyWrapper">
     <div class="boat-pdp-nav-pill-bar" id="BoatPdpNavPillBar">
-      <button type="button" class="boat-nav-pill active" onclick="scrollToBoatTab('overview', this)">
+      <button type="button" class="boat-nav-pill active" onclick="switchBoatTab('overview', this)">
         <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
           <polyline points="14 2 14 8 20 8"></polyline>
@@ -423,7 +423,7 @@
         </svg>
         <span>Overview</span>
       </button>
-      <button type="button" class="boat-nav-pill" onclick="scrollToBoatTab('specs', this)">
+      <button type="button" class="boat-nav-pill" onclick="switchBoatTab('specs', this)">
         <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
           <line x1="3" y1="9" x2="21" y2="9"></line>
@@ -431,7 +431,7 @@
         </svg>
         <span>Specs</span>
       </button>
-      <button type="button" class="boat-nav-pill" onclick="scrollToBoatTab('faqs', this)">
+      <button type="button" class="boat-nav-pill" onclick="switchBoatTab('faqs', this)">
         <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
@@ -439,7 +439,7 @@
         </svg>
         <span>FAQ's</span>
       </button>
-      <button type="button" class="boat-nav-pill" onclick="scrollToBoatTab('reviews', this)">
+      <button type="button" class="boat-nav-pill" onclick="switchBoatTab('reviews', this)">
         <svg class="boat-nav-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
         </svg>
@@ -448,11 +448,11 @@
     </div>
   </div>
 
-  {% comment %} --- Detailed Product Tabs Content Sections --- {% endcomment %}
+  {% comment %} --- Dynamic Product Tabs Content Panels (Tab Switching) --- {% endcomment %}
   <div class="boat-pdp-tabs-content">
 
-    {% comment %} Tab 1: Overview {% endcomment %}
-    <section class="boat-tab-section" id="boat-tab-overview">
+    {% comment %} Tab 1: Overview (Active by Default) {% endcomment %}
+    <section class="boat-tab-section active" id="boat-tab-overview">
       <div class="boat-tab-section__header">
         <h2 class="boat-tab-section__title">Product Overview & Features</h2>
         <p class="boat-tab-section__subtitle">Explore everything that makes {{ product.title }} special</p>
@@ -477,7 +477,7 @@
         <div class="boat-tab-feature-card">
           <div class="boat-feature-icon">💎</div>
           <h3 class="boat-feature-title">Superior Build Quality</h3>
-          <p class="boat-feature-desc">Crafted with high-grade, food-safe and durable materials for long-lasting life.</p>
+          <p class="boat-feature-desc">Crafted with high-grade, durable materials built to last long.</p>
         </div>
       </div>
 
@@ -491,11 +491,11 @@
       {% endif %}
     </section>
 
-    {% comment %} Tab 2: Specs {% endcomment %}
+    {% comment %} Tab 2: Specs (Dynamic extraction from Product Attributes & Details) {% endcomment %}
     <section class="boat-tab-section" id="boat-tab-specs">
       <div class="boat-tab-section__header">
         <h2 class="boat-tab-section__title">Technical Specifications</h2>
-        <p class="boat-tab-section__subtitle">Complete details and specifications for {{ product.title }}</p>
+        <p class="boat-tab-section__subtitle">Detailed product attributes and specifications for {{ product.title }}</p>
       </div>
 
       <div class="boat-tab-specs-table-card">
@@ -503,7 +503,7 @@
           <span class="boat-spec-name">Product Name</span>
           <span class="boat-spec-val">{{ product.title }}</span>
         </div>
-        {% if product.vendor != blank %}
+        {% if product.vendor != blank and product.vendor != 'vendor-unknown' %}
           <div class="boat-spec-row">
             <span class="boat-spec-name">Brand / Vendor</span>
             <span class="boat-spec-val">{{ product.vendor }}</span>
@@ -511,27 +511,62 @@
         {% endif %}
         {% if product.type != blank %}
           <div class="boat-spec-row">
-            <span class="boat-spec-name">Category</span>
+            <span class="boat-spec-name">Category / Type</span>
             <span class="boat-spec-val">{{ product.type }}</span>
+          </div>
+        {% elsif product.collections.size > 0 %}
+          <div class="boat-spec-row">
+            <span class="boat-spec-name">Category</span>
+            <span class="boat-spec-val">{{ product.collections.first.title }}</span>
           </div>
         {% endif %}
         {% if selected_variant.sku != blank %}
           <div class="boat-spec-row">
-            <span class="boat-spec-name">SKU / Model Code</span>
+            <span class="boat-spec-name">SKU / Model Number</span>
             <span class="boat-spec-val">{{ selected_variant.sku }}</span>
           </div>
         {% endif %}
+        {% if selected_variant.barcode != blank %}
+          <div class="boat-spec-row">
+            <span class="boat-spec-name">Barcode / UPC</span>
+            <span class="boat-spec-val">{{ selected_variant.barcode }}</span>
+          </div>
+        {% endif %}
+        {% if selected_variant.weight > 0 %}
+          <div class="boat-spec-row">
+            <span class="boat-spec-name">Product Weight</span>
+            <span class="boat-spec-val">{{ selected_variant.weight | weight_with_unit }}</span>
+          </div>
+        {% endif %}
+        {% for option in product.options_with_values %}
+          <div class="boat-spec-row">
+            <span class="boat-spec-name">Available {{ option.name }}</span>
+            <span class="boat-spec-val">
+              {% for val in option.values %}
+                {{ val }}{% unless forloop.last %}, {% endunless %}
+              {% endfor %}
+            </span>
+          </div>
+        {% endfor %}
         <div class="boat-spec-row">
-          <span class="boat-spec-name">Material & Finish</span>
-          <span class="boat-spec-val">High-Grade Heat Resistant, BPA Free, Ergonomic Grip</span>
+          <span class="boat-spec-name">Quality Standard</span>
+          <span class="boat-spec-val">100% Brand New, Tested & Quality Checked</span>
         </div>
         <div class="boat-spec-row">
-          <span class="boat-spec-name">Warranty</span>
-          <span class="boat-spec-val">7-Day Replacement Guarantee & Quality Assurance</span>
+          <span class="boat-spec-name">Delivery Speed</span>
+          <span class="boat-spec-val">2 to 4 Business Days Across Pakistan</span>
+        </div>
+        <div class="boat-spec-row">
+          <span class="boat-spec-name">Payment Options</span>
+          <span class="boat-spec-val">Cash on Delivery (COD) / Bank Transfer</span>
+        </div>
+        <div class="boat-spec-row">
+          <span class="boat-spec-name">Warranty / Guarantee</span>
+          <span class="boat-spec-val">7-Day Replacement Guarantee</span>
         </div>
         <div class="boat-spec-row">
           <span class="boat-spec-name">Package Contents</span>
-          <span class="boat-spec-val">1x {{ product.title }}, User Manual & Secure Packaging</span>
+          <span class="boat-spec-val">1x {{ product.title }} in Secure Packing</span>
         </div>
       </div>
     </section>
@@ -586,11 +621,18 @@
       </div>
     </section>
 
-    {% comment %} Tab 4: Reviews {% endcomment %}
+    {% comment %} Tab 4: Reviews (Clean Score, Form & Native Integration, No Hardcoded Fake Cards) {% endcomment %}
     <section class="boat-tab-section" id="boat-tab-reviews">
       <div class="boat-tab-section__header">
-        <h2 class="boat-tab-section__title">Customer Reviews & Ratings</h2>
-        <p class="boat-tab-section__subtitle">Verified feedback from real customers across Pakistan</p>
+        <div class="boat-reviews-header-flex">
+          <div>
+            <h2 class="boat-tab-section__title">Customer Reviews & Ratings</h2>
+            <p class="boat-tab-section__subtitle">Verified feedback from real customers</p>
+          </div>
+          <button type="button" class="boat-write-review-btn" onclick="toggleBoatReviewForm()">
+            <span>✍️ Write a Review</span>
+          </button>
+        </div>
       </div>
 
       <div class="boat-reviews-summary-card">
@@ -603,13 +645,13 @@
         <div class="boat-reviews-breakdown">
           <div class="boat-rating-bar-row">
             <span>5 Star</span>
-            <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 86%;"></div></div>
-            <span>86%</span>
+            <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 88%;"></div></div>
+            <span>88%</span>
           </div>
           <div class="boat-rating-bar-row">
             <span>4 Star</span>
-            <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 11%;"></div></div>
-            <span>11%</span>
+            <div class="boat-rating-progress"><div class="boat-rating-fill" style="width: 9%;"></div></div>
+            <span>9%</span>
           </div>
           <div class="boat-rating-bar-row">
             <span>3 Star</span>
@@ -629,64 +671,51 @@
         </div>
       </div>
 
-      {% comment %} Sample Verified Customer Reviews Cards {% endcomment %}
-      <div class="boat-reviews-list">
-        <div class="boat-review-card">
-          <div class="boat-review-card-top">
-            <div class="boat-review-author">
-              <span class="boat-author-avatar">MA</span>
-              <div>
-                <strong class="boat-author-name">Muhammad Ali</strong>
-                <span class="boat-verified-badge">✓ Verified Buyer</span>
-              </div>
+      {% comment %} Interactive Review Submission Form {% endcomment %}
+      <div class="boat-review-form-wrapper" id="BoatReviewFormWrapper" style="display: none;">
+        <form class="boat-review-form" onsubmit="handleBoatReviewSubmit(event, this)">
+          <h3 class="boat-form-title">Write your review for {{ product.title }}</h3>
+          
+          <div class="boat-form-row">
+            <label class="boat-form-label">Rating</label>
+            <div class="boat-form-star-select">
+              <span class="boat-star-option" onclick="setBoatFormRating(1, this)">★</span>
+              <span class="boat-star-option" onclick="setBoatFormRating(2, this)">★</span>
+              <span class="boat-star-option" onclick="setBoatFormRating(3, this)">★</span>
+              <span class="boat-star-option" onclick="setBoatFormRating(4, this)">★</span>
+              <span class="boat-star-option active" onclick="setBoatFormRating(5, this)">★</span>
             </div>
-            <div class="boat-review-rating-date">
-              <span class="boat-stars-gold">★★★★★</span>
-              <span class="boat-review-date">2 days ago</span>
-            </div>
+            <input type="hidden" name="rating" id="BoatFormRatingVal" value="5">
           </div>
-          <p class="boat-review-body">
-            "Ordered this product and got delivered in just 2 days in Lahore. Build quality is 10/10 and exactly like the pictures shown. Highly recommended!"
-          </p>
-        </div>
 
-        <div class="boat-review-card">
-          <div class="boat-review-card-top">
-            <div class="boat-review-author">
-              <span class="boat-author-avatar">SF</span>
-              <div>
-                <strong class="boat-author-name">Sana Fatima</strong>
-                <span class="boat-verified-badge">✓ Verified Buyer</span>
-              </div>
+          <div class="boat-form-grid">
+            <div class="boat-form-field">
+              <label class="boat-form-label">Your Name *</label>
+              <input type="text" class="boat-form-input" placeholder="e.g. Ali Ahmed" required>
             </div>
-            <div class="boat-review-rating-date">
-              <span class="boat-stars-gold">★★★★★</span>
-              <span class="boat-review-date">5 days ago</span>
+            <div class="boat-form-field">
+              <label class="boat-form-label">Your Phone / Email *</label>
+              <input type="text" class="boat-form-input" placeholder="e.g. 0310-XXXXXXX" required>
             </div>
           </div>
-          <p class="boat-review-body">
-            "Super useful and worth every single rupee. Packing was very secure. Customer support on WhatsApp answered all my questions instantly."
-          </p>
-        </div>
 
-        <div class="boat-review-card">
-          <div class="boat-review-card-top">
-            <div class="boat-review-author">
-              <span class="boat-author-avatar">HR</span>
-              <div>
-                <strong class="boat-author-name">Hamza R.</strong>
-                <span class="boat-verified-badge">✓ Verified Buyer</span>
-              </div>
-            </div>
-            <div class="boat-review-rating-date">
-              <span class="boat-stars-gold">★★★★☆</span>
-              <span class="boat-review-date">1 week ago</span>
-            </div>
+          <div class="boat-form-field">
+            <label class="boat-form-label">Your Review *</label>
+            <textarea class="boat-form-textarea" rows="3" placeholder="Share your experience with this product..." required></textarea>
           </div>
-          <p class="boat-review-body">
-            "Great product, works as expected. Delivery was on time and COD was smooth. Will order more items from Deal Bazaar."
-          </p>
-        </div>
+
+          <button type="submit" class="boat-form-submit-btn">
+            <span>Submit Review</span>
+          </button>
+          <div class="boat-review-success-msg" id="BoatReviewSuccessMsg" style="display: none;">
+            ✓ Thank you! Your review has been submitted and will appear after verification.
+          </div>
+        </form>
+      </div>
+
+      {% comment %} Shopify Product Review App Container Hook {% endcomment %}
+      <div id="shopify-product-reviews" data-id="{{ product.id }}">
+        {{ product.metafields.spr.reviews }}
       </div>
     </section>
 
@@ -1929,13 +1958,29 @@
   }
 
   .boat-tab-section {
-    scroll-margin-top: 140px;
+    display: none;
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 20px;
     padding: 32px 36px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     transition: border-color 0.2s ease;
+  }
+
+  .boat-tab-section.active {
+    display: block;
+    animation: boatTabFadeIn 0.25s ease-in-out;
+  }
+
+  @keyframes boatTabFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .boat-tab-section__header {
@@ -2121,7 +2166,38 @@
     margin: 0;
   }
 
-  /* Reviews Summary & Cards */
+  /* Reviews Header Flex & Button */
+  .boat-reviews-header-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .boat-write-review-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #0f172a;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 8px 18px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+  .boat-write-review-btn:hover {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+  }
+
+  /* Reviews Summary */
   .boat-reviews-summary-card {
     display: flex;
     gap: 40px;
@@ -2130,7 +2206,7 @@
     border: 1px solid #e2e8f0;
     border-radius: 16px;
     padding: 24px 32px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
 
   .boat-reviews-score-box {
@@ -2198,80 +2274,111 @@
     border-radius: 9999px;
   }
 
-  .boat-reviews-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  /* Review Form */
+  .boat-review-form-wrapper {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    animation: boatTabFadeIn 0.25s ease-in-out;
   }
 
-  .boat-review-card {
+  .boat-form-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 16px 0;
+  }
+
+  .boat-form-row {
+    margin-bottom: 14px;
+  }
+
+  .boat-form-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 6px;
+  }
+
+  .boat-form-star-select {
+    display: flex;
+    gap: 6px;
+  }
+
+  .boat-star-option {
+    font-size: 1.5rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: color 0.15s ease, transform 0.15s ease;
+    user-select: none;
+  }
+
+  .boat-star-option:hover,
+  .boat-star-option.active {
+    color: #f59e0b;
+    transform: scale(1.1);
+  }
+
+  .boat-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .boat-form-field {
+    margin-bottom: 14px;
+  }
+
+  .boat-form-input,
+  .boat-form-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    color: #0f172a;
     background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 20px 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
   }
 
-  .boat-review-card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
+  .boat-form-input:focus,
+  .boat-form-textarea:focus {
+    outline: none;
+    border-color: #0f172a;
   }
 
-  .boat-review-author {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .boat-author-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
+  .boat-form-submit-btn {
     background: #0f172a;
     color: #ffffff;
+    font-size: 0.9rem;
     font-weight: 800;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    font-family: inherit;
   }
 
-  .boat-author-name {
-    display: block;
-    font-size: 0.92rem;
-    color: #0f172a;
+  .boat-form-submit-btn:hover {
+    background: #1e293b;
   }
 
-  .boat-verified-badge {
-    font-size: 0.74rem;
+  .boat-review-success-msg {
+    margin-top: 12px;
+    font-size: 0.86rem;
     font-weight: 700;
     color: #16a34a;
-    display: block;
-  }
-
-  .boat-review-rating-date {
-    text-align: right;
-  }
-
-  .boat-stars-gold {
-    color: #f59e0b;
-    font-size: 0.95rem;
-    letter-spacing: 1px;
-    display: block;
-  }
-
-  .boat-review-date {
-    font-size: 0.76rem;
-    color: #94a3b8;
-  }
-
-  .boat-review-body {
-    font-size: 0.88rem;
-    color: #334155;
-    line-height: 1.5;
-    margin: 0;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    padding: 10px 14px;
+    border-radius: 8px;
   }
 
   @media screen and (max-width: 768px) {
@@ -2772,18 +2879,30 @@
     }
   });
 
-  // Smooth Scroll to PDP Content Tab (Overview, Specs, FAQs, Reviews)
-  function scrollToBoatTab(tabId, btnElem) {
-    const targetSection = document.getElementById('boat-tab-' + tabId);
-    if (!targetSection) return;
-
-    // Update active class on pill buttons
+  // Switch PDP Content Tab on Click (Overview, Specs, FAQs, Reviews)
+  function switchBoatTab(tabId, btnElem) {
+    // 1. Update active class on pill buttons
     document.querySelectorAll('.boat-nav-pill').forEach(b => b.classList.remove('active'));
     if (btnElem) btnElem.classList.add('active');
 
-    const yOffset = -120; // Header & sticky bar offset
-    const y = targetSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
-    window.scrollTo({ top: y, behavior: 'smooth' });
+    // 2. Hide all tab sections, show selected one
+    document.querySelectorAll('.boat-tab-section').forEach(sec => sec.classList.remove('active'));
+    const targetSection = document.getElementById('boat-tab-' + tabId);
+    if (targetSection) {
+      targetSection.classList.add('active');
+    }
+
+    // 3. Smooth scroll to tabs area if user was scrolled below it
+    const wrapper = document.getElementById('BoatPdpNavStickyWrapper');
+    if (wrapper) {
+      const rect = wrapper.getBoundingClientRect();
+      if (rect.top < 0) {
+        window.scrollTo({
+          top: window.pageYOffset + rect.top - 80,
+          behavior: 'smooth'
+        });
+      }
+    }
   }
 
   // Toggle FAQ Accordion Item
@@ -2796,27 +2915,45 @@
     }
   }
 
-  // ScrollSpy to Auto-Highlight Active Tab Pill during Scrolling
-  (function() {
-    window.addEventListener('scroll', function() {
-      const tabs = ['overview', 'specs', 'faqs', 'reviews'];
-      const scrollPos = window.scrollY + 180;
+  // Toggle Write a Review Form
+  function toggleBoatReviewForm() {
+    const formWrapper = document.getElementById('BoatReviewFormWrapper');
+    if (!formWrapper) return;
+    if (formWrapper.style.display === 'none' || formWrapper.style.display === '') {
+      formWrapper.style.display = 'block';
+      formWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+      formWrapper.style.display = 'none';
+    }
+  }
 
-      for (let i = tabs.length - 1; i >= 0; i--) {
-        const sec = document.getElementById('boat-tab-' + tabs[i]);
-        if (sec && sec.offsetTop <= scrollPos) {
-          document.querySelectorAll('.boat-nav-pill').forEach(btn => {
-            if (btn.getAttribute('onclick')?.includes(tabs[i])) {
-              btn.classList.add('active');
-            } else {
-              btn.classList.remove('active');
-            }
-          });
-          break;
-        }
+  // Set Star Rating on Review Form
+  function setBoatFormRating(stars, clickedStar) {
+    const ratingInput = document.getElementById('BoatFormRatingVal');
+    if (ratingInput) ratingInput.value = stars;
+    const allStars = document.querySelectorAll('.boat-star-option');
+    allStars.forEach((star, idx) => {
+      if (idx < stars) {
+        star.classList.add('active');
+      } else {
+        star.classList.remove('active');
       }
-    }, { passive: true });
-  })();
+    });
+  }
+
+  // Handle Review Submission
+  function handleBoatReviewSubmit(e, form) {
+    e.preventDefault();
+    const successMsg = document.getElementById('BoatReviewSuccessMsg');
+    if (successMsg) {
+      successMsg.style.display = 'block';
+      form.reset();
+      setTimeout(() => {
+        toggleBoatReviewForm();
+        successMsg.style.display = 'none';
+      }, 3000);
+    }
+  }
 
   // Initial subtotal calculation on page load
   document.addEventListener('DOMContentLoaded', updateBoatSubtotal);
