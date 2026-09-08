@@ -15,8 +15,10 @@
         "slide_1": {
           "type": "slide_item",
           "settings": {
+            "image_desktop": "shopify://shop_images/Gemini_Generated_Image_vj8lvzvj8lvzvj8l.jpg",
+            "image_mobile": "shopify://shop_images/Gemini_Generated_Image_vj8lvzvj8lvzvj8l.jpg",
             "slide_url": "",
-            "title": "SOUND. STYLE.<br>SMART LIVING.",
+            "title": "SOUND. STYLE.SMART LIVING.",
             "subtitle": "Premium Audio. Smarter Tech. Better Every Day.",
             "button_label": "EXPLORE NOW",
             "button_link": "shopify://collections/all"
