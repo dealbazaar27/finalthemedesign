@@ -102,7 +102,7 @@
               <div id="cart-discount-disclosure">
                 <cart-discount-component {% if section_id != blank %}data-section-id="{{ section_id }}"{% endif %}>
                   <div class="cart-discount__content">
-                    <form on:submit="/applyDiscount" onsubmit="return false;" class="cart-discount__form">
+                    <form on:submit="/applyDiscount" onsubmit="window.handleManualDiscountApply(event, this); return false;" class="cart-discount__form">
                       <input id="cart-discount" class="cart-discount__input" type="text" name="discount" size="8" placeholder="Enter coupon code" required data-skip-node-update>
                       <button type="submit" class="button cart-discount__button">{{ 'actions.apply' | t }}</button>
                     </form>
@@ -144,7 +144,7 @@
                     {% for discount_code in discount_codes %}
                       <li class="cart-discount__pill" data-discount-code="{{ discount_code }}">
                         <p class="cart-discount__pill-code">🏷️ {{ discount_code }}</p>
-                        <button type="button" on:click="/removeDiscount" class="cart-discount__pill-remove svg-wrapper svg-wrapper--smaller button-unstyled" aria-label="Remove {{ discount_code }}">
+                        <button type="button" on:click="/removeDiscount" onclick="window.handleManualDiscountRemove(event, '{{ discount_code }}')" class="cart-discount__pill-remove svg-wrapper svg-wrapper--smaller button-unstyled" aria-label="Remove {{ discount_code }}">
                           {{- 'icon-filters-close.svg' | inline_asset_content -}}
                         </button>
                       </li>
@@ -358,6 +358,139 @@
       }
     } catch(e) {}
   })();
+
+  // Direct 100% Reliable Manual Discount Apply & Remove Handlers
+  window.handleManualDiscountApply = async function(event, form) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    const input = form ? form.querySelector('input[name="discount"]') : document.getElementById('cart-discount');
+    if (!input) return;
+    const code = input.value.trim();
+    if (!code) return;
+
+    const btn = form ? form.querySelector('button[type="submit"]') : document.querySelector('.cart-discount__button');
+    const origText = btn ? btn.innerHTML : 'Apply';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span style="font-size:12px;">Applying...</span>';
+    }
+
+    const errBox = document.querySelector('.cart-discount__error');
+    const errText = document.querySelector('.cart-discount__error-text');
+    if (errBox) errBox.classList.add('hidden');
+
+    try {
+      try {
+        await fetch('/discount/' + encodeURIComponent(code));
+      } catch(e) {}
+
+      const res = await fetch('/cart/update.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          discount: code,
+          sections: ['cart-drawer-section']
+        })
+      });
+      const data = await res.json();
+
+      const isRejected = data.discount_codes && data.discount_codes.some(d => d.code && d.code.toLowerCase() === code.toLowerCase() && d.applicable === false);
+      if (isRejected && (!data.total_discount || data.total_discount === 0)) {
+        if (errBox) {
+          errBox.classList.remove('hidden');
+          if (errText) {
+            errText.classList.remove('hidden');
+            errText.textContent = 'Invalid or expired coupon code: ' + code;
+          }
+        }
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = origText;
+        }
+        return;
+      }
+
+      if (data.sections && data.sections['cart-drawer-section']) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data.sections['cart-drawer-section'], 'text/html');
+        const newSection = doc.getElementById('shopify-section-cart-drawer-section');
+        const liveSection = document.getElementById('shopify-section-cart-drawer-section');
+
+        if (newSection && liveSection) {
+          const liveItems = liveSection.querySelector('.cart-drawer__items');
+          const newItems = newSection.querySelector('.cart-drawer__items');
+          if (liveItems && newItems) liveItems.innerHTML = newItems.innerHTML;
+
+          const liveSummary = liveSection.querySelector('.cart-drawer__summary');
+          const newSummary = newSection.querySelector('.cart-drawer__summary');
+          if (liveSummary && newSummary) liveSummary.innerHTML = newSummary.innerHTML;
+        }
+      }
+
+      const collapseBody = document.getElementById('BoatBillCollapseBody');
+      const arrowBtn = document.getElementById('BoatBillToggleBtn');
+      if (collapseBody) collapseBody.classList.remove('collapsed');
+      if (arrowBtn) arrowBtn.classList.remove('collapsed');
+
+      if (typeof window.fetchBackendShippingRate === 'function') {
+        window.fetchBackendShippingRate();
+      }
+    } catch (err) {
+      console.warn('Discount apply error:', err);
+      if (errBox) {
+        errBox.classList.remove('hidden');
+        if (errText) {
+          errText.classList.remove('hidden');
+          errText.textContent = 'Could not apply coupon. Please try again.';
+        }
+      }
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = origText;
+      }
+    }
+  };
+
+  window.handleManualDiscountRemove = async function(event, code) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    try {
+      await fetch('/discount/');
+      const res = await fetch('/cart/update.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          discount: '',
+          sections: ['cart-drawer-section']
+        })
+      });
+      const data = await res.json();
+      if (data.sections && data.sections['cart-drawer-section']) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data.sections['cart-drawer-section'], 'text/html');
+        const newSection = doc.getElementById('shopify-section-cart-drawer-section');
+        const liveSection = document.getElementById('shopify-section-cart-drawer-section');
+
+        if (newSection && liveSection) {
+          const liveItems = liveSection.querySelector('.cart-drawer__items');
+          const newItems = newSection.querySelector('.cart-drawer__items');
+          if (liveItems && newItems) liveItems.innerHTML = newItems.innerHTML;
+
+          const liveSummary = liveSection.querySelector('.cart-drawer__summary');
+          const newSummary = newSection.querySelector('.cart-drawer__summary');
+          if (liveSummary && newSummary) liveSummary.innerHTML = newSummary.innerHTML;
+        }
+      }
+    } catch(e) {
+      console.warn('Discount remove error:', e);
+    }
+  };
 </script>
 
 <div class="cart__ctas" style="width: 100%;">

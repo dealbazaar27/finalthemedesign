@@ -132,7 +132,7 @@ class CartDiscount extends Component {
       // morphSection no longer syncs the input value from the server-rendered empty state,
       // so without this the user's typed code stays in the field after a successful apply.
       discountCode.value = '';
-      morphSection(this.dataset.sectionId, newHtml, { mode: this.closest('theme-drawer') ? 'hydration' : 'full' });
+      morphSection(this.dataset.sectionId, newHtml, { mode: 'full' });
     } catch (error) {
       deferredPromise.reject(error);
       if (error instanceof Error && error.name !== 'AbortError') {
@@ -205,7 +205,7 @@ class CartDiscount extends Component {
       });
 
       morphSection(this.dataset.sectionId, data.sections[this.dataset.sectionId], {
-        mode: this.closest('theme-drawer') ? 'hydration' : 'full',
+        mode: 'full',
       });
     } catch (error) {
       deferredPromise.reject(error);
