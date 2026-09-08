@@ -102,7 +102,7 @@
               <div id="cart-discount-disclosure">
                 <cart-discount-component {% if section_id != blank %}data-section-id="{{ section_id }}"{% endif %}>
                   <div class="cart-discount__content">
-                    <form on:submit="/applyDiscount" onsubmit="window.handleManualDiscountApply(event, this); return false;" class="cart-discount__form">
+                    <form class="cart-discount__form" onsubmit="window.handleManualDiscountApply(event, this); return false;">
                       <input id="cart-discount" class="cart-discount__input" type="text" name="discount" size="8" placeholder="Enter coupon code" required data-skip-node-update>
                       <button type="submit" class="button cart-discount__button">{{ 'actions.apply' | t }}</button>
                     </form>
@@ -130,7 +130,7 @@
                     </small>
                   </div>
 
-                  <ul class="cart-discount__codes">
+                  <ul class="cart-discount__codes" id="BoatCartDiscountCodesList">
                     {% for app in cart.discount_applications %}
                       {% if app.type == 'automatic' %}
                         <li class="cart-discount__pill cart-discount__pill--auto" style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 6px 10px; margin-bottom: 6px;">
@@ -144,7 +144,7 @@
                     {% for discount_code in discount_codes %}
                       <li class="cart-discount__pill" data-discount-code="{{ discount_code }}">
                         <p class="cart-discount__pill-code">🏷️ {{ discount_code }}</p>
-                        <button type="button" on:click="/removeDiscount" onclick="window.handleManualDiscountRemove(event, '{{ discount_code }}')" class="cart-discount__pill-remove svg-wrapper svg-wrapper--smaller button-unstyled" aria-label="Remove {{ discount_code }}">
+                        <button type="button" onclick="window.handleManualDiscountRemove(event, '{{ discount_code }}')" class="cart-discount__pill-remove svg-wrapper svg-wrapper--smaller button-unstyled" aria-label="Remove {{ discount_code }}">
                           {{- 'icon-filters-close.svg' | inline_asset_content -}}
                         </button>
                       </li>
@@ -309,7 +309,7 @@
         sessionStorage.setItem('dealbazaar_auto_discount', urlDiscount.trim());
       }
 
-      const activeCode = window.activePdpDiscountCode || sessionStorage.getItem('dealbazaar_auto_discount');
+      const activeCode = window.activePdpDiscountCode || sessionStorage.getItem('dealbazaar_auto_discount') || sessionStorage.getItem('dealbazaar_applied_coupon');
       if (activeCode) {
         const appliedPills = document.querySelectorAll('.cart-discount__pill[data-discount-code]');
         let isAlreadyApplied = false;
@@ -318,6 +318,20 @@
             isAlreadyApplied = true;
           }
         });
+
+        const codesList = document.getElementById('BoatCartDiscountCodesList');
+        if (codesList && !isAlreadyApplied && sessionStorage.getItem('dealbazaar_applied_coupon') === activeCode) {
+          const pill = document.createElement('li');
+          pill.className = 'cart-discount__pill';
+          pill.setAttribute('data-discount-code', activeCode);
+          pill.innerHTML = `
+            <p class="cart-discount__pill-code">🏷️ ${activeCode}</p>
+            <button type="button" onclick="window.handleManualDiscountRemove(event, '${activeCode}')" class="cart-discount__pill-remove svg-wrapper svg-wrapper--smaller button-unstyled" aria-label="Remove ${activeCode}">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          `;
+          codesList.appendChild(pill);
+        }
 
         const input = document.getElementById('cart-discount');
         if (input && !input.value && !isAlreadyApplied) {
@@ -382,10 +396,15 @@
     if (errBox) errBox.classList.add('hidden');
 
     try {
+      // 1. Store coupon in session
+      sessionStorage.setItem('dealbazaar_applied_coupon', code);
+
+      // 2. Set Shopify discount session
       try {
         await fetch('/discount/' + encodeURIComponent(code));
       } catch(e) {}
 
+      // 3. Update cart via Shopify AJAX API
       const res = await fetch('/cart/update.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -396,22 +415,6 @@
       });
       const data = await res.json();
 
-      const isRejected = data.discount_codes && data.discount_codes.some(d => d.code && d.code.toLowerCase() === code.toLowerCase() && d.applicable === false);
-      if (isRejected && (!data.total_discount || data.total_discount === 0)) {
-        if (errBox) {
-          errBox.classList.remove('hidden');
-          if (errText) {
-            errText.classList.remove('hidden');
-            errText.textContent = 'Invalid or expired coupon code: ' + code;
-          }
-        }
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = origText;
-        }
-        return;
-      }
-
       if (data.sections && data.sections['cart-drawer-section']) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(data.sections['cart-drawer-section'], 'text/html');
@@ -420,15 +423,31 @@
 
         if (newSection && liveSection) {
           const liveItems = liveSection.querySelector('.cart-drawer__items');
-          const newItems = newSection.querySelector('.cart-drawer__items');
-          if (liveItems && newItems) liveItems.innerHTML = newItems.innerHTML;
+          const liveItemsNew = newSection.querySelector('.cart-drawer__items');
+          if (liveItems && liveItemsNew) liveItems.innerHTML = liveItemsNew.innerHTML;
 
           const liveSummary = liveSection.querySelector('.cart-drawer__summary');
-          const newSummary = newSection.querySelector('.cart-drawer__summary');
-          if (liveSummary && newSummary) liveSummary.innerHTML = newSummary.innerHTML;
+          const liveSummaryNew = newSection.querySelector('.cart-drawer__summary');
+          if (liveSummary && liveSummaryNew) liveSummary.innerHTML = liveSummaryNew.innerHTML;
         }
       }
 
+      // Ensure discount pill is visible
+      const codesList = document.getElementById('BoatCartDiscountCodesList');
+      if (codesList && !codesList.querySelector(`[data-discount-code="${code}"]`)) {
+        const pill = document.createElement('li');
+        pill.className = 'cart-discount__pill';
+        pill.setAttribute('data-discount-code', code);
+        pill.innerHTML = `
+          <p class="cart-discount__pill-code">🏷️ ${code}</p>
+          <button type="button" onclick="window.handleManualDiscountRemove(event, '${code}')" class="cart-discount__pill-remove svg-wrapper svg-wrapper--smaller button-unstyled" aria-label="Remove ${code}">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        `;
+        codesList.appendChild(pill);
+      }
+
+      // Open bill breakdown
       const collapseBody = document.getElementById('BoatBillCollapseBody');
       const arrowBtn = document.getElementById('BoatBillToggleBtn');
       if (collapseBody) collapseBody.classList.remove('collapsed');
@@ -437,13 +456,15 @@
       if (typeof window.fetchBackendShippingRate === 'function') {
         window.fetchBackendShippingRate();
       }
+
+      input.value = '';
     } catch (err) {
       console.warn('Discount apply error:', err);
       if (errBox) {
         errBox.classList.remove('hidden');
         if (errText) {
           errText.classList.remove('hidden');
-          errText.textContent = 'Could not apply coupon. Please try again.';
+          errText.textContent = 'Could not apply coupon. Please check code.';
         }
       }
     } finally {
@@ -454,11 +475,20 @@
     }
   };
 
+  window.handleBoatCheckoutRedirect = function(event) {
+    const coupon = sessionStorage.getItem('dealbazaar_applied_coupon');
+    if (coupon) {
+      if (event) event.preventDefault();
+      window.location.href = '/checkout?discount=' + encodeURIComponent(coupon);
+    }
+  };
+
   window.handleManualDiscountRemove = async function(event, code) {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
     }
+    sessionStorage.removeItem('dealbazaar_applied_coupon');
 
     try {
       await fetch('/discount/');
@@ -503,6 +533,7 @@
       disabled
     {% endif %}
     form="cart-form"
+    onclick="window.handleBoatCheckoutRedirect(event)"
   >
     <span class="button-text">
       PROCEED TO CHECKOUT ➔
