@@ -15,11 +15,22 @@
     assign total_price = cart.total_price | money_without_trailing_zeros
   endif
 
+  # Total discounts applied by Shopify (Automatic Discounts + Coupon Codes)
+  assign total_cart_discount = cart.total_discount | default: 0
+
   # Calculate voucher / coupon discounts if any
   assign voucher_discount = 0
   for discount in cart.cart_level_discount_applications
     assign voucher_discount = voucher_discount | plus: discount.total_allocated_amount
   endfor
+  for item in cart.items
+    for allocation in item.line_level_discount_allocations
+      assign voucher_discount = voucher_discount | plus: allocation.amount
+    endfor
+  endfor
+  if voucher_discount == 0 and total_cart_discount > 0
+    assign voucher_discount = total_cart_discount
+  endif
 
   # Calculate MRP compare total if not passed from parent
   if total_compare_price == blank or total_compare_price == 0
@@ -82,7 +93,7 @@
         %}
 
         {% capture cart_discount_accordion_children %}
-          <details {% if discount_codes.size > 0 %}open{% endif %}>
+          <details {% if discount_codes.size > 0 or cart.discount_applications.size > 0 %}open{% endif %}>
             <summary class="cart-discount__summary">
               <span class="cart-discount__label cart-primary-typography">Discount / Voucher Code</span>
               <span class="cart-totals__icon">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
@@ -96,7 +107,40 @@
                       <button type="submit" class="button cart-discount__button">{{ 'actions.apply' | t }}</button>
                     </form>
                   </div>
+
+                  <div
+                    class="cart-discount__error hidden"
+                    role="alert"
+                    ref="cartDiscountError"
+                  >
+                    <span class="svg-wrapper">
+                      {{- 'icon-error.svg' | inline_asset_content -}}
+                    </span>
+                    <small
+                      class="cart-discount__error-text cart-primary-typography hidden"
+                      ref="cartDiscountErrorDiscountCode"
+                    >
+                      Invalid coupon code
+                    </small>
+                    <small
+                      class="cart-discount__error-text cart-primary-typography hidden"
+                      ref="cartDiscountErrorShipping"
+                    >
+                      {{ 'content.shipping_discount_error' | t | default: 'Discount not applicable for shipping' }}
+                    </small>
+                  </div>
+
                   <ul class="cart-discount__codes">
+                    {% for app in cart.discount_applications %}
+                      {% if app.type == 'automatic' %}
+                        <li class="cart-discount__pill cart-discount__pill--auto" style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 6px 10px; margin-bottom: 6px;">
+                          <p class="cart-discount__pill-code" style="color: #065f46; font-weight: 800; font-size: 0.8rem; margin: 0;">
+                            ✨ Auto Applied: {{ app.title }} (-{{ app.total_allocated_amount | money_without_trailing_zeros }})
+                          </p>
+                        </li>
+                      {% endif %}
+                    {% endfor %}
+
                     {% for discount_code in discount_codes %}
                       <li class="cart-discount__pill" data-discount-code="{{ discount_code }}">
                         <p class="cart-discount__pill-code">🏷️ {{ discount_code }}</p>
@@ -132,11 +176,25 @@
       {% endif %}
 
       <div class="boat-bill-row">
-        <span class="boat-bill-label">Cart Total:</span>
+        <span class="boat-bill-label">Cart Subtotal:</span>
         <span class="boat-bill-value">{{ cart.items_subtotal_price | money_without_trailing_zeros }}</span>
       </div>
 
-      {% if voucher_discount > 0 %}
+      {% comment %} Show all applied Automatic Discounts & Coupon Codes {% endcomment %}
+      {% if cart.discount_applications.size > 0 %}
+        {% for discount in cart.discount_applications %}
+          <div class="boat-bill-row">
+            <span class="boat-bill-label">
+              {% if discount.type == 'automatic' %}
+                ✨ Auto Discount ({{ discount.title }}):
+              {% else %}
+                🏷️ Voucher ({{ discount.title }}):
+              {% endif %}
+            </span>
+            <span class="boat-bill-value text-green">- {{ discount.total_allocated_amount | money_without_trailing_zeros }}</span>
+          </div>
+        {% endfor %}
+      {% elsif voucher_discount > 0 %}
         <div class="boat-bill-row">
           <span class="boat-bill-label">Voucher Discount:</span>
           <span class="boat-bill-value text-green">- {{ voucher_discount | money_without_trailing_zeros }}</span>
@@ -240,6 +298,65 @@
     } else {
       fetchBackendShippingRate();
     }
+  })();
+
+  // Auto-fetch & sync discounts from URL / Session / Product Deals
+  (function initAutoDiscountSync() {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlDiscount = urlParams.get('discount') || urlParams.get('coupon') || urlParams.get('code');
+      if (urlDiscount) {
+        sessionStorage.setItem('dealbazaar_auto_discount', urlDiscount.trim());
+      }
+
+      const activeCode = window.activePdpDiscountCode || sessionStorage.getItem('dealbazaar_auto_discount');
+      if (activeCode) {
+        const appliedPills = document.querySelectorAll('.cart-discount__pill[data-discount-code]');
+        let isAlreadyApplied = false;
+        appliedPills.forEach(pill => {
+          if (pill.dataset.discountCode && pill.dataset.discountCode.toLowerCase() === activeCode.toLowerCase()) {
+            isAlreadyApplied = true;
+          }
+        });
+
+        const input = document.getElementById('cart-discount');
+        if (input && !input.value && !isAlreadyApplied) {
+          input.value = activeCode;
+        }
+
+        const cartItemCount = {{ cart.item_count | default: 0 }};
+        if (!isAlreadyApplied && cartItemCount > 0 && window.lastAutoDiscountAttempt !== activeCode) {
+          window.lastAutoDiscountAttempt = activeCode;
+          fetch('/cart/update.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+              discount: activeCode,
+              sections: ['cart-drawer-section']
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.sections && data.sections['cart-drawer-section']) {
+              const liveSection = document.getElementById('shopify-section-cart-drawer-section');
+              if (liveSection) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.sections['cart-drawer-section'], 'text/html');
+                const newSection = doc.getElementById('shopify-section-cart-drawer-section');
+                if (newSection) {
+                  const liveSummary = liveSection.querySelector('.cart-drawer__summary');
+                  const newSummary = newSection.querySelector('.cart-drawer__summary');
+                  if (liveSummary && newSummary) {
+                    liveSummary.innerHTML = newSummary.innerHTML;
+                  }
+                }
+              }
+            }
+          })
+          .catch(e => console.warn('Auto discount sync error:', e));
+        }
+      }
+    } catch(e) {}
   })();
 </script>
 

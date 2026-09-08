@@ -17,7 +17,7 @@ import { CartDiscountUpdateEvent, CartErrorEvent } from '@shopify/events';
  * @extends {Component<CartDiscountComponentRefs>}
  */
 class CartDiscount extends Component {
-  requiredRefs = ['cartDiscountError', 'cartDiscountErrorDiscountCode', 'cartDiscountErrorShipping'];
+  requiredRefs = [];
 
   /** @type {AbortController | null} */
   #activeFetch = null;
@@ -48,16 +48,17 @@ class CartDiscount extends Component {
     const discountCode = form.querySelector('input[name="discount"]');
     if (!(discountCode instanceof HTMLInputElement) || typeof this.dataset.sectionId !== 'string') return;
 
-    const discountCodeValue = discountCode.value;
+    const discountCodeValue = discountCode.value.trim();
+    if (!discountCodeValue) return;
 
     const abortController = this.#createAbortController();
 
     const existingDiscounts = this.#existingDiscounts();
     if (existingDiscounts.includes(discountCodeValue)) return;
 
-    cartDiscountError.classList.add('hidden');
-    cartDiscountErrorDiscountCode.classList.add('hidden');
-    cartDiscountErrorShipping.classList.add('hidden');
+    if (cartDiscountError) cartDiscountError.classList.add('hidden');
+    if (cartDiscountErrorDiscountCode) cartDiscountErrorDiscountCode.classList.add('hidden');
+    if (cartDiscountErrorShipping) cartDiscountErrorShipping.classList.add('hidden');
 
     const allDiscountCodes = [...existingDiscounts, discountCodeValue];
     const deferredPromise = CartDiscountUpdateEvent.createPromise();
@@ -229,8 +230,8 @@ class CartDiscount extends Component {
   #handleDiscountError(type) {
     const { cartDiscountError, cartDiscountErrorDiscountCode, cartDiscountErrorShipping } = this.refs;
     const target = type === 'discount_code' ? cartDiscountErrorDiscountCode : cartDiscountErrorShipping;
-    cartDiscountError.classList.remove('hidden');
-    target.classList.remove('hidden');
+    if (cartDiscountError) cartDiscountError.classList.remove('hidden');
+    if (target) target.classList.remove('hidden');
 
     const errorMessage = type === 'discount_code' ? 'Invalid discount code' : 'Discount not applicable for shipping';
     this.dispatchEvent(

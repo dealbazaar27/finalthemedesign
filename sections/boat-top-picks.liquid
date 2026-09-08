@@ -775,7 +775,27 @@
         btn.innerHTML = '<span style="font-size:15px; font-weight:800; color:#fff;">✓</span>';
 
         const sections = responseData.sections || {};
-        const drawerHtml = sections['cart-drawer-section'];
+        let drawerHtml = sections['cart-drawer-section'];
+
+        // Auto apply active coupon code if present in window or session
+        const activeCode = window.activePdpDiscountCode || sessionStorage.getItem('dealbazaar_auto_discount');
+        if (activeCode) {
+          try {
+            fetch('/discount/' + encodeURIComponent(activeCode));
+            const updateRes = await fetch('/cart/update.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+              body: JSON.stringify({
+                discount: activeCode,
+                sections: ['cart-drawer-section']
+              })
+            });
+            const updateData = await updateRes.json();
+            if (updateData.sections && updateData.sections['cart-drawer-section']) {
+              drawerHtml = updateData.sections['cart-drawer-section'];
+            }
+          } catch(e) {}
+        }
 
         // 1. Smoothly update Cart Drawer DOM without wiping shell/header (Zero Flicker / No Jhatka)
         if (drawerHtml) {
