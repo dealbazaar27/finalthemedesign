@@ -107,24 +107,6 @@
               {{ empty_cart_drawer_content }}
             {%- else -%}
               {% liquid
-                assign shipping_fee_raw = settings.shipping_fee | default: 200
-                assign free_shipping_threshold_raw = settings.free_shipping_threshold | default: 2500
-                assign free_shipping_threshold = free_shipping_threshold_raw | times: 100
-                assign current_total = cart.total_price
-                
-                assign is_free_shipping = false
-                if current_total >= free_shipping_threshold or settings.enable_shipping_calculation == false or shipping_fee_raw == 0
-                  assign is_free_shipping = true
-                  assign remaining_amount = 0
-                  assign progress_percent = 100
-                else
-                  assign remaining_amount = free_shipping_threshold | minus: current_total
-                  assign progress_percent = current_total | times: 100 | divided_by: free_shipping_threshold
-                  if progress_percent > 100
-                    assign progress_percent = 100
-                  endif
-                endif
-
                 assign total_compare_price = 0
                 for item in cart.items
                   if item.variant.compare_at_price > item.variant.price
@@ -147,22 +129,6 @@
                 aria-label="{{ 'accessibility.cart' | t }}"
                 style="--header-height: 60px;"
               >
-                {% comment %} --- Free Delivery Progress Bar --- {% endcomment %}
-                {% if settings.show_free_shipping_bar != false and settings.enable_shipping_calculation != false %}
-                  <div class="boat-cart-shipping-bar">
-                    <div class="boat-cart-shipping-text {% if is_free_shipping %}unlocked{% endif %}">
-                      {% if is_free_shipping %}
-                        🎉 <strong>Congratulations!</strong> You have unlocked <strong>FREE Delivery</strong>!
-                      {% else %}
-                        🚚 Add <strong>{{ remaining_amount | money_without_trailing_zeros }}</strong> more to get <strong>FREE Delivery</strong>!
-                      {% endif %}
-                    </div>
-                    <div class="boat-cart-progress-track">
-                      <div class="boat-cart-progress-fill {% if is_free_shipping %}unlocked{% endif %}" style="width: {{ progress_percent }}%;"></div>
-                    </div>
-                  </div>
-                {% endif %}
-
                 {% comment %} --- Savings Banner --- {% endcomment %}
                 {% if total_savings > 0 %}
                   <div class="boat-cart-savings-banner">
