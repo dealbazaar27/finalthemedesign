@@ -1569,6 +1569,32 @@
       },
       {
         "type": "checkbox",
+        "id": "enable_shipping_calculation",
+        "label": "Enable Delivery Fee Calculation in Cart",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "shipping_fee",
+        "label": "Standard Delivery Fee (e.g. 200)",
+        "default": 200,
+        "visible_if": "{{ settings.enable_shipping_calculation == true }}"
+      },
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free Delivery Order Amount Threshold (e.g. 2500)",
+        "default": 2500,
+        "visible_if": "{{ settings.enable_shipping_calculation == true }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_free_shipping_bar",
+        "label": "Show Free Delivery Progress Bar in Cart",
+        "default": true
+      },
+      {
+        "type": "checkbox",
         "id": "show_cart_note",
         "label": "t:settings.seller_note",
         "default": false

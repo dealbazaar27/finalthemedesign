@@ -9,10 +9,26 @@
 {% render 'cart-typography-styles' %}
 
 {% liquid
-  if settings.currency_code_enabled_cart_total
-    assign total_price = cart.total_price | money_with_currency
+  # Shipping / Delivery Fee Calculation
+  assign shipping_fee_raw = settings.shipping_fee | default: 200
+  assign free_shipping_threshold_raw = settings.free_shipping_threshold | default: 2500
+  assign shipping_fee = shipping_fee_raw | times: 100
+  assign free_shipping_threshold = free_shipping_threshold_raw | times: 100
+
+  assign is_free_shipping = false
+  if cart.total_price >= free_shipping_threshold or settings.enable_shipping_calculation == false or shipping_fee_raw == 0
+    assign is_free_shipping = true
+    assign actual_shipping_fee = 0
   else
-    assign total_price = cart.total_price | money_without_trailing_zeros
+    assign actual_shipping_fee = shipping_fee
+  endif
+
+  # Calculate Total To Pay = cart.total_price + actual_shipping_fee
+  assign final_to_pay = cart.total_price | plus: actual_shipping_fee
+  if settings.currency_code_enabled_cart_total
+    assign total_price = final_to_pay | money_with_currency
+  else
+    assign total_price = final_to_pay | money_without_trailing_zeros
   endif
 
   # Calculate voucher / coupon discounts if any
@@ -144,8 +160,12 @@
       {% endif %}
 
       <div class="boat-bill-row">
-        <span class="boat-bill-label">Shipping:</span>
-        <span class="boat-bill-value text-green">FREE</span>
+        <span class="boat-bill-label">Delivery Charges:</span>
+        {% if is_free_shipping %}
+          <span class="boat-bill-value text-green" style="font-weight: 800; color: #00b853;">FREE</span>
+        {% else %}
+          <span class="boat-bill-value" style="font-weight: 700; color: #0f172a;">+ {{ actual_shipping_fee | money_without_trailing_zeros }}</span>
+        {% endif %}
       </div>
 
       <div class="boat-bill-dashed-divider"></div>
