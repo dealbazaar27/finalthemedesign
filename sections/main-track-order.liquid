@@ -519,6 +519,17 @@
     padding: 16px 0;
   }
 
+  .db-timeline::before {
+    content: '';
+    position: absolute;
+    top: 33px; /* 16px padding + 17px half of dot */
+    left: 12.5%;
+    right: 12.5%;
+    height: 3px;
+    background: #e2e8f0;
+    z-index: 1;
+  }
+
   .db-timeline-step {
     text-align: center;
     position: relative;
@@ -538,11 +549,14 @@
     font-weight: 800;
     border: 3px solid #ffffff;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    position: relative;
+    z-index: 2;
   }
 
   .db-timeline-step.completed .db-step-dot {
     background: #10b981;
     color: #ffffff;
+    border-color: #ffffff;
   }
 
   .db-timeline-step.active .db-step-dot {
@@ -679,20 +693,32 @@
 
     .db-timeline {
       grid-template-columns: 1fr;
-      gap: 16px;
+      gap: 20px;
       text-align: left;
+      padding: 16px 0 16px 12px;
+    }
+
+    .db-timeline::before {
+      top: 26px;
+      bottom: 30px;
+      left: 29px; /* 12px padding + 17px */
+      width: 3px;
+      height: auto;
+      right: auto;
     }
 
     .db-timeline-step {
       display: flex;
-      align-items: center;
-      gap: 12px;
+      align-items: flex-start;
+      gap: 16px;
       text-align: left;
     }
 
     .db-step-dot {
       margin: 0;
       flex-shrink: 0;
+      position: relative;
+      z-index: 2;
     }
 
     .db-courier-grid {
