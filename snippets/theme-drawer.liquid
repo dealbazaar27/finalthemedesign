@@ -85,18 +85,26 @@
   const pageWrapper = document.querySelector('.page-wrapper');
   const squeezeQuery = window.matchMedia('(min-width: 990px)');
 
-  // ── Squeeze coordination ──
-  // Listens to all drawers. Only squeezes on wide viewports.
+  // ── Squeeze & Scroll Lock coordination ──
+  // Listens to all drawers.
   document.addEventListener('theme-drawer:open', () => {
     if (squeezeQuery.matches) {
       pageWrapper?.classList.add('page-wrapper--drawer-open');
     }
+    document.documentElement.classList.add('cart-drawer-open');
+    document.body.classList.add('cart-drawer-open');
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
   });
 
   document.addEventListener('theme-drawer:close', () => {
     const openDrawer = document.querySelector('theme-drawer[open]');
     if (!openDrawer) {
       pageWrapper?.classList.remove('page-wrapper--drawer-open');
+      document.documentElement.classList.remove('cart-drawer-open');
+      document.body.classList.remove('cart-drawer-open');
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
     }
   });
 

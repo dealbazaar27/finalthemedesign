@@ -160,9 +160,79 @@
   {% if render_wrapper %}
     </div>
   {% endif %}
+
+  <script>
+    (function () {
+      function syncCartScrollLock() {
+        var cartDrawer = document.getElementById('cart-drawer');
+        var dialog = cartDrawer ? cartDrawer.querySelector('dialog') : null;
+        var isOpen = Boolean(cartDrawer && (cartDrawer.hasAttribute('open') || (dialog && dialog.hasAttribute('open'))));
+        
+        if (isOpen) {
+          document.documentElement.classList.add('cart-drawer-open');
+          document.body.classList.add('cart-drawer-open');
+          document.documentElement.style.overflow = 'hidden';
+          document.body.style.overflow = 'hidden';
+        } else {
+          document.documentElement.classList.remove('cart-drawer-open');
+          document.body.classList.remove('cart-drawer-open');
+          document.documentElement.style.overflow = '';
+          document.body.style.overflow = '';
+        }
+      }
+
+      document.addEventListener('theme-drawer:open', function (e) {
+        if (!e.target || e.target.id === 'cart-drawer' || e.target.closest('#cart-drawer')) {
+          syncCartScrollLock();
+        }
+      });
+
+      document.addEventListener('theme-drawer:close', function () {
+        setTimeout(syncCartScrollLock, 50);
+      });
+
+      var obs = new MutationObserver(syncCartScrollLock);
+      function bindCartObserver() {
+        var cartDrawer = document.getElementById('cart-drawer');
+        if (cartDrawer) {
+          obs.observe(cartDrawer, { attributes: true, attributeFilter: ['open'] });
+          var dialog = cartDrawer.querySelector('dialog');
+          if (dialog) {
+            obs.observe(dialog, { attributes: true, attributeFilter: ['open'] });
+          }
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bindCartObserver);
+      } else {
+        bindCartObserver();
+      }
+    })();
+  </script>
 {%- endif -%}
 
 {% stylesheet %}
+  /* ── Strict Background Scroll Lock when Cart Drawer is Open ── */
+  html:has(#cart-drawer[open]),
+  body:has(#cart-drawer[open]),
+  html.cart-drawer-open,
+  body.cart-drawer-open {
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+    touch-action: none !important;
+  }
+
+  html:has(#cart-drawer[open]) .page-wrapper,
+  html.cart-drawer-open .page-wrapper {
+    overflow: hidden !important;
+  }
+
+  #cart-drawer dialog,
+  #cart-drawer .cart-drawer__inner {
+    overscroll-behavior: contain !important;
+  }
+
   cart-drawer-component {
     --cart-drawer-padding: 16px;
     --font-paragraph--line-height: 1;
@@ -398,15 +468,20 @@
     padding: 0;
     background-color: #f8fafc !important;
     flex-grow: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+    touch-action: pan-y !important;
   }
 
   .cart-drawer__items {
     display: flex;
     flex-direction: column;
     padding: 12px 12px !important;
-    overflow-y: auto;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+    touch-action: pan-y !important;
     gap: 8px !important;
   }
 
