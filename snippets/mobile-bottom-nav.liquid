@@ -1,4 +1,4 @@
-﻿<style>
+<style>
   /* ==========================================================================
      App-Style Mobile Bottom Navigation Dock (Home, Track, SALE, Cart, WhatsApp)
      ========================================================================== */
@@ -278,13 +278,94 @@
     drawer.dispatchEvent(new CustomEvent('theme-drawer:open', { bubbles: true }));
   }
 
-  // Live Cart Count sync for bottom dock badge
-  document.addEventListener('cart:updated', function(event) {
-    const badge = document.getElementById('DbDockCartBadge');
-    if (badge && event.detail && typeof event.detail.item_count !== 'undefined') {
-      const count = event.detail.item_count;
-      badge.textContent = count;
-      badge.style.display = count > 0 ? 'flex' : 'none';
+  // --- Rock-Solid Real-Time Cart Count Synchronization ---
+  (function() {
+    function setDbCartBadgeCount(count) {
+      const badge = document.getElementById('DbDockCartBadge');
+      if (!badge) return;
+      const num = parseInt(count, 10) || 0;
+      badge.textContent = num;
+      badge.style.display = num > 0 ? 'flex' : 'none';
     }
-  });
+
+    function syncFromCartAPI() {
+      fetch('/cart.js')
+        .then(res => res.json())
+        .then(cart => {
+          if (cart && typeof cart.item_count !== 'undefined') {
+            setDbCartBadgeCount(cart.item_count);
+          }
+        })
+        .catch(() => {});
+    }
+
+    // 1. Intercept window.fetch for real-time add/change/clear
+    const originalFetch = window.fetch;
+    window.fetch = function() {
+      const args = arguments;
+      const url = typeof args[0] === 'string' ? args[0] : (args[0] && args[0].url ? args[0].url : '');
+      const promise = originalFetch.apply(this, args);
+
+      if (url && (url.includes('/cart/add') || url.includes('/cart/change') || url.includes('/cart/update') || url.includes('/cart/clear'))) {
+        promise.then(response => {
+          try {
+            const clone = response.clone();
+            clone.json().then(data => {
+              if (data && typeof data.item_count !== 'undefined') {
+                setDbCartBadgeCount(data.item_count);
+              } else {
+                syncFromCartAPI();
+              }
+            }).catch(() => syncFromCartAPI());
+          } catch (err) {
+            syncFromCartAPI();
+          }
+        });
+      }
+      return promise;
+    };
+
+    // 2. Listen to Shopify theme & custom events
+    const cartEvents = ['cart:lines:update', 'cart:updated', 'cart:update', 'cart:change', 'ajaxCart.afterCartLoad'];
+    cartEvents.forEach(evtName => {
+      document.addEventListener(evtName, function(event) {
+        if (event && event.detail && typeof event.detail.item_count !== 'undefined') {
+          setDbCartBadgeCount(event.detail.item_count);
+        } else if (event && event.detail && typeof event.detail.itemCount !== 'undefined') {
+          setDbCartBadgeCount(event.detail.itemCount);
+        } else if (event && event.detail && event.detail.cart && typeof event.detail.cart.item_count !== 'undefined') {
+          setDbCartBadgeCount(event.detail.cart.item_count);
+        } else {
+          syncFromCartAPI();
+        }
+      });
+    });
+
+    // 3. MutationObserver on header cart badges
+    function observeHeaderCart() {
+      const headerBadges = document.querySelectorAll('[ref="cartBubbleCount"], .theme-drawer__badge, cart-icon');
+      if (headerBadges.length > 0) {
+        const observer = new MutationObserver(() => {
+          headerBadges.forEach(el => {
+            const val = parseInt(el.textContent.trim(), 10);
+            if (!isNaN(val)) setDbCartBadgeCount(val);
+          });
+        });
+        headerBadges.forEach(el => observer.observe(el, { childList: true, characterData: true, subtree: true }));
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        syncFromCartAPI();
+        observeHeaderCart();
+      });
+    } else {
+      syncFromCartAPI();
+      observeHeaderCart();
+    }
+
+    window.addEventListener('pageshow', syncFromCartAPI);
+    window.setDbMobileCartBadge = setDbCartBadgeCount;
+  })();
 </script>
