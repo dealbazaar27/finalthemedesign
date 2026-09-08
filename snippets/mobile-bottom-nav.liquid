@@ -1,6 +1,6 @@
 ﻿<style>
   /* ==========================================================================
-     App-Style Mobile Bottom Navigation Dock (Matching Reference Screenshot)
+     App-Style Mobile Bottom Navigation Dock (Home, Track, SALE, Cart, Profile)
      ========================================================================== */
   .db-mobile-dock {
     display: none;
@@ -26,7 +26,7 @@
       z-index: 999990 !important;
       align-items: center !important;
       justify-content: space-around !important;
-      padding: 0 8px calc(env(safe-area-inset-bottom, 0px) / 2) 8px !important;
+      padding: 0 6px calc(env(safe-area-inset-bottom, 0px) / 2) 6px !important;
       box-sizing: border-box !important;
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     }
@@ -46,6 +46,9 @@
       transition: color 0.2s ease, transform 0.15s ease !important;
       -webkit-tap-highlight-color: transparent !important;
       padding: 4px 0 !important;
+      background: transparent !important;
+      border: none !important;
+      cursor: pointer !important;
     }
 
     .db-dock-item.active,
@@ -80,7 +83,7 @@
       letter-spacing: 0.1px !important;
     }
 
-    /* --- Center Elevated Floating Bubble Button --- */
+    /* --- Center Elevated Floating Bubble Button (SALE) --- */
     .db-dock-center-wrapper {
       position: relative !important;
       flex: 1 1 0 !important;
@@ -96,10 +99,11 @@
       width: 54px !important;
       height: 54px !important;
       border-radius: 50% !important;
-      background: #00b853 !important;
+      background: linear-gradient(135deg, #00b853, #059669) !important;
       border: 4.5px solid #ffffff !important;
       color: #ffffff !important;
       display: flex !important;
+      flex-direction: column !important;
       align-items: center !important;
       justify-content: center !important;
       box-shadow: 0 6px 18px rgba(0, 184, 83, 0.45) !important;
@@ -113,8 +117,8 @@
     }
 
     .db-dock-center-icon {
-      width: 26px !important;
-      height: 26px !important;
+      width: 24px !important;
+      height: 24px !important;
       stroke-width: 2.2 !important;
       color: #ffffff !important;
     }
@@ -129,6 +133,27 @@
       border-radius: 33px 33px 0 0;
       z-index: -1;
       box-shadow: 0 -3px 10px rgba(0,0,0,0.03);
+    }
+
+    /* Cart badge indicator on dock item */
+    .db-dock-badge {
+      position: absolute !important;
+      top: -4px !important;
+      right: -8px !important;
+      background: #ef4444 !important;
+      color: #ffffff !important;
+      font-size: 0.62rem !important;
+      font-weight: 800 !important;
+      min-width: 16px !important;
+      height: 16px !important;
+      border-radius: 10px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0 4px !important;
+      border: 1.5px solid #ffffff !important;
+      line-height: 1 !important;
+      box-sizing: border-box !important;
     }
   }
 </style>
@@ -149,36 +174,7 @@
     <span class="db-dock-label">Home</span>
   </a>
 
-  {% comment %} 2. Explore / Categories Tab {% endcomment %}
-  <a href="/collections/all" class="db-dock-item {% if current_path contains '/collections' %}active{% endif %}">
-    <div class="db-dock-icon-wrap">
-      <svg class="db-dock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
-        <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
-        <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
-        <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
-      </svg>
-    </div>
-    <span class="db-dock-label">Explore</span>
-  </a>
-
-  {% comment %} 3. Center Elevated Floating Bubble {% endcomment %}
-  <div class="db-dock-center-wrapper">
-    <div class="db-dock-notch-aura"></div>
-    <a 
-      href="https://wa.me/923102492119" 
-      class="db-dock-center-btn"
-      aria-label="Hot Deals"
-      target="_blank"
-    >
-      {% comment %} Deal / Special Lightning Icon {% endcomment %}
-      <svg class="db-dock-center-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-      </svg>
-    </a>
-  </div>
-
-  {% comment %} 4. Track Order Tab {% endcomment %}
+  {% comment %} 2. Track Order Tab {% endcomment %}
   <a href="/pages/track-order" class="db-dock-item {% if current_path contains '/pages/track-order' %}active{% endif %}">
     <div class="db-dock-icon-wrap">
       <svg class="db-dock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -191,6 +187,40 @@
     <span class="db-dock-label">Track</span>
   </a>
 
+  {% comment %} 3. Center Elevated Floating Bubble (SALE) {% endcomment %}
+  <div class="db-dock-center-wrapper">
+    <div class="db-dock-notch-aura"></div>
+    <a 
+      href="/collections/all" 
+      class="db-dock-center-btn"
+      aria-label="Hot Sale & Deals"
+    >
+      <svg class="db-dock-center-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+      </svg>
+    </a>
+  </div>
+
+  {% comment %} 4. Cart Tab (Opens Cart Drawer) {% endcomment %}
+  <button 
+    type="button"
+    class="db-dock-item"
+    aria-label="Shopping Cart"
+    onclick="openMobileCartDrawer(event)"
+  >
+    <div class="db-dock-icon-wrap">
+      <svg class="db-dock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <path d="M16 10a4 4 0 0 1-8 0"></path>
+      </svg>
+      <span class="db-dock-badge" id="DbDockCartBadge" style="{% if cart.item_count == 0 %}display:none;{% endif %}">
+        {{ cart.item_count }}
+      </span>
+    </div>
+    <span class="db-dock-label">Cart</span>
+  </button>
+
   {% comment %} 5. Profile / Support Tab {% endcomment %}
   <a href="/pages/shipping-returns" class="db-dock-item {% if current_path contains '/pages/shipping-returns' or current_path contains '/pages/contact' %}active{% endif %}">
     <div class="db-dock-icon-wrap">
@@ -202,3 +232,37 @@
     <span class="db-dock-label">Profile</span>
   </a>
 </nav>
+
+<script>
+  function openMobileCartDrawer(e) {
+    if (e) e.preventDefault();
+    const drawer = document.getElementById('cart-drawer');
+    if (!drawer) {
+      window.location.href = '/cart';
+      return;
+    }
+    
+    // Method 1: native showModal if dialog
+    const dialog = drawer.querySelector('dialog') || (drawer.tagName === 'DIALOG' ? drawer : null);
+    if (dialog && typeof dialog.showModal === 'function') {
+      try { dialog.showModal(); } catch (err) {}
+    }
+
+    // Method 2: theme-drawer open attribute
+    drawer.setAttribute('open', '');
+    if (drawer.show) drawer.show();
+
+    // Method 3: dispatch custom event
+    drawer.dispatchEvent(new CustomEvent('theme-drawer:open', { bubbles: true }));
+  }
+
+  // Live Cart Count sync for bottom dock badge
+  document.addEventListener('cart:updated', function(event) {
+    const badge = document.getElementById('DbDockCartBadge');
+    if (badge && event.detail && typeof event.detail.item_count !== 'undefined') {
+      const count = event.detail.item_count;
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'flex' : 'none';
+    }
+  });
+</script>
