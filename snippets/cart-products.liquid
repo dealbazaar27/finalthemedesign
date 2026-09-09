@@ -283,14 +283,13 @@
                       {%- endif -%}
 
                       {%- if item.line_level_discount_allocations.size > 0 -%}
-                        <ul
-                          class="list-unstyled"
-                          role="list"
-                        >
+                        <div class="cart-item-discount-badges" style="margin-top: 4px; display: flex; flex-direction: column; gap: 4px;">
                           {%- for discount in item.line_level_discount_allocations -%}
-                            <li>{{ discount.discount_application.title | escape }}</li>
+                            <span class="cart-item-discount-pill" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.73rem; font-weight: 700; color: #065f46; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 7px; border-radius: 6px; width: fit-content;">
+                              <span style="font-size: 0.8rem;">🏷️</span> {{ discount.discount_application.title | escape }} (-{{ discount.amount | money_without_trailing_zeros }})
+                            </span>
                           {%- endfor -%}
-                        </ul>
+                        </div>
                       {%- endif -%}
                     {%- endif -%}
                   </div>
@@ -299,7 +298,7 @@
                     <div>
                       {% if item.original_price != item.final_price %}
                         <span class="visually-hidden">{{ 'content.price_sale' | t }}</span>
-                        <span>{{ item.final_price | money }}</span>
+                        <span style="font-weight: 800; color: #16a34a;">{{ item.final_price | money }}</span>
                         <span class="visually-hidden">{{ 'content.price_regular' | t }}</span>
                         <s class="compare-at-price">
                           {% if item.variant.compare_at_price > item.original_price %}
