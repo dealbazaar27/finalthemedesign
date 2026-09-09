@@ -15,6 +15,18 @@
         "slide_1": {
           "type": "slide_item",
           "settings": {
+            "image_desktop": "shopify://shop_images/01_desktop_1200x500_678fc071-1f68-4cf5-8ad1-003341122344.jpg",
+            "image_mobile": "shopify://shop_images/02_mobile_800x600_702247c7-d019-4611-915a-61ce7b926212.jpg",
+            "slide_url": "",
+            "title": "STYLE.SMART LIVING.",
+            "subtitle": "Premium & Smarter. Better Every Day.",
+            "button_label": "EXPLORE NOW",
+            "button_link": "shopify://collections/all"
+          }
+        },
+        "slide_item_dcG8rq": {
+          "type": "slide_item",
+          "settings": {
             "image_desktop": "shopify://shop_images/desktop_1200x500_c5f269da-986c-4a33-bdad-5291f9689917.png",
             "image_mobile": "shopify://shop_images/mobile_800x600_3d6c0c02-72b2-42f7-85e1-7e6b712dba6d.png",
             "slide_url": "",
@@ -29,6 +41,7 @@
           "settings": {
             "title": "Smart Earbuds",
             "badge_text": "STARTING FROM RS. 599/-",
+            "image": "shopify://shop_images/promo_400x240_2f805ac2-1344-4d17-8953-498eccee8ca0.jpg",
             "link": ""
           }
         },
@@ -37,12 +50,14 @@
           "settings": {
             "title": "Smart Watches",
             "badge_text": "STARTING FROM RS. 799/-",
+            "image": "shopify://shop_images/promo_400x240_b4840b71-4d0a-464b-b7de-9556b00a3e13.png",
             "link": ""
           }
         }
       },
       "block_order": [
         "slide_1",
+        "slide_item_dcG8rq",
         "promo_banner_1",
         "promo_banner_2"
       ],
