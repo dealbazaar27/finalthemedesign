@@ -872,3 +872,116 @@
     padding: 40px 20px !important;
   }
 {% endstylesheet %}
+
+
+<script>
+  (function initGlobalBoatCartHelpers() {
+    // 1. Universal Cart Breakdown Toggle Handler (Works on First Click, Before & After Page Refresh)
+    window.toggleBoatBillBreakdown = function(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      const card = (event && event.target) ? event.target.closest('.boat-bill-card') : (document.querySelector('.cart-drawer .boat-bill-card') || document.querySelector('.boat-bill-card'));
+      if (!card) return;
+      card.classList.toggle('is-open');
+    };
+
+    // 2. Global Delegated Click Listener (Captures all clicks on bill main row or arrow instantly)
+    if (!window._boatBillGlobalDelegatedBound) {
+      window._boatBillGlobalDelegatedBound = true;
+      document.addEventListener('click', function(e) {
+        const row = e.target.closest('.boat-bill-main-row') || e.target.closest('.boat-bill-toggle-btn') || e.target.closest('.boat-bill-view-tag');
+        if (row) {
+          const card = row.closest('.boat-bill-card') || document.querySelector('.boat-bill-card');
+          if (card) {
+            e.preventDefault();
+            e.stopPropagation();
+            card.classList.toggle('is-open');
+          }
+        }
+      }, true);
+    }
+
+    // 3. Global Tier Discount Synchronizer
+    window.syncBoatTierDiscount = function() {
+      clearTimeout(window.boatTierSyncDebounceTimer);
+      window.boatTierSyncDebounceTimer = setTimeout(async function() {
+        if (window.isBoatSyncingTier) return;
+        try {
+          const res = await fetch('/cart.js', { headers: { 'Accept': 'application/json' } });
+          const cart = await res.json();
+          if (!cart) return;
+
+          let totalQty = 0;
+          if (cart.items && cart.items.length > 0) {
+            cart.items.forEach(function(item) {
+              totalQty += (item.quantity || 0);
+            });
+          }
+
+          let targetCode = '';
+          if (totalQty >= 10) {
+            targetCode = 'DEAL10';
+          } else if (totalQty >= 5) {
+            targetCode = 'DEAL7';
+          } else if (totalQty >= 2) {
+            targetCode = 'DEAL6';
+          }
+
+          const appliedCodes = (cart.discount_applications || [])
+            .filter(function(app) { return app.type === 'discount_code'; })
+            .map(function(app) { return app.title; });
+
+          const isTier = function(c) {
+            return c === 'DEAL6' || c === 'DEAL7' || c === 'DEAL10';
+          };
+
+          const hasCustom = appliedCodes.some(function(c) { return !isTier(c); });
+          if (hasCustom) return;
+
+          const currentTier = appliedCodes.find(isTier) || '';
+          if (targetCode && sessionStorage.getItem('boat_dismissed_tier_code') === targetCode) {
+            return;
+          }
+
+          if (currentTier === targetCode) {
+            window.activeCartTierCode = targetCode;
+            return;
+          }
+
+          window.isBoatSyncingTier = true;
+          window.activeCartTierCode = targetCode;
+
+          await fetch('/cart/update.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ discount: targetCode })
+          });
+        } catch(err) {
+          console.warn('Tier sync error:', err);
+        } finally {
+          window.isBoatSyncingTier = false;
+        }
+      }, 150);
+    };
+
+    // 4. Global Checkout Redirect Handler
+    window.handleBoatCheckoutRedirect = function(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      const btn = document.getElementById('checkout');
+      if (btn) {
+        btn.style.opacity = '0.85';
+        btn.style.pointerEvents = 'none';
+        btn.innerHTML = '<span class="button-text" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;"><span class="boat-checkout-spinner"></span> SECURING ORDER...</span>';
+      }
+      const code = window.activeCartTierCode || '';
+      const checkoutUrl = code ? '/checkout?discount=' + encodeURIComponent(code) : '/checkout';
+      window.location.href = checkoutUrl;
+      return false;
+    };
+  })();
+</script>
