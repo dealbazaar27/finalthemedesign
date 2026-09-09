@@ -1,0 +1,1003 @@
+{% liquid
+  assign bg_color = section.settings.background_color | default: '#0f172a'
+  assign text_color = section.settings.text_color | default: '#94a3b8'
+  assign heading_color = section.settings.heading_color | default: '#ffffff'
+  assign accent_color = section.settings.accent_color | default: '#00b853'
+  assign border_color = section.settings.border_color | default: 'rgba(255, 255, 255, 0.08)'
+%}
+
+<style>
+  /* ==========================================================================
+     boAt-Inspired Dynamic E-Commerce Footer
+     ========================================================================== */
+  .boat-footer-section {
+    background-color: {{ bg_color }};
+    color: {{ text_color }};
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    position: relative;
+    border-top: 1px solid {{ border_color }};
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .boat-footer-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+
+  /* --- 1. Trust & Value Proposition Badges Bar --- */
+  .boat-footer-trust-bar {
+    border-bottom: 1px solid {{ border_color }};
+    padding: 28px 0;
+  }
+
+  .boat-footer-trust-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    align-items: center;
+  }
+
+  @media (max-width: 991px) {
+    .boat-footer-trust-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+  }
+
+  @media (max-width: 575px) {
+    .boat-footer-trust-grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+  }
+
+  .boat-footer-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid {{ border_color }};
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+  .boat-footer-trust-item:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .boat-footer-trust-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: rgba(0, 184, 83, 0.1);
+    color: {{ accent_color }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .boat-footer-trust-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke-width: 2;
+  }
+
+  .boat-footer-trust-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: {{ heading_color }};
+    margin: 0 0 2px 0;
+    line-height: 1.2;
+  }
+
+  .boat-footer-trust-subtitle {
+    font-size: 0.78rem;
+    color: {{ text_color }};
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  /* --- 2. Main Footer Multi-Column Grid --- */
+  .boat-footer-main {
+    padding: 50px 0 35px 0;
+  }
+
+  .boat-footer-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.3fr;
+    gap: 36px;
+    align-items: start;
+  }
+
+  @media (max-width: 991px) {
+    .boat-footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .boat-footer-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+
+  /* Footer Brand / About Column */
+  .boat-footer-brand-logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: {{ heading_color }};
+    text-decoration: none;
+    letter-spacing: -0.5px;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  .boat-footer-brand-desc {
+    font-size: 0.86rem;
+    line-height: 1.6;
+    color: {{ text_color }};
+    margin: 0 0 18px 0;
+  }
+
+  .boat-footer-contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .boat-footer-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.86rem;
+    color: {{ text_color }};
+  }
+
+  .boat-footer-contact-item a {
+    color: {{ text_color }};
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .boat-footer-contact-item a:hover {
+    color: {{ accent_color }};
+  }
+
+  .boat-footer-contact-icon {
+    width: 18px;
+    height: 18px;
+    color: {{ accent_color }};
+    flex-shrink: 0;
+  }
+
+  /* Social Icons */
+  .boat-footer-socials {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  .boat-footer-social-link {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid {{ border_color }};
+    color: {{ heading_color }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .boat-footer-social-link:hover {
+    background: {{ accent_color }};
+    color: #ffffff;
+    border-color: {{ accent_color }};
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 184, 83, 0.35);
+  }
+
+  .boat-footer-social-link svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  /* Column Headings */
+  .boat-footer-heading {
+    font-size: 1rem;
+    font-weight: 700;
+    color: {{ heading_color }};
+    margin: 0 0 18px 0;
+    letter-spacing: 0.3px;
+    position: relative;
+    padding-bottom: 8px;
+  }
+
+  .boat-footer-heading::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 28px;
+    height: 2.5px;
+    background: {{ accent_color }};
+    border-radius: 2px;
+  }
+
+  /* Navigation Links List */
+  .boat-footer-menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .boat-footer-menu-link {
+    font-size: 0.88rem;
+    color: {{ text_color }};
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .boat-footer-menu-link::before {
+    content: '›';
+    font-size: 1.1rem;
+    line-height: 1;
+    color: {{ accent_color }};
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all 0.2s ease;
+  }
+
+  .boat-footer-menu-link:hover {
+    color: {{ heading_color }};
+    transform: translateX(4px);
+  }
+
+  .boat-footer-menu-link:hover::before {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Mobile Collapsible Accordion Mode */
+  @media (max-width: 768px) {
+    .boat-footer-col--accordion {
+      border-bottom: 1px solid {{ border_color }};
+      padding-bottom: 12px;
+    }
+
+    .boat-footer-col--accordion .boat-footer-heading {
+      margin-bottom: 0;
+      padding: 6px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .boat-footer-col--accordion .boat-footer-heading::after {
+      display: none;
+    }
+
+    .boat-footer-accordion-toggle {
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.25s ease;
+      color: {{ accent_color }};
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .boat-footer-col--accordion.open .boat-footer-accordion-toggle {
+      transform: rotate(45deg);
+    }
+
+    .boat-footer-col--accordion .boat-footer-accordion-body {
+      display: none;
+      padding-top: 14px;
+      animation: boatFooterFadeIn 0.25s ease;
+    }
+
+    .boat-footer-col--accordion.open .boat-footer-accordion-body {
+      display: block;
+    }
+  }
+
+  @keyframes boatFooterFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Newsletter Box */
+  .boat-footer-newsletter-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid {{ border_color }};
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .boat-footer-newsletter-text {
+    font-size: 0.84rem;
+    color: {{ text_color }};
+    line-height: 1.5;
+    margin: 0 0 14px 0;
+  }
+
+  .boat-footer-newsletter-form {
+    display: flex;
+    gap: 6px;
+    position: relative;
+  }
+
+  .boat-footer-newsletter-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid {{ border_color }};
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: {{ heading_color }};
+    font-size: 0.86rem;
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    min-width: 0;
+  }
+
+  .boat-footer-newsletter-input:focus {
+    border-color: {{ accent_color }};
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .boat-footer-newsletter-input::placeholder {
+    color: {{ text_color }};
+    opacity: 0.7;
+  }
+
+  .boat-footer-newsletter-btn {
+    background: {{ accent_color }};
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-weight: 700;
+    font-size: 0.84rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .boat-footer-newsletter-btn:hover {
+    transform: scale(1.03);
+    filter: brightness(1.08);
+  }
+
+  .boat-footer-newsletter-note {
+    font-size: 0.72rem;
+    color: {{ text_color }};
+    opacity: 0.8;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* --- 3. Bottom Copyright & Utilities Bar --- */
+  .boat-footer-bottom {
+    border-top: 1px solid {{ border_color }};
+    padding: 22px 0;
+  }
+
+  .boat-footer-bottom-grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .boat-footer-bottom-grid {
+      flex-direction: column;
+      text-align: center;
+      gap: 14px;
+    }
+  }
+
+  .boat-footer-copyright {
+    font-size: 0.82rem;
+    color: {{ text_color }};
+    margin: 0;
+  }
+
+  .boat-footer-policy-links {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .boat-footer-policy-links {
+      justify-content: center;
+    }
+  }
+
+  .boat-footer-policy-link {
+    font-size: 0.8rem;
+    color: {{ text_color }};
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .boat-footer-policy-link:hover {
+    color: {{ heading_color }};
+    text-decoration: underline;
+  }
+
+  /* Payment Badges */
+  .boat-footer-payments {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .boat-footer-payments {
+      justify-content: center;
+    }
+  }
+
+  .boat-footer-payment-pill {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid {{ border_color }};
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: {{ heading_color }};
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: 0.2px;
+  }
+
+  /* Back To Top Button */
+  .boat-footer-back-to-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid {{ border_color }};
+    color: {{ heading_color }};
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .boat-footer-back-to-top:hover {
+    background: {{ accent_color }};
+    border-color: {{ accent_color }};
+    color: #ffffff;
+    transform: translateY(-2px);
+  }
+</style>
+
+<footer class="boat-footer-section" id="BoatFooterSection">
+  <div class="boat-footer-container">
+    
+    {% comment %} --- 1. Top Trust Badges Bar --- {% endcomment %}
+    {% if section.settings.show_trust_bar %}
+      <div class="boat-footer-trust-bar">
+        <div class="boat-footer-trust-grid">
+          
+          {% assign trust_blocks = section.blocks | where: 'type', 'trust_badge' %}
+          {% if trust_blocks.size > 0 %}
+            {% for block in trust_blocks %}
+              <div class="boat-footer-trust-item" {{ block.shopify_attributes }}>
+                <div class="boat-footer-trust-icon">
+                  {% case block.settings.icon %}
+                    {% when 'shield' %}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    {% when 'return' %}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                    {% when 'support' %}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                    {% when 'zap' %}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    {% when 'award' %}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                    {% else %}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                  {% endcase %}
+                </div>
+                <div>
+                  <h4 class="boat-footer-trust-title">{{ block.settings.title }}</h4>
+                  <p class="boat-footer-trust-subtitle">{{ block.settings.subtitle }}</p>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            {% comment %} Default Trust Badges {% endcomment %}
+            <div class="boat-footer-trust-item">
+              <div class="boat-footer-trust-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+              </div>
+              <div>
+                <h4 class="boat-footer-trust-title">Free Express Shipping</h4>
+                <p class="boat-footer-trust-subtitle">On all orders across Pakistan</p>
+              </div>
+            </div>
+
+            <div class="boat-footer-trust-item">
+              <div class="boat-footer-trust-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+              </div>
+              <div>
+                <h4 class="boat-footer-trust-title">7-Days Easy Return</h4>
+                <p class="boat-footer-trust-subtitle">Hassle-free replacement policy</p>
+              </div>
+            </div>
+
+            <div class="boat-footer-trust-item">
+              <div class="boat-footer-trust-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              </div>
+              <div>
+                <h4 class="boat-footer-trust-title">100% Genuine Products</h4>
+                <p class="boat-footer-trust-subtitle">Original warranty guaranteed</p>
+              </div>
+            </div>
+
+            <div class="boat-footer-trust-item">
+              <div class="boat-footer-trust-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+              </div>
+              <div>
+                <h4 class="boat-footer-trust-title">24/7 Priority Support</h4>
+                <p class="boat-footer-trust-subtitle">Live WhatsApp helpline available</p>
+              </div>
+            </div>
+          {% endif %}
+
+        </div>
+      </div>
+    {% endif %}
+
+    {% comment %} --- 2. Main Footer Columns --- {% endcomment %}
+    <div class="boat-footer-main">
+      <div class="boat-footer-grid">
+        
+        {% comment %} Column 1: Brand Info {% endcomment %}
+        <div class="boat-footer-col">
+          <a href="/" class="boat-footer-brand-logo">{{ shop.name | default: 'Deal bazaar' }}</a>
+          <p class="boat-footer-brand-desc">
+            {{ section.settings.brand_description | default: 'Your premier destination for high-quality audio gear, smartwatches, power accessories, and innovative lifestyle tech.' }}
+          </p>
+
+          <ul class="boat-footer-contact-list">
+            {% if section.settings.phone != blank %}
+              <li class="boat-footer-contact-item">
+                <svg class="boat-footer-contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                <a href="tel:{{ section.settings.phone }}">{{ section.settings.phone }}</a>
+              </li>
+            {% endif %}
+
+            {% if section.settings.whatsapp != blank %}
+              <li class="boat-footer-contact-item">
+                <svg class="boat-footer-contact-icon" style="color:#25d366;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                <a href="https://wa.me/{{ section.settings.whatsapp | remove: '+' | remove: ' ' }}" target="_blank" rel="noopener">WhatsApp: {{ section.settings.whatsapp }}</a>
+              </li>
+            {% endif %}
+
+            {% if section.settings.email != blank %}
+              <li class="boat-footer-contact-item">
+                <svg class="boat-footer-contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <a href="mailto:{{ section.settings.email }}">{{ section.settings.email }}</a>
+              </li>
+            {% endif %}
+          </ul>
+
+          <div class="boat-footer-socials">
+            {% if section.settings.social_instagram != blank %}
+              <a href="{{ section.settings.social_instagram }}" class="boat-footer-social-link" target="_blank" rel="noopener" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+              </a>
+            {% endif %}
+            {% if section.settings.social_facebook != blank %}
+              <a href="{{ section.settings.social_facebook }}" class="boat-footer-social-link" target="_blank" rel="noopener" aria-label="Facebook">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+              </a>
+            {% endif %}
+            {% if section.settings.social_tiktok != blank %}
+              <a href="{{ section.settings.social_tiktok }}" class="boat-footer-social-link" target="_blank" rel="noopener" aria-label="TikTok">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
+              </a>
+            {% endif %}
+            {% if section.settings.social_youtube != blank %}
+              <a href="{{ section.settings.social_youtube }}" class="boat-footer-social-link" target="_blank" rel="noopener" aria-label="YouTube">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+
+        {% comment %} Column 2: Navigation Menu 1 {% endcomment %}
+        <div class="boat-footer-col boat-footer-col--accordion open">
+          <h4 class="boat-footer-heading" onclick="toggleFooterAccordion(this)">
+            <span>{{ section.settings.menu_1_heading | default: 'Shop & Categories' }}</span>
+            <span class="boat-footer-accordion-toggle">+</span>
+          </h4>
+          <div class="boat-footer-accordion-body">
+            <ul class="boat-footer-menu-list">
+              {% assign menu_1 = linklists[section.settings.menu_1] %}
+              {% if menu_1 != blank and menu_1.links.size > 0 %}
+                {% for link in menu_1.links %}
+                  <li><a href="{{ link.url }}" class="boat-footer-menu-link">{{ link.title }}</a></li>
+                {% endfor %}
+              {% else %}
+                <li><a href="/collections/all" class="boat-footer-menu-link">All Products</a></li>
+                <li><a href="/collections/all" class="boat-footer-menu-link">New Arrivals</a></li>
+                <li><a href="/collections/all" class="boat-footer-menu-link">Best Sellers</a></li>
+                <li><a href="/collections/all" class="boat-footer-menu-link">Special Offers & Deals</a></li>
+                <li><a href="/collections/all" class="boat-footer-menu-link">Featured Collections</a></li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+
+        {% comment %} Column 3: Navigation Menu 2 {% endcomment %}
+        <div class="boat-footer-col boat-footer-col--accordion open">
+          <h4 class="boat-footer-heading" onclick="toggleFooterAccordion(this)">
+            <span>{{ section.settings.menu_2_heading | default: 'Help & Customer Care' }}</span>
+            <span class="boat-footer-accordion-toggle">+</span>
+          </h4>
+          <div class="boat-footer-accordion-body">
+            <ul class="boat-footer-menu-list">
+              {% assign menu_2 = linklists[section.settings.menu_2] %}
+              {% if menu_2 != blank and menu_2.links.size > 0 %}
+                {% for link in menu_2.links %}
+                  <li><a href="{{ link.url }}" class="boat-footer-menu-link">{{ link.title }}</a></li>
+                {% endfor %}
+              {% else %}
+                <li><a href="/pages/contact" class="boat-footer-menu-link">Track Your Order</a></li>
+                <li><a href="/pages/contact" class="boat-footer-menu-link">Shipping & Delivery Policy</a></li>
+                <li><a href="/pages/contact" class="boat-footer-menu-link">Returns & Replacement</a></li>
+                <li><a href="/pages/contact" class="boat-footer-menu-link">Warranty Claim</a></li>
+                <li><a href="/pages/contact" class="boat-footer-menu-link">Contact Us</a></li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+
+        {% comment %} Column 4: Newsletter & Exclusive Deals {% endcomment %}
+        <div class="boat-footer-col">
+          <div class="boat-footer-newsletter-card">
+            <h4 class="boat-footer-heading" style="margin-bottom: 8px;">
+              <span>{{ section.settings.newsletter_title | default: 'Get Special Deals' }}</span>
+            </h4>
+            <p class="boat-footer-newsletter-text">
+              {{ section.settings.newsletter_desc | default: 'Subscribe to receive secret discount vouchers, flash sale alerts, and early access to drops.' }}
+            </p>
+
+            {% form 'customer', class: 'boat-footer-newsletter-form' %}
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              <input 
+                type="email" 
+                name="contact[email]" 
+                class="boat-footer-newsletter-input" 
+                placeholder="Enter your email address" 
+                required
+                autocomplete="email"
+              >
+              <button type="submit" class="boat-footer-newsletter-btn">
+                <span>Join</span> ➔
+              </button>
+            {% endform %}
+
+            <div class="boat-footer-newsletter-note">
+              <span>🔒</span> We respect your privacy. Unsubscribe anytime.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% comment %} --- 3. Bottom Bar & Policies --- {% endcomment %}
+    <div class="boat-footer-bottom">
+      <div class="boat-footer-bottom-grid">
+        
+        <p class="boat-footer-copyright">
+          © {{ 'now' | date: '%Y' }} <strong>{{ shop.name }}</strong>. All rights reserved.
+        </p>
+
+        {% if section.settings.show_payment_icons %}
+          <div class="boat-footer-payments">
+            <span class="boat-footer-payment-pill">💵 Cash On Delivery</span>
+            <span class="boat-footer-payment-pill">💳 Visa / Master</span>
+            <span class="boat-footer-payment-pill">📱 JazzCash</span>
+            <span class="boat-footer-payment-pill">🟢 EasyPaisa</span>
+          </div>
+        {% endif %}
+
+        <div class="boat-footer-policy-links">
+          <a href="/policies/privacy-policy" class="boat-footer-policy-link">Privacy Policy</a>
+          <a href="/policies/terms-of-service" class="boat-footer-policy-link">Terms of Service</a>
+          <a href="/policies/refund-policy" class="boat-footer-policy-link">Refund Policy</a>
+          <a href="#header-component" class="boat-footer-back-to-top" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;">
+            <span>↑</span> Top
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+<script>
+  function toggleFooterAccordion(headingEl) {
+    if (window.innerWidth > 768) return;
+    const col = headingEl.closest('.boat-footer-col--accordion');
+    if (!col) return;
+    col.classList.toggle('open');
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Boat Dynamic Footer",
+  "settings": [
+    {
+      "type": "header",
+      "content": "COLORS & STYLING"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Footer Background Color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Headings Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body / Links Text Color",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#00b853"
+    },
+    {
+      "type": "header",
+      "content": "TRUST BADGES BAR"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_trust_bar",
+      "label": "Show Trust Badges Bar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "BRAND & CONTACT INFO"
+    },
+    {
+      "type": "textarea",
+      "id": "brand_description",
+      "label": "Brand Description / Bio",
+      "default": "Your premier destination for high-quality audio gear, smartwatches, power accessories, and innovative lifestyle tech."
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Helpline / Phone Number",
+      "default": "+92 310 2492119"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp",
+      "label": "WhatsApp Number",
+      "default": "+92 310 2492119"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Support Email Address",
+      "default": "support@dealbazaar.pk"
+    },
+    {
+      "type": "header",
+      "content": "SOCIAL MEDIA LINKS"
+    },
+    {
+      "type": "url",
+      "id": "social_instagram",
+      "label": "Instagram URL",
+      "default": "https://instagram.com"
+    },
+    {
+      "type": "url",
+      "id": "social_facebook",
+      "label": "Facebook URL",
+      "default": "https://facebook.com"
+    },
+    {
+      "type": "url",
+      "id": "social_tiktok",
+      "label": "TikTok URL",
+      "default": "https://tiktok.com"
+    },
+    {
+      "type": "url",
+      "id": "social_youtube",
+      "label": "YouTube URL",
+      "default": "https://youtube.com"
+    },
+    {
+      "type": "header",
+      "content": "MENU COLUMNS"
+    },
+    {
+      "type": "text",
+      "id": "menu_1_heading",
+      "label": "Menu 1 Heading",
+      "default": "Shop & Categories"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_1",
+      "label": "Select Menu 1"
+    },
+    {
+      "type": "text",
+      "id": "menu_2_heading",
+      "label": "Menu 2 Heading",
+      "default": "Help & Customer Care"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_2",
+      "label": "Select Menu 2"
+    },
+    {
+      "type": "header",
+      "content": "NEWSLETTER & OFFERS"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_title",
+      "label": "Newsletter Title",
+      "default": "Get Special Deals"
+    },
+    {
+      "type": "textarea",
+      "id": "newsletter_desc",
+      "label": "Newsletter Subtitle",
+      "default": "Subscribe to receive secret discount vouchers, flash sale alerts, and early access to drops."
+    },
+    {
+      "type": "header",
+      "content": "BOTTOM UTILITIES"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "Show Payment Badges",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust_badge",
+      "name": "Trust Badge",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Badge Icon",
+          "options": [
+            { "value": "truck", "label": "Delivery Truck" },
+            { "value": "return", "label": "Return / Replace" },
+            { "value": "shield", "label": "Shield / Guarantee" },
+            { "value": "support", "label": "24/7 Support" },
+            { "value": "zap", "label": "Lightning Fast" },
+            { "value": "award", "label": "Award / Quality" }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Badge Title",
+          "default": "Free Express Shipping"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Badge Subtitle",
+          "default": "On all orders across Pakistan"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Boat Dynamic Footer",
+      "blocks": [
+        {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "truck",
+            "title": "Free Express Shipping",
+            "subtitle": "On all orders across Pakistan"
+          }
+        },
+        {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "return",
+            "title": "7-Days Easy Return",
+            "subtitle": "Hassle-free replacement policy"
+          }
+        },
+        {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "shield",
+            "title": "100% Genuine Products",
+            "subtitle": "Original warranty guaranteed"
+          }
+        },
+        {
+          "type": "trust_badge",
+          "settings": {
+            "icon": "support",
+            "title": "24/7 Priority Support",
+            "subtitle": "Live WhatsApp helpline available"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
