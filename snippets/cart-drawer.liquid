@@ -22,128 +22,8 @@
     fetchpriority="low"
   ></script>
 
-    {% capture empty_cart_drawer_content %}
-    {%- liquid
-      assign empty_heading = settings.empty_cart_heading | default: 'Your Cart is Empty!'
-      assign empty_subtitle = settings.empty_cart_subtitle | default: "Looks like you haven't added anything to your cart yet. Discover trending deals & bestselling products below!"
-      assign empty_btn_text = settings.empty_cart_btn_text | default: 'START SHOPPING NOW'
-      assign empty_btn_url = settings.empty_cart_btn_url | default: routes.all_products_collection_url
-      if empty_btn_url == blank
-        assign empty_btn_url = '/collections/all'
-      endif
-      assign show_chips = settings.empty_cart_show_chips
-      if show_chips == nil
-        assign show_chips = true
-      endif
-      assign chips_label = settings.empty_cart_chips_label | default: '⚡ Explore Trending:'
-      assign autoclose_enabled = settings.empty_cart_autoclose_enable
-      if autoclose_enabled == nil
-        assign autoclose_enabled = true
-      endif
-      assign autoclose_duration = settings.empty_cart_autoclose_duration | default: 4
-      assign autoclose_desktop_only = settings.empty_cart_autoclose_desktop_only | default: false
-    -%}
-    <div
-      class="cart-drawer__content boat-empty-cart-container"
-      aria-label="{{ 'accessibility.cart' | t }}"
-      style="
-        --boat-empty-bg: {{ settings.empty_cart_bg_color | default: '#ffffff' }};
-        --boat-empty-title: {{ settings.empty_cart_title_color | default: '#0f172a' }};
-        --boat-empty-subtitle: {{ settings.empty_cart_subtitle_color | default: '#64748b' }};
-        --boat-empty-btn-bg: {{ settings.empty_cart_btn_bg | default: '#000000' }};
-        --boat-empty-btn-hover-bg: {{ settings.empty_cart_btn_hover_bg | default: '#00b853' }};
-        --boat-empty-btn-text: {{ settings.empty_cart_btn_text_color | default: '#ffffff' }};
-        --boat-empty-chip-bg: {{ settings.empty_cart_chip_bg | default: '#ffffff' }};
-        --boat-empty-chip-text: {{ settings.empty_cart_chip_text_color | default: '#1e293b' }};
-        --boat-empty-chip-border: {{ settings.empty_cart_chip_border | default: '#e2e8f0' }};
-        --boat-empty-progress: {{ settings.empty_cart_progress_color | default: '#00b853' }};
-      "
-    >
-      {% comment %} --- Top Auto-Close Countdown Bar --- {% endcomment %}
-      {% if autoclose_enabled %}
-        <div class="boat-empty-autoclose-bar" id="BoatEmptyAutoCloseBar" data-duration="{{ autoclose_duration }}" data-desktop-only="{{ autoclose_desktop_only }}">
-          <div class="boat-empty-autoclose-text">
-            <span class="boat-empty-pulse-dot"></span>
-            <span>Auto-closing in <strong id="BoatEmptyCountdownSec">{{ autoclose_duration }}</strong>s...</span>
-          </div>
-          <button type="button" class="boat-empty-stay-btn" onclick="window.cancelBoatEmptyAutoClose(event)">STAY HERE</button>
-          <div class="boat-empty-progress-track">
-            <div class="boat-empty-progress-line" id="BoatEmptyProgressLine"></div>
-          </div>
-        </div>
-      {% endif %}
-
-      <div class="boat-empty-cart-body">
-        {% comment %} Animated Floating Bag Graphic {% endcomment %}
-        <div class="boat-empty-cart-graphic-wrap">
-          <div class="boat-empty-cart-glow"></div>
-          <div class="boat-empty-cart-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <path d="M16 10a4 4 0 0 1-8 0"></path>
-            </svg>
-            <span class="boat-empty-badge-sparkle sparkle-top">✨</span>
-            <span class="boat-empty-badge-sparkle sparkle-bottom">⚡</span>
-          </div>
-        </div>
-
-        <h2 class="boat-empty-cart-title">{{ empty_heading }}</h2>
-        <p class="boat-empty-cart-subtitle">
-          {{ empty_subtitle }}
-        </p>
-
-        {% comment %} Quick Category Shortcut Chips {% endcomment %}
-        {% if show_chips %}
-          <div class="boat-empty-quick-nav">
-            {% if chips_label != blank %}
-              <span class="boat-empty-quick-label">{{ chips_label }}</span>
-            {% endif %}
-            <div class="boat-empty-chips-list">
-              {% assign c1_t = settings.empty_cart_chip_1_text | default: '🔥 Top Picks' %}
-              {% assign c1_u = settings.empty_cart_chip_1_url | default: '/collections/all' %}
-              {% if c1_t != blank %}<a href="{{ c1_u }}" class="boat-empty-chip">{{ c1_t }}</a>{% endif %}
-
-              {% assign c2_t = settings.empty_cart_chip_2_text | default: '🎧 Smart Earbuds' %}
-              {% assign c2_u = settings.empty_cart_chip_2_url | default: '/collections/all' %}
-              {% if c2_t != blank %}<a href="{{ c2_u }}" class="boat-empty-chip">{{ c2_t }}</a>{% endif %}
-
-              {% assign c3_t = settings.empty_cart_chip_3_text | default: '⌚ Smart Watches' %}
-              {% assign c3_u = settings.empty_cart_chip_3_url | default: '/collections/all' %}
-              {% if c3_t != blank %}<a href="{{ c3_u }}" class="boat-empty-chip">{{ c3_t }}</a>{% endif %}
-
-              {% assign c4_t = settings.empty_cart_chip_4_text | default: '🏷️ Flash Sale' %}
-              {% assign c4_u = settings.empty_cart_chip_4_url | default: '/collections/all' %}
-              {% if c4_t != blank %}<a href="{{ c4_u }}" class="boat-empty-chip">{{ c4_t }}</a>{% endif %}
-
-              {% assign c5_t = settings.empty_cart_chip_5_text | default: "👔 Men's Fashion" %}
-              {% assign c5_u = settings.empty_cart_chip_5_url | default: '/collections/all' %}
-              {% if c5_t != blank %}<a href="{{ c5_u }}" class="boat-empty-chip">{{ c5_t }}</a>{% endif %}
-
-              {% assign c6_t = settings.empty_cart_chip_6_text | default: '👗 Women Fashion' %}
-              {% assign c6_u = settings.empty_cart_chip_6_url | default: '/collections/all' %}
-              {% if c6_t != blank %}<a href="{{ c6_u }}" class="boat-empty-chip">{{ c6_t }}</a>{% endif %}
-            </div>
-          </div>
-        {% endif %}
-
-        {% comment %} Primary CTA Button {% endcomment %}
-        {% if empty_btn_text != blank %}
-          <a href="{{ empty_btn_url }}" class="boat-empty-shop-now-btn">
-            <span>{{ empty_btn_text }}</span>
-            <span class="boat-btn-arrow">➔</span>
-          </a>
-        {% endif %}
-
-        {% if shop.customer_accounts_enabled and customer == null %}
-          <div class="boat-empty-login-prompt">
-            <span>Have an account?</span>
-            <a href="{{ routes.account_login_url }}" class="boat-empty-login-link">Log in</a>
-            <span>to check out faster.</span>
-          </div>
-        {% endif %}
-      </div>
-    </div>
+      {% capture empty_cart_drawer_content %}
+    {% render 'boat-empty-cart', is_drawer: true %}
   {% endcapture %}
 
   <theme-drawer
@@ -1388,7 +1268,8 @@
         const progressLine = document.getElementById('BoatEmptyProgressLine');
         const countdownEl = document.getElementById('BoatEmptyCountdownSec');
 
-        if (!drawer || !emptyContainer || !autoCloseBar || !drawer.hasAttribute('open')) return;
+        if (!drawer || !emptyContainer || !autoCloseBar) return;
+        if (!drawer.hasAttribute('open') && !drawer.querySelector('dialog[open]')) return;
 
         const desktopOnly = autoCloseBar.getAttribute('data-desktop-only') === 'true';
         if (desktopOnly && window.innerWidth < 768) {
@@ -1417,8 +1298,13 @@
           if (left <= 0) {
             clearInterval(progressInterval);
             progressInterval = null;
-            if (drawer && drawer.hasAttribute('open')) {
-              drawer.close();
+            if (drawer && (drawer.hasAttribute('open') || drawer.querySelector('dialog[open]'))) {
+              if (typeof drawer.close === 'function') drawer.close();
+              else {
+                const dialog = drawer.querySelector('dialog');
+                if (dialog && typeof dialog.close === 'function') dialog.close();
+                drawer.removeAttribute('open');
+              }
             }
           }
         }, 50);
@@ -1443,6 +1329,8 @@
         cancelTimer(true);
       };
 
+      window.startBoatEmptyAutoClose = startAutoCloseTimer;
+
       // Pause timer when mouse is hovering inside empty cart
       document.addEventListener('mouseenter', function(e) {
         if (e.target && e.target.closest && e.target.closest('.boat-empty-cart-container')) {
@@ -1459,19 +1347,36 @@
 
       // Trigger when drawer opens
       document.addEventListener('theme-drawer:open', function(e) {
-        if (e.target && e.target.id === 'cart-drawer') {
-          const isCartEmpty = Boolean(e.target.querySelector('.cart-drawer--empty, .boat-empty-cart-container'));
+        if (e.target && (e.target.id === 'cart-drawer' || e.target.closest('#cart-drawer'))) {
+          const isCartEmpty = Boolean(document.querySelector('.cart-drawer--empty, .boat-empty-cart-container'));
           if (isCartEmpty) {
             setTimeout(startAutoCloseTimer, 200);
           }
         }
       });
 
-      // Mutation observer on cart-drawer attribute
+      // Trigger when cart lines are updated or emptied dynamically
+      const emptyCheckEvents = ['cart:lines:update', 'cart:updated', 'cart:change', 'shopify:cart:lines-update', 'cart:empty-rendered'];
+      emptyCheckEvents.forEach(evt => {
+        document.addEventListener(evt, function(e) {
+          setTimeout(() => {
+            const drawer = document.getElementById('cart-drawer');
+            if (drawer && (drawer.hasAttribute('open') || drawer.querySelector('dialog[open]'))) {
+              const emptyContainer = document.querySelector('.boat-empty-cart-container');
+              if (emptyContainer) {
+                startAutoCloseTimer();
+              }
+            }
+          }, 250);
+        });
+      });
+
+      // Mutation observer on cart-drawer
       const drawerElem = document.getElementById('cart-drawer');
       if (drawerElem) {
         const observer = new MutationObserver(function() {
-          if (drawerElem.hasAttribute('open')) {
+          const isOpen = drawerElem.hasAttribute('open') || Boolean(drawerElem.querySelector('dialog[open]'));
+          if (isOpen) {
             const isCartEmpty = Boolean(drawerElem.querySelector('.cart-drawer--empty, .boat-empty-cart-container'));
             if (isCartEmpty && !progressInterval) {
               setTimeout(startAutoCloseTimer, 200);
@@ -1480,7 +1385,7 @@
             cancelTimer(false);
           }
         });
-        observer.observe(drawerElem, { attributes: true, attributeFilter: ['open'] });
+        observer.observe(drawerElem, { attributes: true, subtree: true, attributeFilter: ['open', 'class'] });
       }
     })();
 })();

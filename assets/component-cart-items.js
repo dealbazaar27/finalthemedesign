@@ -179,6 +179,8 @@ export class CartItemsComponent extends createViewEventElement(Component) {
       startViewTransition(() => {
         document.getElementById('cart-drawer-heading')?.remove();
         this.replaceChildren(clone);
+        document.dispatchEvent(new CustomEvent('cart:empty-rendered', { bubbles: true }));
+        if (typeof window.startBoatEmptyAutoClose === 'function') setTimeout(window.startBoatEmptyAutoClose, 200);
       }, [this.isDrawer ? 'empty-cart-drawer' : 'empty-cart-page']);
 
       return;
