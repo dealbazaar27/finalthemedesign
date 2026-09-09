@@ -834,37 +834,88 @@ a.boat-megamenu-card,
   background: #f0f0f0;
 }
 
+.category-hero__main {
+  position: relative;
+}
+
 .category-hero__slider-nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
+  color: #111111;
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   z-index: 5;
-  transition: all 0.2s ease;
-  font-size: 1.4rem;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease, visibility 0.3s ease;
+  font-size: 1.6rem;
   line-height: 1;
 }
 
-.category-hero__slider-nav:hover {
-  background: #ffffff;
-  transform: translateY(-50%) scale(1.1);
+/* Desktop: Hidden by default, smooth slide-in on hover */
+@media (min-width: 769px) {
+  .category-hero__slider-nav {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .category-hero__slider-nav--prev {
+    left: 20px;
+    transform: translateY(-50%) translateX(-12px);
+  }
+
+  .category-hero__slider-nav--next {
+    right: 20px;
+    transform: translateY(-50%) translateX(12px);
+  }
+
+  .category-hero__main:hover .category-hero__slider-nav,
+  .category-hero__main:focus-within .category-hero__slider-nav {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .category-hero__main:hover .category-hero__slider-nav--prev,
+  .category-hero__main:focus-within .category-hero__slider-nav--prev {
+    transform: translateY(-50%) translateX(0);
+  }
+
+  .category-hero__main:hover .category-hero__slider-nav--next,
+  .category-hero__main:focus-within .category-hero__slider-nav--next {
+    transform: translateY(-50%) translateX(0);
+  }
+
+  .category-hero__slider-nav:hover {
+    background: #ffffff;
+    transform: translateY(-50%) scale(1.1) !important;
+  }
 }
 
-.category-hero__slider-nav--prev {
-  left: 16px;
-}
-
-.category-hero__slider-nav--next {
-  right: 16px;
+/* Mobile Arrows */
+@media (max-width: 768px) {
+  .category-hero__slider-nav {
+    opacity: 0.9;
+    visibility: visible;
+    width: 32px;
+    height: 32px;
+    font-size: 1.1rem;
+    transform: translateY(-50%);
+  }
+  .category-hero__slider-nav--prev {
+    left: 8px;
+  }
+  .category-hero__slider-nav--next {
+    right: 8px;
+  }
 }
 
 /* Slider Pagination Dots */
