@@ -287,52 +287,54 @@
   {% comment %} --- Dedicated Collapsible Bill Breakdown (SS 3) --- {% endcomment %}
   <div class="boat-bill-card is-collapsed" id="BoatBillCard">
     <div class="boat-bill-collapse-body collapsed" id="BoatBillCollapseBody">
-      <div class="boat-bill-row">
-        <span class="boat-bill-label">MRP Total:</span>
-        <span class="boat-bill-value">{{ total_compare_price | money }}</span>
-      </div>
-
-      {% if mrp_discount > 0 %}
+      <div class="boat-bill-collapse-inner">
         <div class="boat-bill-row">
-          <span class="boat-bill-label">MRP Discount:</span>
-          <span class="boat-bill-value text-green">- {{ mrp_discount | money }}</span>
+          <span class="boat-bill-label">MRP Total:</span>
+          <span class="boat-bill-value">{{ total_compare_price | money }}</span>
         </div>
-      {% endif %}
 
-      <div class="boat-bill-row">
-        <span class="boat-bill-label">Cart Subtotal:</span>
-        <span class="boat-bill-value">{{ cart.items_subtotal_price | money }}</span>
-      </div>
+        {% if mrp_discount > 0 %}
+          <div class="boat-bill-row">
+            <span class="boat-bill-label">MRP Discount:</span>
+            <span class="boat-bill-value text-green">- {{ mrp_discount | money }}</span>
+          </div>
+        {% endif %}
 
-      {% comment %} Show all applied Automatic Discounts & Coupon Codes {% endcomment %}
-      {% if cart.discount_applications.size > 0 %}
-        {% for discount in cart.discount_applications %}
-          {% if discount.type == 'automatic' %}
-            <div class="boat-bill-row">
-              <span class="boat-bill-label">✨ Auto Discount ({{ discount.title }}):</span>
-              <span class="boat-bill-value text-green">- {{ discount.total_allocated_amount | money }}</span>
-            </div>
-          {% endif %}
-        {% endfor %}
-      {% endif %}
+        <div class="boat-bill-row">
+          <span class="boat-bill-label">Cart Subtotal:</span>
+          <span class="boat-bill-value">{{ cart.items_subtotal_price | money }}</span>
+        </div>
 
-      {% if effective_voucher_discount > 0 and active_voucher_code != blank %}
-        <div class="boat-bill-row" id="BoatVoucherBreakdownRow">
-          <span class="boat-bill-label">
-            🏷️ Voucher ({{ active_voucher_code }}{% if active_voucher_percent > 0 %} - {{ active_voucher_percent }}% OFF{% endif %}):
+        {% comment %} Show all applied Automatic Discounts & Coupon Codes {% endcomment %}
+        {% if cart.discount_applications.size > 0 %}
+          {% for discount in cart.discount_applications %}
+            {% if discount.type == 'automatic' %}
+              <div class="boat-bill-row">
+                <span class="boat-bill-label">✨ Auto Discount ({{ discount.title }}):</span>
+                <span class="boat-bill-value text-green">- {{ discount.total_allocated_amount | money }}</span>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+
+        {% if effective_voucher_discount > 0 and active_voucher_code != blank %}
+          <div class="boat-bill-row" id="BoatVoucherBreakdownRow">
+            <span class="boat-bill-label">
+              🏷️ Voucher ({{ active_voucher_code }}{% if active_voucher_percent > 0 %} - {{ active_voucher_percent }}% OFF{% endif %}):
+            </span>
+            <span class="boat-bill-value text-green">- {{ effective_voucher_discount | money }}</span>
+          </div>
+        {% endif %}
+
+        <div class="boat-bill-row">
+          <span class="boat-bill-label">Delivery Charges:</span>
+          <span class="boat-bill-value" id="BoatDeliveryFeeValue" style="font-weight: 700; color: #0f172a;">
+            Calculated at checkout
           </span>
-          <span class="boat-bill-value text-green">- {{ effective_voucher_discount | money }}</span>
         </div>
-      {% endif %}
 
-      <div class="boat-bill-row">
-        <span class="boat-bill-label">Delivery Charges:</span>
-        <span class="boat-bill-value" id="BoatDeliveryFeeValue" style="font-weight: 700; color: #0f172a;">
-          Calculated at checkout
-        </span>
+        <div class="boat-bill-dashed-divider"></div>
       </div>
-
-      <div class="boat-bill-dashed-divider"></div>
     </div>
 
     {% comment %} --- Main To Pay Row + Arrow Toggle --- {% endcomment %}

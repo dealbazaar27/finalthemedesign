@@ -57,6 +57,35 @@
 
 {% if has_desktop_content or has_mobile_content %}
   <style>
+    .section-{{ section.id }} {
+      background-color: {{ section.settings.section_bg_color | default: '#f7f8fa' }} !important;
+    }
+    .section-{{ section.id }} .category-hero__sidebar {
+      background-color: {{ section.settings.sidebar_bg_color | default: '#ffffff' }} !important;
+    }
+    .section-{{ section.id }} .category-hero__sidebar-header {
+      color: {{ section.settings.sidebar_header_color | default: '#71778e' }} !important;
+    }
+    .section-{{ section.id }} .category-hero__sidebar-link {
+      color: {{ section.settings.sidebar_text_color | default: '#2c3038' }} !important;
+    }
+    .section-{{ section.id }} .category-hero__mobile-bar {
+      background-color: {{ section.settings.mobile_bar_bg | default: '#ffffff' }} !important;
+    }
+    .section-{{ section.id }} .category-hero__mobile-link {
+      background-color: {{ section.settings.mobile_pill_bg | default: '#f3f5f9' }} !important;
+      color: {{ section.settings.mobile_pill_text | default: '#1a1a1a' }} !important;
+    }
+    .section-{{ section.id }} .category-hero__slide-title {
+      color: {{ section.settings.slide_title_color | default: '#ffffff' }} !important;
+    }
+    .section-{{ section.id }} .category-hero__slide-subtitle {
+      color: {{ section.settings.slide_subtitle_color | default: '#ffffff' }} !important;
+    }
+    .section-{{ section.id }} .category-hero__slide-btn {
+      background-color: {{ section.settings.slide_button_bg | default: '#ffffff' }} !important;
+      color: {{ section.settings.slide_button_text | default: '#000000' }} !important;
+    }
     .section-{{ section.id }} .category-hero__main,
     .section-{{ section.id }} .category-hero__slide {
       min-height: {{ section.settings.hero_height_desktop }}px;
@@ -505,6 +534,76 @@
   "tag": "section",
   "class": "section-category-hero-banner",
   "settings": [
+        {
+      "type": "header",
+      "content": "🎨 Colors & Styling"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background Color",
+      "default": "#f7f8fa"
+    },
+    {
+      "type": "color",
+      "id": "sidebar_bg_color",
+      "label": "Sidebar Card Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "sidebar_header_color",
+      "label": "Sidebar Header Color",
+      "default": "#71778e"
+    },
+    {
+      "type": "color",
+      "id": "sidebar_text_color",
+      "label": "Sidebar Links Color",
+      "default": "#2c3038"
+    },
+    {
+      "type": "color",
+      "id": "mobile_bar_bg",
+      "label": "Mobile Categories Bar Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "mobile_pill_bg",
+      "label": "Mobile Category Pill Background",
+      "default": "#f3f5f9"
+    },
+    {
+      "type": "color",
+      "id": "mobile_pill_text",
+      "label": "Mobile Category Pill Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "slide_title_color",
+      "label": "Banner Slide Title Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "slide_subtitle_color",
+      "label": "Banner Slide Subtitle Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "slide_button_bg",
+      "label": "Banner Button Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "slide_button_text",
+      "label": "Banner Button Text Color",
+      "default": "#000000"
+    },
     {
       "type": "header",
       "content": "Page Display Options"

@@ -21,6 +21,24 @@
   .section-{{ section.id }}-padding {
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.background_color | default: '#ffffff' }} !important;
+  }
+  .section-{{ section.id }}-padding .boat-top-picks__heading {
+    color: {{ section.settings.heading_color | default: '#0f172a' }} !important;
+  }
+  .section-{{ section.id }}-padding .boat-top-picks__heading span.underline-red::after {
+    background-color: {{ section.settings.accent_color | default: '#d8232a' }} !important;
+  }
+  .section-{{ section.id }}-padding .boat-top-picks__view-all {
+    color: {{ section.settings.view_all_color | default: '#1e293b' }} !important;
+  }
+  .section-{{ section.id }}-padding .boat-top-picks__tab {
+    background-color: {{ section.settings.tab_inactive_bg | default: '#f1f5f9' }} !important;
+    color: {{ section.settings.tab_inactive_text | default: '#64748b' }} !important;
+  }
+  .section-{{ section.id }}-padding .boat-top-picks__tab.active {
+    background-color: {{ section.settings.tab_active_bg | default: '#000000' }} !important;
+    color: {{ section.settings.tab_active_text | default: '#ffffff' }} !important;
   }
 
   /* --- Top Picks Section Wrapper --- */
@@ -974,6 +992,58 @@
   "tag": "section",
   "class": "section-boat-top-picks",
   "settings": [
+        {
+      "type": "header",
+      "content": "🎨 Colors & Typography Settings"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Section Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Text Color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent / Underline Color",
+      "default": "#d8232a"
+    },
+    {
+      "type": "color",
+      "id": "view_all_color",
+      "label": "View All Link Color",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_bg",
+      "label": "Active Tab Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_text",
+      "label": "Active Tab Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tab_inactive_bg",
+      "label": "Inactive Tab Background",
+      "default": "#f1f5f9"
+    },
+    {
+      "type": "color",
+      "id": "tab_inactive_text",
+      "label": "Inactive Tab Text Color",
+      "default": "#64748b"
+    },
     {
       "type": "text",
       "id": "title",

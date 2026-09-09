@@ -56,13 +56,22 @@
 {% render 'boat-product-card-script' %}
 
 <style>
+  #BoatFeaturedSection-{{ section.id }} {
+    background-color: {{ section.settings.background_color | default: '#ffffff' }} !important;
+  }
+  #BoatFeaturedSection-{{ section.id }} .boat-featured-title {
+    color: {{ section.settings.heading_color | default: '#0f172a' }} !important;
+  }
+  #BoatFeaturedSection-{{ section.id }} .boat-featured-subheading {
+    color: {{ section.settings.subheading_color | default: '#d8232a' }} !important;
+  }
+  #BoatFeaturedSection-{{ section.id }} .boat-featured-view-all {
+    color: {{ section.settings.view_all_color | default: '#0f172a' }} !important;
+  }
   .boat-featured-section {
     width: 100%;
     padding: 48px 0;
-    background: #ffffff;
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    color: #0f172a;
-    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   .boat-featured-container {
@@ -193,6 +202,34 @@
   "tag": "section",
   "class": "boat-featured-products-section",
   "settings": [
+        {
+      "type": "header",
+      "content": "🎨 Colors & Typography Settings"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Section Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Text Color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading Text Color",
+      "default": "#d8232a"
+    },
+    {
+      "type": "color",
+      "id": "view_all_color",
+      "label": "View All Link Color",
+      "default": "#0f172a"
+    },
     {
       "type": "text",
       "id": "heading",

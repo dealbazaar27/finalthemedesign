@@ -2143,3 +2143,31 @@ a.boat-megamenu-card,
     grid-template-columns: 1fr !important;
   }
 }
+
+/* Compact Mobile Hero Spacing Fix */
+@media (max-width: 768px) {
+  .category-hero-section {
+    padding: 6px 0 12px 0 !important;
+  }
+  .category-hero__container {
+    padding: 0 10px !important;
+    gap: 6px !important;
+  }
+  .category-hero__mobile-bar {
+    padding: 6px 10px !important;
+    margin-bottom: 6px !important;
+    border-radius: 10px !important;
+  }
+  .category-hero__mobile-list {
+    gap: 6px !important;
+  }
+  .category-hero__mobile-link {
+    padding: 5px 10px !important;
+    font-size: 0.76rem !important;
+    gap: 5px !important;
+  }
+  .category-hero__mobile-icon {
+    width: 15px !important;
+    height: 15px !important;
+  }
+}

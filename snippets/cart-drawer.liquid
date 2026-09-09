@@ -383,23 +383,28 @@
   }
 
   .boat-bill-collapse-body {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 6px !important;
-    overflow: hidden !important;
-    transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, margin 0.25s ease !important;
-    max-height: 400px !important;
+    display: grid !important;
+    grid-template-rows: 1fr !important;
+    transition: grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, margin 0.2s ease !important;
     opacity: 1 !important;
   }
 
   .boat-bill-collapse-body.collapsed,
   .boat-bill-card.is-collapsed .boat-bill-collapse-body {
-    max-height: 0 !important;
+    grid-template-rows: 0fr !important;
     opacity: 0 !important;
     margin: 0 !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
     pointer-events: none !important;
+  }
+
+  .boat-bill-collapse-inner {
+    overflow: hidden !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
   }
 
   .boat-bill-row {
