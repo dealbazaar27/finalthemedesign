@@ -384,19 +384,21 @@
 
   .boat-bill-collapse-body {
     display: grid !important;
-    grid-template-rows: 1fr !important;
-    transition: grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, margin 0.2s ease !important;
-    opacity: 1 !important;
-  }
-
-  .boat-bill-collapse-body.collapsed,
-  .boat-bill-card.is-collapsed .boat-bill-collapse-body {
     grid-template-rows: 0fr !important;
     opacity: 0 !important;
     margin: 0 !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
     pointer-events: none !important;
+    transition: grid-template-rows 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, margin 0.25s ease !important;
+  }
+
+  .boat-bill-card.is-open .boat-bill-collapse-body,
+  .boat-bill-collapse-body.is-open {
+    grid-template-rows: 1fr !important;
+    opacity: 1 !important;
+    margin-bottom: 8px !important;
+    pointer-events: auto !important;
   }
 
   .boat-bill-collapse-inner {
@@ -487,14 +489,13 @@
   }
 
   .boat-bill-arrow {
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    transform: rotate(180deg) !important; /* Open = Arrow Up */
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transform: rotate(0deg) !important; /* Default = Arrow Down */
   }
 
-  .boat-bill-collapse-body.collapsed ~ .boat-bill-main-row .boat-bill-arrow,
-  .boat-bill-toggle-btn.collapsed .boat-bill-arrow,
-  .boat-bill-card.is-collapsed .boat-bill-arrow {
-    transform: rotate(0deg) !important; /* Collapsed = Arrow Down */
+  .boat-bill-card.is-open .boat-bill-arrow,
+  .boat-bill-toggle-btn.is-open .boat-bill-arrow {
+    transform: rotate(180deg) !important; /* Open = Arrow Up */
   }
 
   .cart-drawer__content {

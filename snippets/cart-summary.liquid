@@ -285,8 +285,8 @@
   {% endif %}
 
   {% comment %} --- Dedicated Collapsible Bill Breakdown (SS 3) --- {% endcomment %}
-  <div class="boat-bill-card is-collapsed" id="BoatBillCard">
-    <div class="boat-bill-collapse-body collapsed" id="BoatBillCollapseBody">
+  <div class="boat-bill-card" id="BoatBillCard">
+    <div class="boat-bill-collapse-body" id="BoatBillCollapseBody">
       <div class="boat-bill-collapse-inner">
         <div class="boat-bill-row">
           <span class="boat-bill-label">MRP Total:</span>
@@ -353,7 +353,7 @@
         <span class="boat-bill-view-tag">Check Bill Details</span>
       </div>
 
-      <div class="boat-bill-toggle-btn collapsed" id="BoatBillToggleBtn" aria-label="Toggle bill breakdown">
+      <div class="boat-bill-toggle-btn" id="BoatBillToggleBtn" aria-label="Toggle bill breakdown">
         <svg class="boat-bill-arrow" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
@@ -370,22 +370,25 @@
       event.preventDefault();
       event.stopPropagation();
     }
-    const card = document.getElementById('BoatBillCard') || (event && event.currentTarget ? event.currentTarget.closest('.boat-bill-card') : null);
+    const card = (event && event.target) ? event.target.closest('.boat-bill-card') : (document.querySelector('.cart-drawer .boat-bill-card') || document.querySelector('.boat-bill-card'));
     if (!card) return;
-    const body = card.querySelector('#BoatBillCollapseBody') || card.querySelector('.boat-bill-collapse-body');
-    const btn = card.querySelector('#BoatBillToggleBtn') || card.querySelector('.boat-bill-toggle-btn');
-    if (!body) return;
-
-    if (body.classList.contains('collapsed')) {
-      body.classList.remove('collapsed');
-      if (btn) btn.classList.remove('collapsed');
-      card.classList.remove('is-collapsed');
-    } else {
-      body.classList.add('collapsed');
-      if (btn) btn.classList.add('collapsed');
-      card.classList.add('is-collapsed');
-    }
+    card.classList.toggle('is-open');
   };
+
+  // Delegated click listener to guarantee 100% 1-click open anywhere on the main row or card
+  if (!window._boatBillClickBound) {
+    window._boatBillClickBound = true;
+    document.addEventListener('click', function(e) {
+      const row = e.target.closest('.boat-bill-main-row');
+      if (row) {
+        const card = row.closest('.boat-bill-card');
+        if (card) {
+          e.preventDefault();
+          card.classList.toggle('is-open');
+        }
+      }
+    });
+  }
 
   // Live Fetch Shopify Backend Shipping Rates
   window.fetchBackendShippingRate = function() {

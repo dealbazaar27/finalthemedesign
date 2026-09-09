@@ -1902,8 +1902,8 @@ a.boat-megamenu-card,
 
 /* Bright Yellow Strip Bar (Category & Rating) */
 .boat-pick-card__yellow-bar {
-  background: #1ca863 !important;
-  color: #ffffff !important;
+  background: #ffc700 !important;
+  color: #000000 !important;
   font-size: 0.76rem !important;
   font-weight: 800 !important;
   font-family: 'Plus Jakarta Sans', sans-serif !important;
@@ -1921,7 +1921,7 @@ a.boat-megamenu-card,
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   font-weight: 800 !important;
-  color: #ffffff !important;
+  color: #000000 !important;
 }
 
 .boat-pick-card__rating {

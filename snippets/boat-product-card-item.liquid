@@ -59,7 +59,10 @@
     assign featured_img = product.featured_media.preview_image
   endif
 
-  assign form_id = 'BoatProductCardForm-' | append: product.id | append: '-' | append: selected_variant.id
+    # Feature strip color settings (Customizable via Section or Theme Settings)
+  assign strip_bg = section.settings.card_strip_bg | default: settings.card_feature_strip_bg | default: '#ffc700'
+  assign strip_text = section.settings.card_strip_text | default: settings.card_feature_strip_text | default: '#000000'
+assign form_id = 'BoatProductCardForm-' | append: product.id | append: '-' | append: selected_variant.id
 %}
 
 <style>
@@ -182,8 +185,8 @@
   }
 
   .boat-pick-card__yellow-bar {
-    background: #1ca863 !important;
-    color: #ffffff !important;
+    background: #ffc700 !important;
+    color: #000000 !important;
     font-size: 0.76rem !important;
     font-weight: 800 !important;
     font-family: 'Plus Jakarta Sans', sans-serif !important;
@@ -203,7 +206,7 @@
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     font-weight: 800 !important;
-    color: #ffffff !important;
+    color: #000000 !important;
   }
 
   .boat-pick-card__rating {
@@ -457,9 +460,9 @@
   </div>
 
   {% comment %} --- Yellow Feature Banner Bar (Collection Name + Rating) --- {% endcomment %}
-  <div class="boat-pick-card__yellow-bar" style="{% if display_tag == blank %}justify-content: flex-end;{% endif %}">
+  <div class="boat-pick-card__yellow-bar" style="background: {{ strip_bg }} !important; color: {{ strip_text }} !important; {% if display_tag == blank %}justify-content: flex-end;{% endif %}">
     {% if display_tag != blank %}
-      <span class="boat-pick-card__collection-name">{{ display_tag }}</span>
+      <span class="boat-pick-card__collection-name" style="color: {{ strip_text }} !important;">{{ display_tag }}</span>
     {% endif %}
     <span class="boat-pick-card__rating">⭐ {{ calc_rating }}</span>
   </div>

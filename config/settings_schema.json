@@ -8,6 +8,27 @@
     "theme_support_url": "https://support.shopify.com/"
   },
   {
+    "name": "🏷️ Product Cards & Badges",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Category / Sale Strip Banner"
+      },
+      {
+        "type": "color",
+        "id": "card_feature_strip_bg",
+        "label": "Card Feature Strip Background",
+        "default": "#ffc700"
+      },
+      {
+        "type": "color",
+        "id": "card_feature_strip_text",
+        "label": "Card Feature Strip Text Color",
+        "default": "#000000"
+      }
+    ]
+  },
+  {
     "name": "t:names.logo_and_favicon",
     "settings": [
       {
