@@ -2143,3 +2143,201 @@ a.boat-megamenu-card,
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ==========================================================================
+   Ultra-Clean Modern Header Actions (Cart, Account, Search, Hamburger)
+   ========================================================================== */
+.header-actions__action,
+.header-actions__action.button-unstyled,
+button.header-actions__action,
+.header-actions__action.button,
+.mobile-search-icon-action button {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 8px !important;
+  margin: 0 !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  color: #1e293b !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  position: relative !important;
+  text-decoration: none !important;
+}
+
+.header-actions__action:hover,
+.mobile-search-icon-action button:hover,
+.header__icon--menu:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  transform: translateY(-1px);
+}
+
+.header-actions__action:active,
+.mobile-search-icon-action button:active {
+  transform: scale(0.95);
+}
+
+/* --- Crisp Micro Cart Bubble Badge --- */
+.header-actions__cart-icon {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.header-actions__cart-icon svg {
+  width: 22px !important;
+  height: 22px !important;
+  stroke-width: 1.8 !important;
+}
+
+.header-actions__cart-icon .cart-bubble,
+.cart-bubble {
+  position: absolute !important;
+  top: -4px !important;
+  right: -7px !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  background: #ef4444 !important;
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  border-radius: 9999px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 4px !important;
+  border: 1.8px solid #ffffff !important;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.45) !important;
+  z-index: 10 !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  aspect-ratio: auto !important;
+}
+
+.cart-bubble__background {
+  display: none !important;
+}
+
+.cart-bubble__text,
+.cart-bubble__text-count {
+  color: #ffffff !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* --- Mobile Header Bar Polishing --- */
+@media screen and (max-width: 768px) {
+  .header__row--top {
+    padding-block: 8px !important;
+    background: #ffffff !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02) !important;
+  }
+
+  .header-logo,
+  .header-logo .header-logo__link,
+  .header-logo h1,
+  .header-logo h2 {
+    font-size: 1.35rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.4px !important;
+    color: #0f172a !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  header-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 2px !important;
+  }
+
+  .header__icon--menu,
+  .header__drawer-toggle {
+    width: 38px !important;
+    height: 38px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    border: none !important;
+    color: #1e293b !important;
+    cursor: pointer !important;
+    transition: background 0.2s ease !important;
+  }
+}
+
+/* --- Category Nav Pills Underneath Header (Horizontal Scroll) --- */
+.category-hero__mobile-bar {
+  background: #ffffff !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  padding: 8px 12px !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
+}
+
+.category-hero__mobile-bar::-webkit-scrollbar {
+  display: none !important;
+}
+
+.category-hero__mobile-list {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+  flex-wrap: nowrap !important;
+}
+
+.category-hero__mobile-item {
+  flex-shrink: 0 !important;
+}
+
+.category-hero__mobile-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: #f8fafc !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 9999px !important;
+  padding: 6px 14px !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  color: #334155 !important;
+  text-decoration: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  white-space: nowrap !important;
+}
+
+.category-hero__mobile-link:hover,
+.category-hero__mobile-link:active,
+.category-hero__mobile-link.active {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #0f172a !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.15) !important;
+}
+
+.category-hero__mobile-link.active span,
+.category-hero__mobile-link:hover span {
+  color: #ffffff !important;
+}
+
