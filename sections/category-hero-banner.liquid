@@ -474,7 +474,7 @@
       const dots = document.querySelectorAll('#HeroDots-{{ section.id }} .category-hero__dot');
 
       if (slider) {
-        const speed = ({{ section.settings.autoplay_speed | default: 5 }}) * 1000;
+        const speed = Math.max(2, parseInt({{ section.settings.autoplay_speed | default: 5 }})) * 1000;
         let autoplayTimer = setInterval(nextSlide, speed);
 
         function updateDots(index) {
@@ -509,23 +509,32 @@
           updateDots(currentIndex);
         });
 
-        slider.addEventListener('mouseenter', () => clearInterval(autoplayTimer));
-        slider.addEventListener('mouseleave', () => {
-          clearInterval(autoplayTimer);
-          autoplayTimer = setInterval(nextSlide, speed);
-        });
+        {% if section.settings.pause_autoplay_on_hover != false %}
+          slider.addEventListener('mouseenter', () => clearInterval(autoplayTimer));
+          slider.addEventListener('mouseleave', () => {
+            clearInterval(autoplayTimer);
+            autoplayTimer = setInterval(nextSlide, speed);
+          });
+        {% endif %}
 
-        // Mobile touch & hover interaction for navigation arrows
+        // Mobile touch & hover interaction for navigation arrows & pause
         const heroMain = slider.closest('.category-hero__main');
         if (heroMain) {
           let touchTimer;
           heroMain.addEventListener('touchstart', () => {
             heroMain.classList.add('is-interacting');
+            {% if section.settings.pause_autoplay_on_hover != false %}
+              clearInterval(autoplayTimer);
+            {% endif %}
             clearTimeout(touchTimer);
           }, { passive: true });
 
           heroMain.addEventListener('touchend', () => {
             clearTimeout(touchTimer);
+            {% if section.settings.pause_autoplay_on_hover != false %}
+              clearInterval(autoplayTimer);
+              autoplayTimer = setInterval(nextSlide, speed);
+            {% endif %}
             touchTimer = setTimeout(() => {
               heroMain.classList.remove('is-interacting');
             }, 3000);
@@ -824,7 +833,7 @@
     },
     {
       "type": "header",
-      "content": "Hero Banner Auto-Play Settings"
+      "content": "⏱️ Hero Banner Auto-Play & Duration Settings"
     },
     {
       "type": "checkbox",
@@ -835,12 +844,19 @@
     {
       "type": "range",
       "id": "autoplay_speed",
-      "min": 3,
-      "max": 10,
+      "min": 2,
+      "max": 15,
       "step": 1,
       "unit": "s",
-      "label": "Banner Auto-Play Speed",
+      "label": "Banner Auto-Play Duration (Seconds)",
+      "info": "Adjust how many seconds each banner slide stays before auto-transitioning (e.g. 3s, 5s, 8s).",
       "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_autoplay_on_hover",
+      "label": "Pause Auto-Play on Hover / Touch",
+      "default": true
     },
     {
       "type": "header",
