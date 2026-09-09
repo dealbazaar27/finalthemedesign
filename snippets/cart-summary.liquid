@@ -9,16 +9,41 @@
 {% render 'cart-typography-styles' %}
 
 {% liquid
-  if settings.currency_code_enabled_cart_total
-    assign total_price = cart.total_price | money_with_currency
-  else
-    assign total_price = cart.total_price | money_without_trailing_zeros
+  # 1. Total cart quantity across items
+  assign total_cart_qty = 0
+  for item in cart.items
+    assign total_cart_qty = total_cart_qty | plus: item.quantity
+  endfor
+
+  # 2. Determine Tier Quantity Discount (DEAL6 = 2+, DEAL7 = 5+, DEAL10 = 10+)
+  assign auto_tier_code = ''
+  assign auto_tier_percent = 0
+  assign auto_tier_badge = ''
+
+  if total_cart_qty >= 10
+    assign auto_tier_code = 'DEAL10'
+    assign auto_tier_percent = 10
+    assign auto_tier_badge = 'MOST SAVINGS'
+  elsif total_cart_qty >= 5
+    assign auto_tier_code = 'DEAL7'
+    assign auto_tier_percent = 7
+    assign auto_tier_badge = 'BEST VALUE'
+  elsif total_cart_qty >= 2
+    assign auto_tier_code = 'DEAL6'
+    assign auto_tier_percent = 6
+    assign auto_tier_badge = 'MOST POPULAR'
   endif
 
-  # Total discounts applied by Shopify (Automatic Discounts + Coupon Codes)
+  # 3. Calculate Tier Discount Amount
+  assign tier_calculated_discount = 0
+  if auto_tier_percent > 0
+    assign tier_calculated_discount = cart.items_subtotal_price | times: auto_tier_percent | divided_by: 100
+  endif
+
+  # 4. Total discounts applied by Shopify (Automatic Discounts + Coupon Codes)
   assign total_cart_discount = cart.total_discount | default: 0
 
-  # Calculate voucher / coupon discounts if any
+  # Calculate voucher / coupon discounts if any from Shopify backend
   assign voucher_discount = 0
   for discount in cart.cart_level_discount_applications
     assign voucher_discount = voucher_discount | plus: discount.total_allocated_amount
@@ -32,7 +57,48 @@
     assign voucher_discount = total_cart_discount
   endif
 
-  # Calculate MRP compare total if not passed from parent
+  # 5. Extract applied discount codes
+  assign discount_codes = cart.cart_level_discount_applications | where: 'type', 'discount_code' | map: 'title'
+  for item in cart.items
+    for allocation in item.line_level_discount_allocations
+      if allocation.discount_application.type == 'discount_code'
+        assign discount_codes = item.line_level_discount_allocations | slice: forloop.index0 | map: 'discount_application' | map: 'title' | concat: discount_codes
+      endif
+    endfor
+  endfor
+  assign discount_codes = discount_codes | uniq
+
+  # 6. Resolve Active Voucher Code and Effective Voucher Discount
+  assign active_voucher_code = ''
+  assign active_voucher_percent = 0
+  assign effective_voucher_discount = voucher_discount
+
+  if discount_codes.size > 0
+    assign active_voucher_code = discount_codes.first
+  elsif auto_tier_code != blank
+    assign active_voucher_code = auto_tier_code
+    assign active_voucher_percent = auto_tier_percent
+    if effective_voucher_discount == 0
+      assign effective_voucher_discount = tier_calculated_discount
+    endif
+  endif
+
+  # 7. Calculate Effective Total Price (subtracting voucher if not already in cart.total_price)
+  assign effective_total_cents = cart.total_price
+  if voucher_discount == 0 and effective_voucher_discount > 0
+    assign effective_total_cents = cart.total_price | minus: effective_voucher_discount
+    if effective_total_cents < 0
+      assign effective_total_cents = 0
+    endif
+  endif
+
+  if settings.currency_code_enabled_cart_total
+    assign total_price = effective_total_cents | money_with_currency
+  else
+    assign total_price = effective_total_cents | money_without_trailing_zeros
+  endif
+
+  # 8. Calculate MRP compare total if not passed from parent
   if total_compare_price == blank or total_compare_price == 0
     assign total_compare_price = 0
     for item in cart.items
@@ -46,7 +112,7 @@
     endfor
   endif
 
-  # Special Discount (MRP Discount)
+  # 9. Special Discount (MRP Discount)
   assign mrp_discount = 0
   if total_compare_price > cart.items_subtotal_price
     assign mrp_discount = total_compare_price | minus: cart.items_subtotal_price
@@ -80,20 +146,8 @@
       {% endif %}
 
       {% if settings.show_add_discount_code %}
-        {% liquid
-          assign discount_codes = cart.cart_level_discount_applications | where: 'type', 'discount_code' | map: 'title'
-          for item in cart.items
-            for allocation in item.line_level_discount_allocations
-              if allocation.discount_application.type == 'discount_code'
-                assign discount_codes = item.line_level_discount_allocations | slice: forloop.index0 | map: 'discount_application' | map: 'title' | concat: discount_codes
-              endif
-            endfor
-          endfor
-          assign discount_codes = discount_codes | uniq
-        %}
-
         {% capture cart_discount_accordion_children %}
-          <details {% if discount_codes.size > 0 or cart.discount_applications.size > 0 %}open{% endif %}>
+          <details {% if active_voucher_code != blank or discount_codes.size > 0 or cart.discount_applications.size > 0 %}open{% endif %}>
             <summary class="cart-discount__summary">
               <span class="cart-discount__label cart-primary-typography">Discount / Voucher Code</span>
               <span class="cart-totals__icon">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
@@ -103,7 +157,7 @@
                 <cart-discount-component {% if section_id != blank %}data-section-id="{{ section_id }}"{% endif %}>
                   <div class="cart-discount__content">
                     <form class="cart-discount__form" onsubmit="window.handleManualDiscountApply(event, this); return false;">
-                      <input id="cart-discount" class="cart-discount__input" type="text" name="discount" size="8" placeholder="Enter coupon code" required data-skip-node-update>
+                      <input id="cart-discount" class="cart-discount__input" type="text" name="discount" size="8" placeholder="Enter coupon code" value="{% if discount_codes.size == 0 and active_voucher_code != blank %}{{ active_voucher_code }}{% endif %}" data-skip-node-update>
                       <button type="submit" class="button cart-discount__button">{{ 'actions.apply' | t }}</button>
                     </form>
                   </div>
@@ -149,9 +203,19 @@
                         </button>
                       </li>
                     {% endfor %}
-                  </ul>
 
-                  </div>
+                    {% if discount_codes.size == 0 and active_voucher_code != blank %}
+                      <li class="cart-discount__pill cart-discount__pill--auto-tier" data-discount-code="{{ active_voucher_code }}" style="background: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 7px 12px; margin-top: 8px; display: flex; align-items: center; justify-content: space-between;">
+                        <p class="cart-discount__pill-code" style="color: #065f46; font-weight: 800; font-size: 0.82rem; margin: 0; display: flex; align-items: center; gap: 6px;">
+                          <span>🏷️</span>
+                          <span><strong>{{ active_voucher_code }}</strong> ({{ active_voucher_percent }}% OFF Applied)</span>
+                        </p>
+                        <button type="button" onclick="window.removeAutoTierDiscount(event, '{{ active_voucher_code }}')" class="cart-discount__pill-remove svg-wrapper svg-wrapper--smaller button-unstyled" aria-label="Remove {{ active_voucher_code }}" style="cursor: pointer; color: #065f46; padding: 2px;">
+                          {{- 'icon-filters-close.svg' | inline_asset_content -}}
+                        </button>
+                      </li>
+                    {% endif %}
+                  </ul>
                 </cart-discount-component>
               </div>
             </div>
@@ -162,7 +226,7 @@
     </div>
   {% endif %}
 
-  {% comment %} --- Real Shopify Automatic Discount Celebration Banner --- {% endcomment %}
+  {% comment %} --- Real Shopify Automatic Discount / Tier Discount Celebration Banner --- {% endcomment %}
   {% assign auto_discounts = cart.discount_applications | where: 'type', 'automatic' %}
   {% if auto_discounts.size > 0 %}
     {% for discount in auto_discounts %}
@@ -176,6 +240,16 @@
         <span class="db-auto-banner-code">- {{ discount.total_allocated_amount | money_without_trailing_zeros }}</span>
       </div>
     {% endfor %}
+  {% elsif active_voucher_code != blank and effective_voucher_discount > 0 %}
+    <div class="db-auto-discount-banner" style="display: flex;">
+      <div class="db-auto-banner-left">
+        <span class="db-auto-banner-icon">🎉</span>
+        <span class="db-auto-banner-text">
+          <strong>{{ active_voucher_code }}</strong> Applied! {{ active_voucher_percent }}% Discount added to your order
+        </span>
+      </div>
+      <span class="db-auto-banner-code">- {{ effective_voucher_discount | money_without_trailing_zeros }}</span>
+    </div>
   {% elsif cart.total_discount > 0 and discount_codes.size == 0 %}
     <div class="db-auto-discount-banner" style="display: flex;">
       <div class="db-auto-banner-left">
@@ -190,7 +264,7 @@
 
   {% comment %} --- Dedicated Collapsible Bill Breakdown (SS 3) --- {% endcomment %}
   {% assign has_any_discount = false %}
-  {% if cart.discount_applications.size > 0 or voucher_discount > 0 or cart.total_discount > 0 %}
+  {% if cart.discount_applications.size > 0 or effective_voucher_discount > 0 or cart.total_discount > 0 %}
     {% assign has_any_discount = true %}
   {% endif %}
 
@@ -227,10 +301,12 @@
             <span class="boat-bill-value text-green">- {{ discount.total_allocated_amount | money_without_trailing_zeros }}</span>
           </div>
         {% endfor %}
-      {% elsif voucher_discount > 0 %}
-        <div class="boat-bill-row">
-          <span class="boat-bill-label">Voucher Discount:</span>
-          <span class="boat-bill-value text-green">- {{ voucher_discount | money_without_trailing_zeros }}</span>
+      {% elsif effective_voucher_discount > 0 %}
+        <div class="boat-bill-row" id="BoatVoucherBreakdownRow">
+          <span class="boat-bill-label">
+            🏷️ Voucher ({% if active_voucher_code != blank %}{{ active_voucher_code }}{% if active_voucher_percent > 0 %} - {{ active_voucher_percent }}% OFF{% endif %}{% else %}Discount{% endif %}):
+          </span>
+          <span class="boat-bill-value text-green">- {{ effective_voucher_discount | money_without_trailing_zeros }}</span>
         </div>
       {% endif %}
 
@@ -270,6 +346,8 @@
 </div>
 
 <script>
+  window.activeCartTierCode = '{{ active_voucher_code }}';
+
   if (typeof window.toggleBoatBillBreakdown !== 'function') {
     window.toggleBoatBillBreakdown = function() {
       const body = document.getElementById('BoatBillCollapseBody');
@@ -292,7 +370,7 @@
       const toPayEl = document.querySelector('.boat-to-pay-value');
       if (!deliveryEl) return;
 
-      const cartSubtotalCents = {{ cart.total_price }};
+      const cartSubtotalCents = {{ effective_total_cents }};
       const country = '{{ localization.country.name | default: "Pakistan" }}';
       const url = `/cart/shipping_rates.json?shipping_address%5Bcountry%5D=${encodeURIComponent(country)}`;
 
@@ -333,14 +411,90 @@
     }
   })();
 
-  // Clear any leftover fake voucher sessions so Shopify Automatic Discounts apply cleanly
+  // Clear any leftover fake voucher sessions
   try {
     sessionStorage.removeItem('dealbazaar_applied_coupon');
     sessionStorage.removeItem('dealbazaar_auto_discount');
-    window.lastAutoCodeApplied = '';
   } catch(e) {}
 
-  // Direct 100% Reliable Manual Discount Apply & Remove Handlers (for customer typed codes)
+  // Auto-sync discount code with Shopify cart session in background
+  (function() {
+    const activeCode = '{{ active_voucher_code }}';
+    if (!activeCode) return;
+    try {
+      if (sessionStorage.getItem('boat_dismissed_tier_code') === activeCode) return;
+      if (window.lastSyncedTierCode === activeCode) return;
+      window.lastSyncedTierCode = activeCode;
+
+      fetch('/cart/update.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          discount: activeCode
+        })
+      }).catch(function() {});
+    } catch(e) {}
+  })();
+
+  // Checkout Redirect with Active Discount Code
+  window.handleBoatCheckoutRedirect = function(event) {
+    const code = window.activeCartTierCode || '{{ active_voucher_code }}';
+    if (code) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      window.location.href = '/checkout?discount=' + encodeURIComponent(code);
+      return false;
+    }
+  };
+
+  // Remove Auto-Tier Voucher Handler
+  window.removeAutoTierDiscount = async function(event, code) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    try {
+      sessionStorage.setItem('boat_dismissed_tier_code', code);
+    } catch(e) {}
+
+    window.activeCartTierCode = '';
+
+    const pill = document.querySelector('.cart-discount__pill--auto-tier');
+    if (pill) pill.remove();
+
+    const banner = document.querySelector('.db-auto-discount-banner');
+    if (banner) banner.style.display = 'none';
+
+    const voucherRow = document.getElementById('BoatVoucherBreakdownRow');
+    if (voucherRow) voucherRow.style.display = 'none';
+
+    const input = document.getElementById('cart-discount');
+    if (input && input.value === code) input.value = '';
+
+    const toPayEl = document.querySelector('.boat-to-pay-value');
+    if (toPayEl) {
+      toPayEl.textContent = '{{ cart.items_subtotal_price | money_without_trailing_zeros }}';
+    }
+
+    try {
+      await fetch('/cart/update.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          discount: '',
+          sections: ['cart-drawer-section']
+        })
+      });
+    } catch(e) {}
+
+    if (typeof window.fetchBackendShippingRate === 'function') {
+      window.fetchBackendShippingRate();
+    }
+  };
+
+  // Direct Manual Discount Apply & Remove Handlers
   window.handleManualDiscountApply = async function(event, form, directCode) {
     if (event) {
       event.preventDefault();
@@ -349,6 +503,11 @@
     const input = form ? form.querySelector('input[name="discount"]') : document.getElementById('cart-discount');
     const code = (directCode || (input ? input.value : '') || '').trim();
     if (!code) return;
+
+    try {
+      sessionStorage.removeItem('boat_dismissed_tier_code');
+    } catch(e) {}
+    window.activeCartTierCode = code;
 
     const btn = form ? form.querySelector('button[type="submit"]') : document.querySelector('.cart-discount__button');
     const origText = btn ? btn.innerHTML : 'Apply';
@@ -361,7 +520,6 @@
     if (errBox) errBox.classList.add('hidden');
 
     try {
-      // Update cart via Shopify AJAX API
       const res = await fetch('/cart/update.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -409,6 +567,10 @@
       event.preventDefault();
       event.stopPropagation();
     }
+    try {
+      sessionStorage.setItem('boat_dismissed_tier_code', code);
+    } catch(e) {}
+    window.activeCartTierCode = '';
 
     try {
       const res = await fetch('/cart/update.js', {
@@ -519,6 +681,7 @@
       disabled
     {% endif %}
     form="cart-form"
+    onclick="window.handleBoatCheckoutRedirect(event)"
   >
     <span class="button-text">
       PROCEED TO CHECKOUT ➔

@@ -118,9 +118,34 @@
                   endif
                 endfor
 
+                # Tier quantity deals: 2+ items = 6%, 5+ items = 7%, 10+ items = 10%
+                assign total_cart_qty = 0
+                for item in cart.items
+                  assign total_cart_qty = total_cart_qty | plus: item.quantity
+                endfor
+
+                assign auto_tier_pct = 0
+                if total_cart_qty >= 10
+                  assign auto_tier_pct = 10
+                elsif total_cart_qty >= 5
+                  assign auto_tier_pct = 7
+                elsif total_cart_qty >= 2
+                  assign auto_tier_pct = 6
+                endif
+
+                assign tier_savings_cents = 0
+                if auto_tier_pct > 0
+                  assign tier_savings_cents = cart.items_subtotal_price | times: auto_tier_pct | divided_by: 100
+                endif
+
+                assign effective_cart_total = cart.total_price
+                if cart.total_discount == 0 and tier_savings_cents > 0
+                  assign effective_cart_total = cart.total_price | minus: tier_savings_cents
+                endif
+
                 assign total_savings = 0
-                if total_compare_price > cart.total_price
-                  assign total_savings = total_compare_price | minus: cart.total_price
+                if total_compare_price > effective_cart_total
+                  assign total_savings = total_compare_price | minus: effective_cart_total
                 endif
               %}
 
