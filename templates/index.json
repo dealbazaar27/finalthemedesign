@@ -80,7 +80,7 @@
         "promo_banner_2"
       ],
       "settings": {
-        "section_bg_color": "{{ settings.color_palette.background }}",
+        "section_bg_color": "#f7f8fa",
         "sidebar_bg_color": "#ffffff",
         "sidebar_header_color": "#71778e",
         "sidebar_text_color": "#2c3038",
