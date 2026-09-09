@@ -14,6 +14,7 @@
     "logo_height": 100,
     "logo_height_mobile": 81,
     "favicon": "shopify://shop_images/lg_4585374f-1b0e-42c0-8461-afd7c18e17e2.png",
+    "search_featured_collection": "sale",
     "dock_center_link": "shopify://collections/sale",
     "dock_center_icon": "bolt",
     "page_text_color": "{{ settings.color_palette.foreground }}",
@@ -116,13 +117,6 @@
     "checkout_input_background_color_mode": "white",
     "checkout_logo_position": "left",
     "checkout_logo_size": "medium",
-    "content_for_index": [],
-    "color_palette": {
-      "background": "#ffffff",
-      "foreground": "#000000",
-      "color1": "#333333",
-      "color2": "#DFDFDF"
-    },
     "empty_cart_autoclose_enable": true,
     "empty_cart_autoclose_duration": 4,
     "empty_cart_autoclose_desktop_only": false,
@@ -153,7 +147,14 @@
     "empty_cart_chip_bg": "#ffffff",
     "empty_cart_chip_text_color": "#1e293b",
     "empty_cart_chip_border": "#e2e8f0",
-    "empty_cart_progress_color": "#00b853"
+    "empty_cart_progress_color": "#00b853",
+    "content_for_index": [],
+    "color_palette": {
+      "background": "#ffffff",
+      "foreground": "#000000",
+      "color1": "#333333",
+      "color2": "#DFDFDF"
+    }
   },
   "presets": {
     "Horizon": {
