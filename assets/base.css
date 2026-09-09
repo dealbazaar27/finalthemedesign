@@ -2309,8 +2309,8 @@ main > .shopify-section:first-child .section:not(.disable-section-top-offset) {
 }
 
 .boat-pick-card__yellow-bar {
-  background: #ffc700 !important;
-  color: #000000 !important;
+  background: #1ca863 !important;
+  color: #ffffff !important;
   font-size: 0.78rem !important;
   font-weight: 800 !important;
   font-family: 'Plus Jakarta Sans', sans-serif !important;
@@ -2328,7 +2328,7 @@ main > .shopify-section:first-child .section:not(.disable-section-top-offset) {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   font-weight: 800 !important;
-  color: #000000 !important;
+  color: #ffffff !important;
 }
 
 .boat-pick-card__rating {
