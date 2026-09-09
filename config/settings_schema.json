@@ -2279,5 +2279,155 @@
         "default": "equal-width-buttons"
       }
     ]
+  },
+  {
+    "name": "Checkout",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Banner"
+      },
+      {
+        "type": "image_picker",
+        "id": "checkout_header_image",
+        "label": "Banner image",
+        "info": "1000 x 400px recommended"
+      },
+      {
+        "type": "header",
+        "content": "Logo"
+      },
+      {
+        "type": "image_picker",
+        "id": "checkout_logo_image",
+        "label": "Logo image"
+      },
+      {
+        "type": "select",
+        "id": "checkout_logo_position",
+        "label": "Position",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ],
+        "default": "left"
+      },
+      {
+        "type": "select",
+        "id": "checkout_logo_size",
+        "label": "Size",
+        "options": [
+          {
+            "value": "small",
+            "label": "Small"
+          },
+          {
+            "value": "medium",
+            "label": "Medium"
+          },
+          {
+            "value": "large",
+            "label": "Large"
+          }
+        ],
+        "default": "medium"
+      },
+      {
+        "type": "header",
+        "content": "Main content area"
+      },
+      {
+        "type": "image_picker",
+        "id": "checkout_body_background_image",
+        "label": "Background image"
+      },
+      {
+        "type": "color",
+        "id": "checkout_body_background_color",
+        "label": "Background color",
+        "default": "#ffffff"
+      },
+      {
+        "type": "select",
+        "id": "checkout_input_background_color_mode",
+        "label": "Input fields background",
+        "options": [
+          {
+            "value": "white",
+            "label": "White"
+          },
+          {
+            "value": "transparent",
+            "label": "Transparent"
+          }
+        ],
+        "default": "white"
+      },
+      {
+        "type": "header",
+        "content": "Order summary sidebar"
+      },
+      {
+        "type": "image_picker",
+        "id": "checkout_sidebar_background_image",
+        "label": "Background image"
+      },
+      {
+        "type": "color",
+        "id": "checkout_sidebar_background_color",
+        "label": "Background color",
+        "default": "#f8fafc"
+      },
+      {
+        "type": "header",
+        "content": "Typography"
+      },
+      {
+        "type": "font_picker",
+        "id": "checkout_heading_font",
+        "label": "Heading font",
+        "default": "helvetica_n7"
+      },
+      {
+        "type": "font_picker",
+        "id": "checkout_body_font",
+        "label": "Body font",
+        "default": "helvetica_n4"
+      },
+      {
+        "type": "header",
+        "content": "Colors"
+      },
+      {
+        "type": "color",
+        "id": "checkout_accent_color",
+        "label": "Accents & Links",
+        "default": "#00b853",
+        "info": "Used for links, active field focus borders, and checkboxes."
+      },
+      {
+        "type": "color",
+        "id": "checkout_button_color",
+        "label": "Primary Buttons",
+        "default": "#00b853",
+        "info": "Used for Pay now, Complete order, and primary action buttons."
+      },
+      {
+        "type": "color",
+        "id": "checkout_error_color",
+        "label": "Errors",
+        "default": "#ef4444"
+      }
+    ]
   }
 ]
