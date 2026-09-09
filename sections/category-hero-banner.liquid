@@ -514,6 +514,23 @@
           clearInterval(autoplayTimer);
           autoplayTimer = setInterval(nextSlide, speed);
         });
+
+        // Mobile touch & hover interaction for navigation arrows
+        const heroMain = slider.closest('.category-hero__main');
+        if (heroMain) {
+          let touchTimer;
+          heroMain.addEventListener('touchstart', () => {
+            heroMain.classList.add('is-interacting');
+            clearTimeout(touchTimer);
+          }, { passive: true });
+
+          heroMain.addEventListener('touchend', () => {
+            clearTimeout(touchTimer);
+            touchTimer = setTimeout(() => {
+              heroMain.classList.remove('is-interacting');
+            }, 3000);
+          }, { passive: true });
+        }
       }
     {% endif %}
 
