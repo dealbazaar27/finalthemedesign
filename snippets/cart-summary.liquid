@@ -434,135 +434,122 @@
     sessionStorage.removeItem('dealbazaar_auto_discount');
   } catch(e) {}
 
-  // 100% Dynamic Synchronization of the 3 Tier Codes: DEAL6 (2+), DEAL7 (5+), DEAL10 (10+)
-  window.syncBoatTierDiscount = async function() {
-    if (window.isBoatSyncingTier) return;
-    try {
-      const res = await fetch('/cart.js', { headers: { 'Accept': 'application/json' } });
-      const cart = await res.json();
-      if (!cart) return;
+  // 100% Dynamic & Seamless Background Synchronization of the 3 Tier Codes: DEAL6 (2+), DEAL7 (5+), DEAL10 (10+)
+  window.syncBoatTierDiscount = function() {
+    clearTimeout(window.boatTierSyncDebounceTimer);
+    window.boatTierSyncDebounceTimer = setTimeout(async function() {
+      if (window.isBoatSyncingTier) return;
+      try {
+        const res = await fetch('/cart.js', { headers: { 'Accept': 'application/json' } });
+        const cart = await res.json();
+        if (!cart) return;
 
-      let totalQty = 0;
-      if (cart.items && cart.items.length > 0) {
-        cart.items.forEach(function(item) {
-          totalQty += (item.quantity || 0);
-        });
-      }
-
-      // Determine required tier code based on cart quantity
-      let targetCode = '';
-      if (totalQty >= 10) {
-        targetCode = 'DEAL10';
-      } else if (totalQty >= 5) {
-        targetCode = 'DEAL7';
-      } else if (totalQty >= 2) {
-        targetCode = 'DEAL6';
-      }
-
-      // Check applied discount codes
-      const appliedCodes = (cart.discount_applications || [])
-        .filter(function(app) { return app.type === 'discount_code'; })
-        .map(function(app) { return app.title; });
-
-      const isTier = function(c) {
-        return c === 'DEAL6' || c === 'DEAL7' || c === 'DEAL10';
-      };
-
-      const hasCustom = appliedCodes.some(function(c) { return !isTier(c); });
-      // If customer has entered a custom promo code, preserve it
-      if (hasCustom) return;
-
-      const currentTier = appliedCodes.find(isTier) || '';
-
-      // Check if user dismissed this specific tier code manually
-      if (targetCode && sessionStorage.getItem('boat_dismissed_tier_code') === targetCode) {
-        return;
-      }
-
-      // If already matching, no update needed
-      if (currentTier === targetCode) return;
-
-      window.isBoatSyncingTier = true;
-      window.activeCartTierCode = targetCode;
-
-      const updateRes = await fetch('/cart/update.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          discount: targetCode,
-          sections: ['cart-drawer-section']
-        })
-      });
-      const updateData = await updateRes.json();
-
-      if (updateData && updateData.sections && updateData.sections['cart-drawer-section']) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(updateData.sections['cart-drawer-section'], 'text/html');
-        const newSection = doc.getElementById('shopify-section-cart-drawer-section');
-        const liveSection = document.getElementById('shopify-section-cart-drawer-section');
-
-        if (newSection && liveSection) {
-          const liveItems = liveSection.querySelector('.cart-drawer__items');
-          const newItems = newSection.querySelector('.cart-drawer__items');
-          if (liveItems && newItems) liveItems.innerHTML = newItems.innerHTML;
-
-          const liveSummary = liveSection.querySelector('.cart-drawer__summary');
-          const newSummary = newSection.querySelector('.cart-drawer__summary');
-          if (liveSummary && newSummary) liveSummary.innerHTML = newSummary.innerHTML;
+        let totalQty = 0;
+        if (cart.items && cart.items.length > 0) {
+          cart.items.forEach(function(item) {
+            totalQty += (item.quantity || 0);
+          });
         }
-      }
 
-      if (typeof window.fetchBackendShippingRate === 'function') {
-        window.fetchBackendShippingRate();
+        // Determine required tier code based on cart quantity
+        let targetCode = '';
+        if (totalQty >= 10) {
+          targetCode = 'DEAL10';
+        } else if (totalQty >= 5) {
+          targetCode = 'DEAL7';
+        } else if (totalQty >= 2) {
+          targetCode = 'DEAL6';
+        }
+
+        // Check applied discount codes
+        const appliedCodes = (cart.discount_applications || [])
+          .filter(function(app) { return app.type === 'discount_code'; })
+          .map(function(app) { return app.title; });
+
+        const isTier = function(c) {
+          return c === 'DEAL6' || c === 'DEAL7' || c === 'DEAL10';
+        };
+
+        const hasCustom = appliedCodes.some(function(c) { return !isTier(c); });
+        // If customer has entered a custom promo code, preserve it
+        if (hasCustom) return;
+
+        const currentTier = appliedCodes.find(isTier) || '';
+
+        // Check if user dismissed this specific tier code manually
+        if (targetCode && sessionStorage.getItem('boat_dismissed_tier_code') === targetCode) {
+          return;
+        }
+
+        // If already matching, no sync needed
+        if (currentTier === targetCode) {
+          window.activeCartTierCode = targetCode;
+          return;
+        }
+
+        window.isBoatSyncingTier = true;
+        window.activeCartTierCode = targetCode;
+
+        // Silent background update to Shopify cart session without destructive innerHTML overwrites
+        await fetch('/cart/update.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            discount: targetCode
+          })
+        });
+
+        if (typeof window.fetchBackendShippingRate === 'function') {
+          window.fetchBackendShippingRate();
+        }
+      } catch(err) {
+        console.warn('Boat tier sync error:', err);
+      } finally {
+        window.isBoatSyncingTier = false;
       }
-    } catch(err) {
-      console.warn('Boat tier sync error:', err);
-    } finally {
-      window.isBoatSyncingTier = false;
-    }
+    }, 150);
   };
 
-  // Run tier sync immediately
+  // Run tier sync seamlessly
   window.syncBoatTierDiscount();
 
-  // Attach global event listeners so quantity changes instantly update DEAL6 / DEAL7 / DEAL10
+  // Attach global event listeners for instant and smooth discount tracking
   if (!window.hasBoatCartUpdateListener) {
     window.hasBoatCartUpdateListener = true;
 
-    document.addEventListener('shopify:cart:lines-update', function(e) {
-      if (e && e.promise) {
-        e.promise.then(function() {
-          window.syncBoatTierDiscount();
-        });
-      } else {
-        setTimeout(window.syncBoatTierDiscount, 300);
-      }
+    document.addEventListener('shopify:cart:lines-update', function() {
+      window.syncBoatTierDiscount();
     });
 
     document.addEventListener('change', function(e) {
       if (e.target && (e.target.matches('.quantity-selector__input') || e.target.name === 'updates[]')) {
-        setTimeout(window.syncBoatTierDiscount, 400);
+        window.syncBoatTierDiscount();
       }
     });
 
     document.addEventListener('click', function(e) {
       if (e.target && e.target.closest('.quantity-selector__button, [name="minus"], [name="plus"]')) {
-        setTimeout(window.syncBoatTierDiscount, 500);
+        window.syncBoatTierDiscount();
       }
     });
   }
 
-  // Checkout Redirect with Active Discount Code
+  // Checkout Redirect with Instant Tactile Feedback & Active Discount Code
   window.handleBoatCheckoutRedirect = function(event) {
-    const code = window.activeCartTierCode || '{{ active_voucher_code }}';
-    if (code) {
-      if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-      window.location.href = '/checkout?discount=' + encodeURIComponent(code);
-      return false;
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
     }
+    const btn = document.getElementById('checkout');
+    if (btn) {
+      btn.style.opacity = '0.85';
+      btn.style.pointerEvents = 'none';
+      btn.innerHTML = '<span class="button-text" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;"><span class="boat-checkout-spinner"></span> SECURING ORDER...</span>';
+    }
+    const code = window.activeCartTierCode || '{{ active_voucher_code }}';
+    const checkoutUrl = code ? '/checkout?discount=' + encodeURIComponent(code) : '/checkout';
+    window.location.href = checkoutUrl;
+    return false;
   };
 
   // Remove Auto-Tier Voucher Handler
@@ -578,10 +565,18 @@
     window.activeCartTierCode = '';
 
     const pill = document.querySelector('.cart-discount__pill--auto-tier');
-    if (pill) pill.remove();
+    if (pill) {
+      pill.style.opacity = '0';
+      pill.style.transform = 'scale(0.95)';
+      setTimeout(() => pill.remove(), 150);
+    }
 
     const banner = document.querySelector('.db-auto-discount-banner');
-    if (banner) banner.style.display = 'none';
+    if (banner) {
+      banner.style.opacity = '0';
+      banner.style.transform = 'translateY(-4px)';
+      setTimeout(() => banner.style.display = 'none', 150);
+    }
 
     const voucherRow = document.getElementById('BoatVoucherBreakdownRow');
     if (voucherRow) voucherRow.style.display = 'none';
@@ -599,8 +594,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
-          discount: '',
-          sections: ['cart-drawer-section']
+          discount: ''
         })
       });
     } catch(e) {}
@@ -629,7 +623,7 @@
     const origText = btn ? btn.innerHTML : 'Apply';
     if (btn) {
       btn.disabled = true;
-      btn.innerHTML = '<span style="font-size:12px;">Applying...</span>';
+      btn.innerHTML = '<span style="font-size:12px;display:inline-flex;align-items:center;gap:4px;"><span class="boat-checkout-spinner" style="width:10px;height:10px;border-width:1.5px;"></span> Applying...</span>';
     }
 
     const errBox = document.querySelector('.cart-discount__error');
@@ -649,17 +643,10 @@
       if (data.sections && data.sections['cart-drawer-section']) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(data.sections['cart-drawer-section'], 'text/html');
-        const newSection = doc.getElementById('shopify-section-cart-drawer-section');
-        const liveSection = document.getElementById('shopify-section-cart-drawer-section');
-
-        if (newSection && liveSection) {
-          const liveItems = liveSection.querySelector('.cart-drawer__items');
-          const newItems = newSection.querySelector('.cart-drawer__items');
-          if (liveItems && newItems) liveItems.innerHTML = newItems.innerHTML;
-
-          const liveSummary = liveSection.querySelector('.cart-drawer__summary');
-          const newSummary = newSection.querySelector('.cart-drawer__summary');
-          if (liveSummary && newSummary) liveSummary.innerHTML = newSummary.innerHTML;
+        const newSummary = doc.querySelector('.cart-drawer__summary');
+        const liveSummary = document.querySelector('.cart-drawer__summary');
+        if (liveSummary && newSummary) {
+          liveSummary.innerHTML = newSummary.innerHTML;
         }
       }
 
@@ -701,17 +688,10 @@
       if (data.sections && data.sections['cart-drawer-section']) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(data.sections['cart-drawer-section'], 'text/html');
-        const newSection = doc.getElementById('shopify-section-cart-drawer-section');
-        const liveSection = document.getElementById('shopify-section-cart-drawer-section');
-
-        if (newSection && liveSection) {
-          const liveItems = liveSection.querySelector('.cart-drawer__items');
-          const newItems = newSection.querySelector('.cart-drawer__items');
-          if (liveItems && newItems) liveItems.innerHTML = newItems.innerHTML;
-
-          const liveSummary = liveSection.querySelector('.cart-drawer__summary');
-          const newSummary = newSection.querySelector('.cart-drawer__summary');
-          if (liveSummary && newSummary) liveSummary.innerHTML = newSummary.innerHTML;
+        const newSummary = doc.querySelector('.cart-drawer__summary');
+        const liveSummary = document.querySelector('.cart-drawer__summary');
+        if (liveSummary && newSummary) {
+          liveSummary.innerHTML = newSummary.innerHTML;
         }
       }
 
@@ -739,7 +719,9 @@
     box-shadow: 0 2px 6px rgba(16, 185, 129, 0.12);
     box-sizing: border-box;
     width: 100%;
-    animation: dbSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: dbSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity;
   }
 
   .db-auto-banner-left {
@@ -775,10 +757,39 @@
     flex-shrink: 0;
   }
 
+  .cart-discount__pill--auto-tier {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    will-change: transform, opacity;
+  }
+
+  .cart__checkout-button {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cart__checkout-button:active {
+    transform: scale(0.985) !important;
+  }
+
+  .boat-checkout-spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: boatSpin 0.6s linear infinite;
+  }
+
+  @keyframes boatSpin {
+    to { transform: rotate(360deg); }
+  }
+
   @keyframes dbSlideIn {
     from {
       opacity: 0;
-      transform: translateY(-6px);
+      transform: translateY(-5px);
     }
     to {
       opacity: 1;
