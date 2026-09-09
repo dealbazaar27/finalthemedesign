@@ -77,14 +77,18 @@
       color: {{ section.settings.mobile_pill_text | default: '#1a1a1a' }} !important;
     }
     .section-{{ section.id }} .category-hero__slide-title {
-      color: {{ section.settings.slide_title_color | default: '#ffffff' }} !important;
+      color: {{ section.settings.slide_title_color | default: '#ffffff' }};
     }
     .section-{{ section.id }} .category-hero__slide-subtitle {
-      color: {{ section.settings.slide_subtitle_color | default: '#ffffff' }} !important;
+      color: {{ section.settings.slide_subtitle_color | default: '#ffffff' }};
     }
     .section-{{ section.id }} .category-hero__slide-btn {
-      background-color: {{ section.settings.slide_button_bg | default: '#ffffff' }} !important;
-      color: {{ section.settings.slide_button_text | default: '#000000' }} !important;
+      background-color: {{ section.settings.slide_button_bg | default: '#ffffff' }};
+      color: {{ section.settings.slide_button_text | default: '#000000' }};
+    }
+    .section-{{ section.id }} .category-hero__promo-badge {
+      background-color: {{ section.settings.promo_badge_bg | default: 'rgba(0, 0, 0, 0.8)' }};
+      color: {{ section.settings.promo_badge_text | default: '#ffffff' }};
     }
     .section-{{ section.id }} .category-hero__main,
     .section-{{ section.id }} .category-hero__slide {
@@ -292,6 +296,13 @@
             <div class="category-hero__slider" id="HeroSlider-{{ section.id }}">
               {% if slide_blocks.size > 0 %}
                 {% for block in slide_blocks %}
+                  {% liquid
+                    assign s_title_color = block.settings.title_color | default: section.settings.slide_title_color | default: '#ffffff'
+                    assign s_subtitle_color = block.settings.subtitle_color | default: section.settings.slide_subtitle_color | default: '#ffffff'
+                    assign s_btn_bg = block.settings.button_bg_color | default: section.settings.slide_button_bg | default: '#ffffff'
+                    assign s_btn_text = block.settings.button_text_color | default: section.settings.slide_button_text | default: '#000000'
+                    assign s_align = block.settings.text_alignment | default: 'left'
+                  %}
                   <div class="category-hero__slide" {{ block.shopify_attributes }}>
                     {% if block.settings.slide_url != blank %}
                       <a href="{{ block.settings.slide_url }}" class="category-hero__slide-link">
@@ -307,16 +318,20 @@
                       <div class="category-hero__slide-img-desktop" style="background: linear-gradient(135deg, #111111 0%, #2b303a 100%); width:100%; height:100%;"></div>
                     {% endif %}
 
-                    {% if block.settings.title != blank or block.settings.subtitle != blank %}
-                      <div class="category-hero__slide-overlay">
+                    {% if block.settings.title != blank or block.settings.subtitle != blank or block.settings.button_label != blank %}
+                      <div class="category-hero__slide-overlay" style="text-align: {{ s_align }}; align-items: {% if s_align == 'center' %}center{% elsif s_align == 'right' %}flex-end{% else %}flex-start{% endif %};">
                         {% if block.settings.title != blank %}
-                          <h2 class="category-hero__slide-title">{{ block.settings.title }}</h2>
+                          <h2 class="category-hero__slide-title" style="color: {{ s_title_color }} !important;">{{ block.settings.title }}</h2>
                         {% endif %}
                         {% if block.settings.subtitle != blank %}
-                          <p class="category-hero__slide-subtitle">{{ block.settings.subtitle }}</p>
+                          <p class="category-hero__slide-subtitle" style="color: {{ s_subtitle_color }} !important;">{{ block.settings.subtitle }}</p>
                         {% endif %}
                         {% if block.settings.button_label != blank %}
-                          <span class="category-hero__slide-btn">{{ block.settings.button_label }}</span>
+                          {% if block.settings.button_link != blank and block.settings.slide_url == blank %}
+                            <a href="{{ block.settings.button_link }}" class="category-hero__slide-btn" style="background-color: {{ s_btn_bg }} !important; color: {{ s_btn_text }} !important;">{{ block.settings.button_label }}</a>
+                          {% else %}
+                            <span class="category-hero__slide-btn" style="background-color: {{ s_btn_bg }} !important; color: {{ s_btn_text }} !important;">{{ block.settings.button_label }}</span>
+                          {% endif %}
                         {% endif %}
                       </div>
                     {% endif %}
@@ -365,14 +380,19 @@
             {% assign promo_blocks = section.blocks | where: 'type', 'promo_banner' %}
             {% if promo_blocks.size > 0 %}
               {% for block in promo_blocks limit: 2 %}
+                {% liquid
+                  assign p_badge_bg = block.settings.badge_bg_color | default: section.settings.promo_badge_bg | default: 'rgba(0, 0, 0, 0.8)'
+                  assign p_badge_text = block.settings.badge_text_color | default: section.settings.promo_badge_text | default: '#ffffff'
+                  assign p_title_color = block.settings.title_color | default: section.settings.promo_title_color | default: '#ffffff'
+                %}
                 <a href="{{ block.settings.link | default: '#' }}" class="category-hero__promo-card" {{ block.shopify_attributes }}>
                   {% if block.settings.badge_text != blank %}
-                    <span class="category-hero__promo-badge">{{ block.settings.badge_text }}</span>
+                    <span class="category-hero__promo-badge" style="background-color: {{ p_badge_bg }} !important; color: {{ p_badge_text }} !important;">{{ block.settings.badge_text }}</span>
                   {% endif %}
                   {% if block.settings.image != blank %}
                     <img src="{{ block.settings.image | image_url: width: 600 }}" alt="{{ block.settings.title | escape }}" loading="lazy" width="300" height="180">
                   {% else %}
-                    <div style="background: #1e2530; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; padding: 20px;">
+                    <div style="background: #1e2530; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: {{ p_title_color }} !important; font-weight: 700; padding: 20px;">
                       {{ block.settings.title | default: 'PROMO BANNER' }}
                     </div>
                   {% endif %}
@@ -605,6 +625,24 @@
       "default": "#000000"
     },
     {
+      "type": "color",
+      "id": "promo_title_color",
+      "label": "Side Promo Title Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "promo_badge_bg",
+      "label": "Side Promo Badge Background",
+      "default": "rgba(0, 0, 0, 0.8)"
+    },
+    {
+      "type": "color",
+      "id": "promo_badge_text",
+      "label": "Side Promo Badge Text Color",
+      "default": "#ffffff"
+    },
+    {
       "type": "header",
       "content": "Page Display Options"
     },
@@ -800,6 +838,41 @@
           "type": "url",
           "id": "button_link",
           "label": "Button Link"
+        },
+        {
+          "type": "header",
+          "content": "🎨 Slide Colors & Alignment"
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Slide Title Color (Overrides Section Setting)"
+        },
+        {
+          "type": "color",
+          "id": "subtitle_color",
+          "label": "Slide Subtitle Color (Overrides Section Setting)"
+        },
+        {
+          "type": "color",
+          "id": "button_bg_color",
+          "label": "Slide Button Background Color"
+        },
+        {
+          "type": "color",
+          "id": "button_text_color",
+          "label": "Slide Button Text Color"
+        },
+        {
+          "type": "select",
+          "id": "text_alignment",
+          "label": "Text Alignment",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "left"
         }
       ]
     },
@@ -829,6 +902,26 @@
           "type": "url",
           "id": "link",
           "label": "Banner Link"
+        },
+        {
+          "type": "header",
+          "content": "🎨 Promo Colors"
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Title Color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "badge_bg_color",
+          "label": "Badge Background Color"
+        },
+        {
+          "type": "color",
+          "id": "badge_text_color",
+          "label": "Badge Text Color"
         }
       ]
     }
