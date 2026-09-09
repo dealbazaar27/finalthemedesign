@@ -99,276 +99,123 @@
     "settings": [
       {
         "type": "header",
-        "content": "GENERAL SETTINGS"
+        "content": "GLOBAL MOBILE BOTTOM BAR"
       },
       {
         "type": "checkbox",
         "id": "enable_mobile_bottom_nav",
-        "label": "Enable Mobile Bottom Dock",
-        "default": true
+        "label": "Enable Mobile Bottom Navigation",
+        "default": true,
+        "info": "Displays a sticky modern app-like navigation bar at the bottom of mobile screens across all pages."
+      },
+      {
+        "type": "link_list",
+        "id": "mobile_bottom_menu",
+        "label": "Mobile Bottom Menu (Optional)",
+        "info": "Select a menu from Navigation. If empty, the default 5 items (Home, Categories, Center Sale, Cart, WhatsApp) will be used."
+      },
+      {
+        "type": "header",
+        "content": "COLORS & STYLING"
       },
       {
         "type": "color",
         "id": "dock_bg_color",
-        "label": "Dock Background Color",
+        "label": "Background Color",
         "default": "#ffffff"
       },
       {
         "type": "color",
         "id": "dock_active_color",
-        "label": "Active Item / Highlight Color",
+        "label": "Active Icon / Highlight Color",
         "default": "#00b853"
       },
       {
         "type": "color",
         "id": "dock_inactive_color",
-        "label": "Inactive Text & Icon Color",
+        "label": "Inactive Icon & Text Color",
         "default": "#64748b"
       },
       {
         "type": "header",
-        "content": "SLOT 1 (DEFAULT: HOME)"
+        "content": "CENTER FLOATING BUTTON (OPTIONAL)"
       },
       {
         "type": "checkbox",
-        "id": "dock_item_1_enable",
-        "label": "Show Slot 1",
+        "id": "dock_show_center_bubble",
+        "label": "Enable Center Floating Bubble",
         "default": true
       },
       {
         "type": "text",
-        "id": "dock_item_1_label",
-        "label": "Slot 1 Label",
-        "default": "Home"
-      },
-      {
-        "type": "url",
-        "id": "dock_item_1_link",
-        "label": "Slot 1 Link",
-        "default": "/"
-      },
-      {
-        "type": "select",
-        "id": "dock_item_1_icon",
-        "label": "Slot 1 Icon",
-        "options": [
-          { "value": "home", "label": "Home" },
-          { "value": "shop", "label": "Shop Store" },
-          { "value": "grid", "label": "Categories Grid" },
-          { "value": "search", "label": "Search" },
-          { "value": "heart", "label": "Wishlist Heart" },
-          { "value": "user", "label": "User Profile" },
-          { "value": "cart", "label": "Cart Bag" },
-          { "value": "whatsapp", "label": "WhatsApp" }
-        ],
-        "default": "home"
-      },
-      {
-        "type": "header",
-        "content": "SLOT 2 (DEFAULT: CATEGORIES)"
-      },
-      {
-        "type": "checkbox",
-        "id": "dock_item_2_enable",
-        "label": "Show Slot 2",
-        "default": true
-      },
-      {
-        "type": "text",
-        "id": "dock_item_2_label",
-        "label": "Slot 2 Label",
-        "default": "Categories"
-      },
-      {
-        "type": "select",
-        "id": "dock_item_2_action",
-        "label": "Slot 2 Action",
-        "options": [
-          { "value": "open_categories_drawer", "label": "Open Menu / Categories Drawer" },
-          { "value": "open_search_modal", "label": "Open Search Modal" },
-          { "value": "open_link", "label": "Open Link (URL)" }
-        ],
-        "default": "open_categories_drawer"
-      },
-      {
-        "type": "url",
-        "id": "dock_item_2_link",
-        "label": "Slot 2 Link (if Open Link selected)",
-        "default": "/collections"
-      },
-      {
-        "type": "select",
-        "id": "dock_item_2_icon",
-        "label": "Slot 2 Icon",
-        "options": [
-          { "value": "grid", "label": "Categories Grid" },
-          { "value": "layers", "label": "Layers / Catalogs" },
-          { "value": "tag", "label": "Discount Tag" },
-          { "value": "fire", "label": "Hot Deals Flame" },
-          { "value": "shop", "label": "Shop Store" }
-        ],
-        "default": "grid"
-      },
-      {
-        "type": "header",
-        "content": "SLOT 3 (CENTER HIGHLIGHTED FLOATING BUBBLE)"
-      },
-      {
-        "type": "checkbox",
-        "id": "dock_item_center_enable",
-        "label": "Show Center Slot",
-        "default": true
-      },
-      {
-        "type": "checkbox",
-        "id": "dock_item_center_elevated",
-        "label": "Floating Elevated Bubble Style",
-        "default": true
-      },
-      {
-        "type": "text",
-        "id": "dock_item_center_label",
+        "id": "dock_center_label",
         "label": "Center Button Label",
         "default": "Sale"
       },
       {
         "type": "url",
-        "id": "dock_item_center_link",
+        "id": "dock_center_link",
         "label": "Center Button Link",
         "default": "/collections/all"
       },
       {
         "type": "select",
-        "id": "dock_item_center_icon",
+        "id": "dock_center_icon",
         "label": "Center Button Icon",
         "options": [
-          { "value": "bolt", "label": "Lightning Bolt ⚡" },
-          { "value": "flame", "label": "Hot Flame 🔥" },
-          { "value": "tag", "label": "Discount Tag 🏷️" },
-          { "value": "gift", "label": "Gift Box 🎁" },
-          { "value": "sparkle", "label": "Sparkle ✨" },
-          { "value": "cart", "label": "Cart Bag 🛍️" },
-          { "value": "whatsapp", "label": "WhatsApp 💬" },
-          { "value": "percentage", "label": "Percentage ％" },
-          { "value": "star", "label": "Star ★" }
+          {
+            "value": "bolt",
+            "label": "⚡ Lightning Bolt"
+          },
+          {
+            "value": "flame",
+            "label": "🔥 Hot Flame"
+          },
+          {
+            "value": "tag",
+            "label": "🏷️ Deals Tag"
+          },
+          {
+            "value": "gift",
+            "label": "🎁 Gift Box"
+          },
+          {
+            "value": "cart",
+            "label": "🛍️ Cart Bag"
+          },
+          {
+            "value": "whatsapp",
+            "label": "💬 WhatsApp"
+          },
+          {
+            "value": "sparkle",
+            "label": "✨ Sparkle"
+          }
         ],
         "default": "bolt"
       },
       {
         "type": "color",
-        "id": "dock_item_center_color_start",
-        "label": "Bubble Gradient Start Color",
+        "id": "dock_center_bg_1",
+        "label": "Center Gradient Start",
         "default": "#00b853"
       },
       {
         "type": "color",
-        "id": "dock_item_center_color_end",
-        "label": "Bubble Gradient End Color",
+        "id": "dock_center_bg_2",
+        "label": "Center Gradient End",
         "default": "#059669"
       },
       {
         "type": "header",
-        "content": "SLOT 4 (DEFAULT: CART)"
-      },
-      {
-        "type": "checkbox",
-        "id": "dock_item_4_enable",
-        "label": "Show Slot 4",
-        "default": true
+        "content": "WHATSAPP / HELPLINE NUMBER"
       },
       {
         "type": "text",
-        "id": "dock_item_4_label",
-        "label": "Slot 4 Label",
-        "default": "Cart"
-      },
-      {
-        "type": "select",
-        "id": "dock_item_4_action",
-        "label": "Slot 4 Action",
-        "options": [
-          { "value": "open_cart_drawer", "label": "Open Cart Drawer" },
-          { "value": "open_cart_page", "label": "Open Cart Page (/cart)" },
-          { "value": "open_link", "label": "Open Custom Link" }
-        ],
-        "default": "open_cart_drawer"
-      },
-      {
-        "type": "url",
-        "id": "dock_item_4_link",
-        "label": "Slot 4 Link (if Open Link selected)",
-        "default": "/cart"
-      },
-      {
-        "type": "checkbox",
-        "id": "dock_item_4_show_badge",
-        "label": "Show Live Item Count Badge",
-        "default": true
-      },
-      {
-        "type": "select",
-        "id": "dock_item_4_icon",
-        "label": "Slot 4 Icon",
-        "options": [
-          { "value": "cart_bag", "label": "Shopping Bag" },
-          { "value": "cart_trolley", "label": "Shopping Cart Trolley" },
-          { "value": "cart_basket", "label": "Shopping Basket" },
-          { "value": "heart", "label": "Wishlist Heart" }
-        ],
-        "default": "cart_bag"
-      },
-      {
-        "type": "header",
-        "content": "SLOT 5 (DEFAULT: WHATSAPP / SUPPORT / TRACK)"
-      },
-      {
-        "type": "checkbox",
-        "id": "dock_item_5_enable",
-        "label": "Show Slot 5",
-        "default": true
-      },
-      {
-        "type": "text",
-        "id": "dock_item_5_label",
-        "label": "Slot 5 Label",
-        "default": "WhatsApp"
-      },
-      {
-        "type": "select",
-        "id": "dock_item_5_action",
-        "label": "Slot 5 Action",
-        "options": [
-          { "value": "whatsapp_chat", "label": "Open WhatsApp Chat" },
-          { "value": "open_account", "label": "Open Account / Profile" },
-          { "value": "phone_call", "label": "Make Direct Phone Call" },
-          { "value": "open_link", "label": "Open Custom Link" }
-        ],
-        "default": "whatsapp_chat"
-      },
-      {
-        "type": "text",
-        "id": "dock_item_5_whatsapp_number",
-        "label": "WhatsApp Phone Number (e.g. 923102492119)",
-        "default": "923102492119"
-      },
-      {
-        "type": "url",
-        "id": "dock_item_5_link",
-        "label": "Slot 5 Link (if Open Link or Phone selected)",
-        "default": "https://wa.me/923102492119"
-      },
-      {
-        "type": "select",
-        "id": "dock_item_5_icon",
-        "label": "Slot 5 Icon",
-        "options": [
-          { "value": "whatsapp", "label": "WhatsApp" },
-          { "value": "user", "label": "User Profile" },
-          { "value": "phone", "label": "Phone Call" },
-          { "value": "headset", "label": "Customer Support Headset" },
-          { "value": "chat", "label": "Chat Bubble" }
-        ],
-        "default": "whatsapp"
+        "id": "dock_whatsapp_number",
+        "label": "WhatsApp Helpline Number",
+        "default": "923102492119",
+        "info": "Used automatically for WhatsApp links (e.g. 923102492119)"
       }
     ]
   },
