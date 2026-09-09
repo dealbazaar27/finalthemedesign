@@ -9,8 +9,11 @@
  */
 {
   "current": {
+    "logo": "shopify://shop_images/WhatsApp_Image_2026-09-09_at_17.03.51.jpg",
+    "logo_inverse": "shopify://shop_images/WhatsApp_Image_2026-09-09_at_17.03.51.jpg",
     "logo_height": 36,
-    "logo_height_mobile": 28,
+    "logo_height_mobile": 81,
+    "favicon": "shopify://shop_images/WhatsApp_Image_2026-09-09_at_17.03.51.jpg",
     "dock_center_link": "shopify://collections/sale",
     "dock_center_icon": "bolt",
     "page_text_color": "{{ settings.color_palette.foreground }}",
