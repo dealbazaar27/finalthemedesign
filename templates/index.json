@@ -26,7 +26,8 @@
             "subtitle_color": "",
             "button_bg_color": "",
             "button_text_color": "",
-            "text_alignment": "left"
+            "content_position_vertical": "center",
+            "content_position_horizontal": "left"
           }
         },
         "slide_item_dcG8rq": {
@@ -43,7 +44,8 @@
             "subtitle_color": "{{ settings.color_palette.foreground }}",
             "button_bg_color": "",
             "button_text_color": "",
-            "text_alignment": "left"
+            "content_position_vertical": "center",
+            "content_position_horizontal": "default"
           }
         },
         "promo_banner_1": {
@@ -92,6 +94,10 @@
         "promo_title_color": "#ffffff",
         "promo_badge_bg": "#000000cc",
         "promo_badge_text": "#ffffff",
+        "content_position_vertical": "bottom",
+        "content_position_horizontal": "left",
+        "show_arrows": true,
+        "show_dots": true,
         "show_only_on_homepage": true,
         "show_categories_on_collection_desktop": false,
         "show_categories_on_collection_mobile": true,
