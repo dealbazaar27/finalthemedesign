@@ -13,7 +13,7 @@
     "logo_inverse": "shopify://shop_images/lg.png",
     "logo_height": 54,
     "logo_height_mobile": 81,
-    "favicon": "shopify://shop_images/WhatsApp_Image_2026-09-09_at_17.03.51.jpg",
+    "favicon": "shopify://shop_images/lg_4585374f-1b0e-42c0-8461-afd7c18e17e2.png",
     "dock_center_link": "shopify://collections/sale",
     "dock_center_icon": "bolt",
     "page_text_color": "{{ settings.color_palette.foreground }}",
