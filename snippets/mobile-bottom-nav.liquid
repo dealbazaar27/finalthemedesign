@@ -190,17 +190,22 @@
     <span class="db-dock-label">Home</span>
   </a>
 
-  {% comment %} 2. Track Order Tab {% endcomment %}
-  <a href="/pages/track-order" class="db-dock-item {% if current_path contains '/pages/track-order' %}active{% endif %}">
+  {% comment %} 2. Categories Tab {% endcomment %}
+  <a 
+    href="/collections" 
+    class="db-dock-item {% if current_path contains '/collections' and current_path != '/collections/all' %}active{% endif %}"
+    onclick="openMobileCategories(event)"
+    aria-label="Categories"
+  >
     <div class="db-dock-icon-wrap">
-      <svg class="db-dock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="1" y="3" width="15" height="13" rx="1"></rect>
-        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-        <circle cx="5.5" cy="18.5" r="2.5"></circle>
-        <circle cx="18.5" cy="18.5" r="2.5"></circle>
+      <svg class="db-dock-icon" viewBox="0 0 24 24" fill="{% if current_path contains '/collections' and current_path != '/collections/all' %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+        <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+        <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
       </svg>
     </div>
-    <span class="db-dock-label">Track</span>
+    <span class="db-dock-label">Categories</span>
   </a>
 
   {% comment %} 3. Center Elevated Floating Bubble (SALE with text below) {% endcomment %}
@@ -256,6 +261,21 @@
 </nav>
 
 <script>
+  function openMobileCategories(e) {
+    const menuContainer = document.getElementById('Details-menu-drawer-container') || document.querySelector('header-drawer details');
+    if (menuContainer) {
+      if (e) e.preventDefault();
+      const summary = menuContainer.querySelector('summary');
+      if (summary) {
+        summary.click();
+        return;
+      }
+      menuContainer.setAttribute('open', '');
+      return;
+    }
+    // Fallback: regular link to /collections
+  }
+
   function openMobileCartDrawer(e) {
     if (e) e.preventDefault();
     const drawer = document.getElementById('cart-drawer');
