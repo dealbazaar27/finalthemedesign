@@ -341,7 +341,7 @@
     </div>
 
     {% comment %} --- Main To Pay Row + Arrow Toggle --- {% endcomment %}
-    <div class="boat-bill-main-row" onclick="toggleBoatBillBreakdown()">
+    <div class="boat-bill-main-row" onclick="window.toggleBoatBillBreakdown(event)">
       <div class="boat-bill-to-pay-left">
         <span class="boat-to-pay-label">To Pay:</span>
         <text-component
@@ -356,11 +356,11 @@
         <span class="boat-bill-view-tag">Check Bill Details</span>
       </div>
 
-      <button type="button" class="boat-bill-toggle-btn {% unless has_any_discount %}collapsed{% endunless %}" id="BoatBillToggleBtn" aria-label="Toggle bill breakdown">
+      <div class="boat-bill-toggle-btn {% unless has_any_discount %}collapsed{% endunless %}" id="BoatBillToggleBtn" aria-label="Toggle bill breakdown">
         <svg class="boat-bill-arrow" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
-      </button>
+      </div>
     </div>
   </div>
 </div>
@@ -368,20 +368,27 @@
 <script>
   window.activeCartTierCode = '{{ active_voucher_code }}';
 
-  if (typeof window.toggleBoatBillBreakdown !== 'function') {
-    window.toggleBoatBillBreakdown = function() {
-      const body = document.getElementById('BoatBillCollapseBody');
-      const btn = document.getElementById('BoatBillToggleBtn');
-      if (!body) return;
-      if (body.classList.contains('collapsed')) {
-        body.classList.remove('collapsed');
-        if (btn) btn.classList.remove('collapsed');
-      } else {
-        body.classList.add('collapsed');
-        if (btn) btn.classList.add('collapsed');
-      }
-    };
-  }
+  window.toggleBoatBillBreakdown = function(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    const card = document.getElementById('BoatBillCard') || (event && event.currentTarget ? event.currentTarget.closest('.boat-bill-card') : null);
+    if (!card) return;
+    const body = card.querySelector('#BoatBillCollapseBody') || card.querySelector('.boat-bill-collapse-body');
+    const btn = card.querySelector('#BoatBillToggleBtn') || card.querySelector('.boat-bill-toggle-btn');
+    if (!body) return;
+
+    if (body.classList.contains('collapsed')) {
+      body.classList.remove('collapsed');
+      if (btn) btn.classList.remove('collapsed');
+      card.classList.remove('is-collapsed');
+    } else {
+      body.classList.add('collapsed');
+      if (btn) btn.classList.add('collapsed');
+      card.classList.add('is-collapsed');
+    }
+  };
 
   // Live Fetch Shopify Backend Shipping Rates
   window.fetchBackendShippingRate = function() {

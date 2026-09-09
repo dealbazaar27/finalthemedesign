@@ -387,15 +387,18 @@
     flex-direction: column !important;
     gap: 6px !important;
     overflow: hidden !important;
-    transition: max-height 0.35s ease, opacity 0.25s ease, margin 0.25s ease !important;
-    max-height: 250px !important;
+    transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, margin 0.25s ease !important;
+    max-height: 400px !important;
     opacity: 1 !important;
   }
 
-  .boat-bill-collapse-body.collapsed {
+  .boat-bill-collapse-body.collapsed,
+  .boat-bill-card.is-collapsed .boat-bill-collapse-body {
     max-height: 0 !important;
     opacity: 0 !important;
     margin: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
     pointer-events: none !important;
   }
 
@@ -461,8 +464,8 @@
     background: #f1f5f9 !important;
     border: 1px solid #e2e8f0 !important;
     border-radius: 50% !important;
-    width: 26px !important;
-    height: 26px !important;
+    width: 28px !important;
+    height: 28px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -470,20 +473,23 @@
     padding: 0 !important;
     color: #0f172a !important;
     transition: background 0.15s ease, transform 0.25s ease !important;
+    flex-shrink: 0 !important;
+    pointer-events: none !important;
   }
 
-  .boat-bill-toggle-btn:hover {
+  .boat-bill-main-row:hover .boat-bill-toggle-btn {
     background: #e2e8f0 !important;
   }
 
   .boat-bill-arrow {
-    transition: transform 0.25s ease !important;
-    transform: rotate(0deg);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transform: rotate(180deg) !important; /* Open = Arrow Up */
   }
 
+  .boat-bill-collapse-body.collapsed ~ .boat-bill-main-row .boat-bill-arrow,
   .boat-bill-toggle-btn.collapsed .boat-bill-arrow,
-  .boat-bill-collapse-body.collapsed ~ .boat-bill-main-row .boat-bill-arrow {
-    transform: rotate(180deg) !important;
+  .boat-bill-card.is-collapsed .boat-bill-arrow {
+    transform: rotate(0deg) !important; /* Collapsed = Arrow Down */
   }
 
   .cart-drawer__content {
