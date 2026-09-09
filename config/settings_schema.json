@@ -29,212 +29,6 @@
     ]
   },
   {
-    "name": "🛒 Empty Cart & Auto-Close Drawer",
-    "settings": [
-      {
-        "type": "header",
-        "content": "⏱️ Auto-Close Timer Settings"
-      },
-      {
-        "type": "checkbox",
-        "id": "empty_cart_autoclose_enable",
-        "label": "Enable Auto-Close Countdown",
-        "default": true,
-        "info": "Automatically closes the cart drawer after countdown expires when cart is empty."
-      },
-      {
-        "type": "range",
-        "id": "empty_cart_autoclose_duration",
-        "label": "Auto-Close Duration (Seconds)",
-        "min": 2,
-        "max": 15,
-        "step": 1,
-        "unit": "s",
-        "default": 4
-      },
-      {
-        "type": "checkbox",
-        "id": "empty_cart_autoclose_desktop_only",
-        "label": "Auto-Close on Desktop Only",
-        "default": false,
-        "info": "When enabled, auto-close timer will only activate on screens wider than 768px."
-      },
-      {
-        "type": "header",
-        "content": "📝 Empty Cart Content"
-      },
-      {
-        "type": "text",
-        "id": "empty_cart_heading",
-        "label": "Empty Cart Title",
-        "default": "Your Cart is Empty!"
-      },
-      {
-        "type": "textarea",
-        "id": "empty_cart_subtitle",
-        "label": "Empty Cart Subtitle",
-        "default": "Looks like you haven't added anything to your cart yet. Discover trending deals & bestselling products below!"
-      },
-      {
-        "type": "text",
-        "id": "empty_cart_btn_text",
-        "label": "Button Text",
-        "default": "START SHOPPING NOW"
-      },
-      {
-        "type": "url",
-        "id": "empty_cart_btn_url",
-        "label": "Button Link"
-      },
-      {
-        "type": "header",
-        "content": "⚡ Trending Category Shortcuts"
-      },
-      {
-        "type": "checkbox",
-        "id": "empty_cart_show_chips",
-        "label": "Show Category Shortcuts",
-        "default": true
-      },
-      {
-        "type": "text",
-        "id": "empty_cart_chips_label",
-        "label": "Section Label",
-        "default": "⚡ Explore Trending:"
-      },
-      {
-        "type": "text",
-        "id": "empty_cart_chip_1_text",
-        "label": "Chip 1 Label",
-        "default": "🔥 Top Picks"
-      },
-      {
-        "type": "url",
-        "id": "empty_cart_chip_1_url",
-        "label": "Chip 1 Link"
-      },
-      {
-        "type": "text",
-        "id": "empty_cart_chip_2_text",
-        "label": "Chip 2 Label",
-        "default": "🎧 Smart Earbuds"
-      },
-      {
-        "type": "url",
-        "id": "empty_cart_chip_2_url",
-        "label": "Chip 2 Link"
-      },
-      {
-        "type": "text",
-        "id": "empty_cart_chip_3_text",
-        "label": "Chip 3 Label",
-        "default": "⌚ Smart Watches"
-      },
-      {
-        "type": "url",
-        "id": "empty_cart_chip_3_url",
-        "label": "Chip 3 Link"
-      },
-      {
-        "type": "text",
-        "id": "empty_cart_chip_4_text",
-        "label": "Chip 4 Label",
-        "default": "🏷️ Flash Sale"
-      },
-      {
-        "type": "url",
-        "id": "empty_cart_chip_4_url",
-        "label": "Chip 4 Link"
-      },
-      {
-        "type": "text",
-        "id": "empty_cart_chip_5_text",
-        "label": "Chip 5 Label",
-        "default": "👔 Men's Fashion"
-      },
-      {
-        "type": "url",
-        "id": "empty_cart_chip_5_url",
-        "label": "Chip 5 Link"
-      },
-      {
-        "type": "text",
-        "id": "empty_cart_chip_6_text",
-        "label": "Chip 6 Label",
-        "default": "👗 Women Fashion"
-      },
-      {
-        "type": "url",
-        "id": "empty_cart_chip_6_url",
-        "label": "Chip 6 Link"
-      },
-      {
-        "type": "header",
-        "content": "🎨 Colors & Styling"
-      },
-      {
-        "type": "color",
-        "id": "empty_cart_bg_color",
-        "label": "Empty Cart Background",
-        "default": "#ffffff"
-      },
-      {
-        "type": "color",
-        "id": "empty_cart_title_color",
-        "label": "Title Color",
-        "default": "#0f172a"
-      },
-      {
-        "type": "color",
-        "id": "empty_cart_subtitle_color",
-        "label": "Subtitle Color",
-        "default": "#64748b"
-      },
-      {
-        "type": "color",
-        "id": "empty_cart_btn_bg",
-        "label": "Button Background",
-        "default": "#000000"
-      },
-      {
-        "type": "color",
-        "id": "empty_cart_btn_hover_bg",
-        "label": "Button Hover Background",
-        "default": "#00b853"
-      },
-      {
-        "type": "color",
-        "id": "empty_cart_btn_text_color",
-        "label": "Button Text Color",
-        "default": "#ffffff"
-      },
-      {
-        "type": "color",
-        "id": "empty_cart_chip_bg",
-        "label": "Category Chip Background",
-        "default": "#ffffff"
-      },
-      {
-        "type": "color",
-        "id": "empty_cart_chip_text_color",
-        "label": "Category Chip Text Color",
-        "default": "#1e293b"
-      },
-      {
-        "type": "color",
-        "id": "empty_cart_chip_border",
-        "label": "Category Chip Border Color",
-        "default": "#e2e8f0"
-      },
-      {
-        "type": "color",
-        "id": "empty_cart_progress_color",
-        "label": "Countdown Progress Bar Color",
-        "default": "#00b853"
-      }
-    ]
-  },
-  {
     "name": "t:names.logo_and_favicon",
     "settings": [
       {
@@ -1952,12 +1746,6 @@
         "default": true
       },
       {
-        "type": "url",
-        "id": "empty_cart_button_link",
-        "label": "t:settings.empty_cart_button_link",
-        "default": "/collections/all"
-      },
-      {
         "type": "header",
         "content": "t:content.product_media"
       },
@@ -2008,6 +1796,207 @@
         "step": 1,
         "unit": "px",
         "default": 0
+      },
+      {
+        "type": "header",
+        "content": "🛒 Empty Cart UI & Explore Trending"
+      },
+      {
+        "type": "text",
+        "id": "empty_cart_heading",
+        "label": "Empty Cart Title",
+        "default": "Your Cart is Empty!"
+      },
+      {
+        "type": "textarea",
+        "id": "empty_cart_subtitle",
+        "label": "Empty Cart Subtitle",
+        "default": "Looks like you haven't added anything to your cart yet. Discover trending deals & bestselling products below!"
+      },
+      {
+        "type": "text",
+        "id": "empty_cart_btn_text",
+        "label": "Shop Button Text",
+        "default": "START SHOPPING NOW"
+      },
+      {
+        "type": "url",
+        "id": "empty_cart_btn_url",
+        "label": "Shop Button Link"
+      },
+      {
+        "type": "header",
+        "content": "⚡ Explore Trending Category Shortcuts"
+      },
+      {
+        "type": "checkbox",
+        "id": "empty_cart_show_chips",
+        "label": "Show Trending Categories",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "empty_cart_chips_label",
+        "label": "Explore Trending Section Label",
+        "default": "⚡ Explore Trending:"
+      },
+      {
+        "type": "text",
+        "id": "empty_cart_chip_1_text",
+        "label": "Category 1 Title",
+        "default": "🔥 Top Picks"
+      },
+      {
+        "type": "url",
+        "id": "empty_cart_chip_1_url",
+        "label": "Category 1 Link"
+      },
+      {
+        "type": "text",
+        "id": "empty_cart_chip_2_text",
+        "label": "Category 2 Title",
+        "default": "🎧 Smart Earbuds"
+      },
+      {
+        "type": "url",
+        "id": "empty_cart_chip_2_url",
+        "label": "Category 2 Link"
+      },
+      {
+        "type": "text",
+        "id": "empty_cart_chip_3_text",
+        "label": "Category 3 Title",
+        "default": "⌚ Smart Watches"
+      },
+      {
+        "type": "url",
+        "id": "empty_cart_chip_3_url",
+        "label": "Category 3 Link"
+      },
+      {
+        "type": "text",
+        "id": "empty_cart_chip_4_text",
+        "label": "Category 4 Title",
+        "default": "🏷️ Flash Sale"
+      },
+      {
+        "type": "url",
+        "id": "empty_cart_chip_4_url",
+        "label": "Category 4 Link"
+      },
+      {
+        "type": "text",
+        "id": "empty_cart_chip_5_text",
+        "label": "Category 5 Title",
+        "default": "👔 Men's Fashion"
+      },
+      {
+        "type": "url",
+        "id": "empty_cart_chip_5_url",
+        "label": "Category 5 Link"
+      },
+      {
+        "type": "text",
+        "id": "empty_cart_chip_6_text",
+        "label": "Category 6 Title",
+        "default": "👗 Women Fashion"
+      },
+      {
+        "type": "url",
+        "id": "empty_cart_chip_6_url",
+        "label": "Category 6 Link"
+      },
+      {
+        "type": "header",
+        "content": "⏱️ Smart Auto-Close Timer"
+      },
+      {
+        "type": "checkbox",
+        "id": "empty_cart_autoclose_enable",
+        "label": "Enable Auto-Close Countdown",
+        "default": true,
+        "info": "Automatically closes the empty cart drawer after countdown expires."
+      },
+      {
+        "type": "range",
+        "id": "empty_cart_autoclose_duration",
+        "label": "Auto-Close Duration (Seconds)",
+        "min": 2,
+        "max": 15,
+        "step": 1,
+        "unit": "s",
+        "default": 4
+      },
+      {
+        "type": "checkbox",
+        "id": "empty_cart_autoclose_desktop_only",
+        "label": "Auto-Close on Desktop Only",
+        "default": false,
+        "info": "When enabled, auto-close timer only runs on desktop screens."
+      },
+      {
+        "type": "header",
+        "content": "🎨 Empty Cart Colors"
+      },
+      {
+        "type": "color",
+        "id": "empty_cart_bg_color",
+        "label": "Empty Cart Background",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "empty_cart_title_color",
+        "label": "Title Color",
+        "default": "#0f172a"
+      },
+      {
+        "type": "color",
+        "id": "empty_cart_subtitle_color",
+        "label": "Subtitle Color",
+        "default": "#64748b"
+      },
+      {
+        "type": "color",
+        "id": "empty_cart_btn_bg",
+        "label": "Button Background",
+        "default": "#000000"
+      },
+      {
+        "type": "color",
+        "id": "empty_cart_btn_hover_bg",
+        "label": "Button Hover Background",
+        "default": "#00b853"
+      },
+      {
+        "type": "color",
+        "id": "empty_cart_btn_text_color",
+        "label": "Button Text Color",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "empty_cart_chip_bg",
+        "label": "Category Chip Background",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "empty_cart_chip_text_color",
+        "label": "Category Chip Text Color",
+        "default": "#1e293b"
+      },
+      {
+        "type": "color",
+        "id": "empty_cart_chip_border",
+        "label": "Category Chip Border Color",
+        "default": "#e2e8f0"
+      },
+      {
+        "type": "color",
+        "id": "empty_cart_progress_color",
+        "label": "Countdown Progress Bar Color",
+        "default": "#00b853"
       }
     ]
   },
