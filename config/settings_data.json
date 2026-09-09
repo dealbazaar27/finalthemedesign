@@ -1,14 +1,21 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "current": {
-    "logo": "shopify://shop_images/WhatsApp_Image_2026-09-09_at_17.03.51.jpg",
-    "logo_inverse": "shopify://shop_images/WhatsApp_Image_2026-09-09_at_17.03.51.jpg",
-    "logo_height": 36,
+    "logo": "shopify://shop_images/lg.png",
+    "logo_inverse": "shopify://shop_images/lg.png",
+    "logo_height": 54,
     "logo_height_mobile": 81,
     "favicon": "shopify://shop_images/WhatsApp_Image_2026-09-09_at_17.03.51.jpg",
     "dock_center_link": "shopify://collections/sale",
     "dock_center_icon": "bolt",
-    "page_background_color": "{{ settings.color_palette.background }}",
-    "page_width": "narrow",
     "page_text_color": "{{ settings.color_palette.foreground }}",
     "type_body_font": "inter_n4",
     "type_subheading_font": "inter_n5",
@@ -40,6 +47,8 @@
     "type_font_h6": "subheading",
     "type_size_h6": "12",
     "type_line_height_h6": "display-loose",
+    "page_background_color": "{{ settings.color_palette.background }}",
+    "page_width": "narrow",
     "page_transition_enabled": false,
     "transition_to_main_product": false,
     "card_hover_effect": "none",
@@ -98,13 +107,6 @@
     "variant_button_border_width": 1,
     "variant_button_radius": 14,
     "variant_button_width": "equal-width-buttons",
-    "content_for_index": [],
-    "color_palette": {
-      "background": "#ffffff",
-      "foreground": "#000000",
-      "color1": "#333333",
-      "color2": "#DFDFDF"
-    },
     "checkout_logo_image": "shopify://shop_images/WhatsApp_Image_2026-09-09_at_17.03.51.jpg",
     "checkout_accent_color": "#00b853",
     "checkout_button_color": "#00b853",
@@ -113,7 +115,14 @@
     "checkout_body_background_color": "#ffffff",
     "checkout_input_background_color_mode": "white",
     "checkout_logo_position": "left",
-    "checkout_logo_size": "medium"
+    "checkout_logo_size": "medium",
+    "content_for_index": [],
+    "color_palette": {
+      "background": "#ffffff",
+      "foreground": "#000000",
+      "color1": "#333333",
+      "color2": "#DFDFDF"
+    }
   },
   "presets": {
     "Horizon": {
