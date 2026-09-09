@@ -21,7 +21,12 @@
             "title": "STYLE.SMART LIVING.",
             "subtitle": "Premium & Smarter. Better Every Day.",
             "button_label": "EXPLORE NOW",
-            "button_link": "shopify://collections/all"
+            "button_link": "shopify://collections/all",
+            "title_color": "",
+            "subtitle_color": "",
+            "button_bg_color": "",
+            "button_text_color": "",
+            "text_alignment": "left"
           }
         },
         "slide_item_dcG8rq": {
@@ -33,7 +38,12 @@
             "title": "STYLE.SMART LIVING.",
             "subtitle": "Premium & Smarter. Better Every Day.",
             "button_label": "EXPLORE NOW",
-            "button_link": "shopify://collections/all"
+            "button_link": "shopify://collections/all",
+            "title_color": "{{ settings.color_palette.foreground }}",
+            "subtitle_color": "{{ settings.color_palette.foreground }}",
+            "button_bg_color": "",
+            "button_text_color": "",
+            "text_alignment": "left"
           }
         },
         "promo_banner_1": {
@@ -42,7 +52,10 @@
             "title": "Smart Earbuds",
             "badge_text": "STARTING FROM RS. 599/-",
             "image": "shopify://shop_images/promo_400x240_2f805ac2-1344-4d17-8953-498eccee8ca0.jpg",
-            "link": ""
+            "link": "",
+            "title_color": "{{ settings.color_palette.foreground }}",
+            "badge_bg_color": "",
+            "badge_text_color": ""
           }
         },
         "promo_banner_2": {
@@ -51,7 +64,10 @@
             "title": "Smart Watches",
             "badge_text": "STARTING FROM RS. 2299/-",
             "image": "shopify://shop_images/promo_400x240_b4840b71-4d0a-464b-b7de-9556b00a3e13.png",
-            "link": ""
+            "link": "",
+            "title_color": "#ffffff",
+            "badge_bg_color": "",
+            "badge_text_color": ""
           }
         }
       },
@@ -62,6 +78,20 @@
         "promo_banner_2"
       ],
       "settings": {
+        "section_bg_color": "#f7f8fa",
+        "sidebar_bg_color": "#ffffff",
+        "sidebar_header_color": "#71778e",
+        "sidebar_text_color": "#2c3038",
+        "mobile_bar_bg": "#ffffff",
+        "mobile_pill_bg": "#f3f5f9",
+        "mobile_pill_text": "#1a1a1a",
+        "slide_title_color": "#ffffff",
+        "slide_subtitle_color": "#ffffff",
+        "slide_button_bg": "#ffffff",
+        "slide_button_text": "#000000",
+        "promo_title_color": "#ffffff",
+        "promo_badge_bg": "#000000cc",
+        "promo_badge_text": "#ffffff",
         "show_only_on_homepage": true,
         "show_categories_on_collection_desktop": false,
         "show_categories_on_collection_mobile": true,
@@ -94,6 +124,14 @@
         "tab_1"
       ],
       "settings": {
+        "background_color": "#ffffff",
+        "heading_color": "#0f172a",
+        "accent_color": "#d8232a",
+        "view_all_color": "#1e293b",
+        "tab_active_bg": "#000000",
+        "tab_active_text": "#ffffff",
+        "tab_inactive_bg": "#f1f5f9",
+        "tab_inactive_text": "#64748b",
         "title": "Top Picks For You",
         "underline_word": "You",
         "collection": "",
