@@ -273,8 +273,40 @@
       </div>
 
       {% comment %} --- Form for Cart Add & Dynamic Variant Selection --- {% endcomment %}
-      <form action="/cart/add" method="post" id="{{ form_id }}" onsubmit="handleBoatPdpSubmit(event, this)">
-        <input type="hidden" name="id" id="BoatPdpSelectedVariantId" value="{{ selected_variant.id }}">
+      <product-form-component
+        data-section-id="{{ section.id }}"
+        data-product-id="{{ product.id }}"
+        data-product-url="{{ product.url }}"
+        on:submit="/handleSubmit"
+        data-quantity-default="1"
+        data-quantity-error-max="{{ 'products.product.quantity_error_max' | t }}"
+        id="BoatPdpProductFormComponent-{{ section.id }}"
+        class="boat-pdp-product-form-component"
+      >
+        <div
+          class="visually-hidden"
+          aria-live="assertive"
+          role="status"
+          aria-atomic="true"
+          ref="liveRegion"
+        ></div>
+        <span
+          class="product-form-text__error hidden"
+          ref="addToCartTextError"
+        >
+          <span class="svg-wrapper">
+            {{- 'icon-error.svg' | inline_asset_content -}}
+          </span>
+        </span>
+
+        {%- form 'product', product, id: form_id, class: 'boat-pdp-form', data-type: 'add-to-cart-form' -%}
+          <input
+            type="hidden"
+            name="id"
+            ref="variantId"
+            id="BoatPdpSelectedVariantId"
+            value="{{ selected_variant.id }}"
+          >
         
         {% comment %} 4. Multi-Option Variant Selectors (Color, Quantity, Size, Pack, etc.) {% endcomment %}
         {% if product.variants.size > 1 %}
@@ -393,18 +425,28 @@
 
         {% comment %} 6. Action Buttons (Add to Cart + Buy Now + WhatsApp) {% endcomment %}
         <div class="boat-pdp-cta-group{% if hide_inline_buttons_mobile %} boat-pdp-cta-group--hide-mobile{% endif %}">
-          <button 
-            type="submit" 
-            class="boat-pdp-btn boat-pdp-btn--atc" 
-            id="BoatPdpAtcBtn"
-            {% unless selected_variant.available %}disabled{% endunless %}
-          >
-            {% if selected_variant.available %}
-              <span>Add to Cart</span>
-            {% else %}
-              <span>Sold Out</span>
-            {% endif %}
-          </button>
+          <add-to-cart-component ref="addToCartButtonContainer" data-add-to-cart-animation="false" class="boat-pdp-atc-component">
+            <button 
+              type="submit" 
+              name="add"
+              ref="addToCartButton"
+              on:click="/handleClick"
+              class="boat-pdp-btn boat-pdp-btn--atc" 
+              id="BoatPdpAtcBtn"
+              {% unless selected_variant.available %}disabled{% endunless %}
+            >
+              {% if selected_variant.available %}
+                <span>Add to Cart</span>
+              {% else %}
+                <span>Sold Out</span>
+              {% endif %}
+              <span class="add-to-cart__added">
+                <span class="svg-wrapper add-to-cart__added-icon">
+                  {{- 'icon-checkmark-burst.svg' | inline_asset_content -}}
+                </span>
+              </span>
+            </button>
+          </add-to-cart-component>
           
           <button 
             type="button" 
@@ -435,7 +477,8 @@
           </div>
         {% endif %}
 
-      </form>
+        {%- endform -%}
+      </product-form-component>
 
     </div>
 
@@ -2943,15 +2986,24 @@
     const qtyInput = document.getElementById('BoatPdpQuantity');
     if (qtyInput) {
       qtyInput.value = qty;
+      qtyInput.dispatchEvent(new Event('input', { bubbles: true }));
+      qtyInput.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
     window.activePdpDiscountCode = code;
+
+    // Background fire-and-forget discount session set
+    if (code) {
+      try {
+        fetch('/discount/' + encodeURIComponent(code));
+      } catch(e) {}
+    }
 
     try {
       navigator.clipboard.writeText(code);
     } catch(e) {}
 
-    const codeElem = cardElem.querySelector('.boat-pdp-offer-code');
+    const codeElem = cardElem ? cardElem.querySelector('.boat-pdp-offer-code') : null;
     if (codeElem) {
       const originalHtml = codeElem.innerHTML;
       codeElem.innerHTML = '✓ ' + code + ' (Qty ' + qty + ')';
@@ -2959,6 +3011,10 @@
         codeElem.innerHTML = 'Code: <strong>' + code + '</strong>';
       }, 1500);
     }
+
+    // Active visual highlight for selected deal card
+    document.querySelectorAll('.boat-pdp-offer-card').forEach(c => c.classList.remove('selected-deal'));
+    if (cardElem) cardElem.classList.add('selected-deal');
 
     updateBoatSubtotal();
   }
@@ -2970,6 +3026,8 @@
     let val = parseInt(input.value, 10) || 1;
     val = Math.max(1, val + delta);
     input.value = val;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
     updateBoatSubtotal();
   }
 
@@ -3001,7 +3059,10 @@
     if (matchedVariant) {
       // Update hidden input
       const idInput = document.getElementById('BoatPdpSelectedVariantId');
-      if (idInput) idInput.value = matchedVariant.id;
+      if (idInput) {
+        idInput.value = matchedVariant.id;
+        idInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
 
       // Update Price & Current Unit Price
       currentVariantPrice = matchedVariant.price;
@@ -3064,15 +3125,7 @@
     }
   }
 
-  // Smooth Submit Handler supporting auto coupon session sync
-  async function handleBoatPdpSubmit(event, form) {
-    if (activeCouponCode) {
-      try {
-        fetch('/discount/' + encodeURIComponent(activeCouponCode));
-      } catch(e) {}
-    }
-    handleBoatAddToCart(event, form);
-  }
+
 
   // Direct Checkout for Buy Now Button with Active Coupon Applied
   async function buyNowBoatPdp(formId) {
