@@ -156,7 +156,11 @@
         "settings": {
           "greeting_message": "",
           "show_featured_products": true,
-          "featured_products": [],
+          "featured_products": [
+            "1080-rotatable-extension-faucet-sprayer-head-water-tap-nozzle-universal-bathroom-tap-extend-adapter-aerator-2-spray-modes-for-washroom-for-kitchen-item",
+            "145-pcs-unicorn-colour-art-case",
+            "2-in-1-transforming-truck-playset-with-race-track-2-alloy-cars"
+          ],
           "background_color": "#ffffff",
           "font_color": "#000000",
           "agent_invert_activator_colors": false,
