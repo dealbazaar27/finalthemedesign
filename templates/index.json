@@ -160,6 +160,18 @@
     },
     "boat_top_picks_rUKVUj": {
       "type": "boat-top-picks",
+      "blocks": {
+        "tab_block_epNzka": {
+          "type": "tab_block",
+          "settings": {
+            "tab_title": "New Launches",
+            "collection": "sale"
+          }
+        }
+      },
+      "block_order": [
+        "tab_block_epNzka"
+      ],
       "settings": {
         "background_color": "#ffffff",
         "heading_color": "#0f172a",
