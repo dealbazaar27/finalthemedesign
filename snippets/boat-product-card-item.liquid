@@ -93,25 +93,20 @@ assign form_id = 'BoatProductCardForm-' | append: product.id | append: '-' | app
     position: relative !important;
     width: 100% !important;
     aspect-ratio: 1 / 1 !important;
-    height: auto !important;
-    padding-top: 0 !important;
+    height: 0 !important;
+    padding-bottom: 100% !important;
     overflow: hidden !important;
     background: #f8fafc !important;
     flex-shrink: 0 !important;
     display: block !important;
   }
 
-  @supports not (aspect-ratio: 1 / 1) {
-    .boat-pick-card__media-container {
-      padding-top: 100% !important;
-      height: 0 !important;
-    }
-  }
-
   .boat-pick-card__image-link {
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
     width: 100% !important;
     height: 100% !important;
     display: flex !important;
@@ -122,6 +117,9 @@ assign form_id = 'BoatProductCardForm-' | append: product.id | append: '-' | app
   }
 
   .boat-pick-card__image {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 100% !important;
     height: 100% !important;
     max-width: 100% !important;
@@ -327,6 +325,14 @@ assign form_id = 'BoatProductCardForm-' | append: product.id | append: '-' | app
     min-height: 26px !important;
     margin-top: 4px !important;
     flex-wrap: nowrap !important;
+  }
+
+  .boat-pick-card__swatches:empty {
+    display: none !important;
+    min-height: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .boat-swatch-dot {
