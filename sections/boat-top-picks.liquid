@@ -622,8 +622,8 @@
   {% comment %} --- Product Cards Container with Optional Desktop Slider --- {% endcomment %}
   <div class="boat-top-picks__grid-wrapper">
     {% if enable_desktop_slider %}
-      <button type="button" class="boat-top-picks__slider-nav boat-top-picks__slider-nav--prev" onclick="scrollBoatGrid('{{ section.id }}', -300)" aria-label="Previous Products">‹</button>
-      <button type="button" class="boat-top-picks__slider-nav boat-top-picks__slider-nav--next" onclick="scrollBoatGrid('{{ section.id }}', 300)" aria-label="Next Products">›</button>
+      <button type="button" class="boat-top-picks__slider-nav boat-top-picks__slider-nav--prev" onclick="scrollBoatGrid(this, -320)" aria-label="Previous Products">‹</button>
+      <button type="button" class="boat-top-picks__slider-nav boat-top-picks__slider-nav--next" onclick="scrollBoatGrid(this, 320)" aria-label="Next Products">›</button>
     {% endif %}
 
     {% assign blocks_tabs = section.blocks | where: 'type', 'tab_block' %}
@@ -698,11 +698,36 @@
     } catch(e) {}
   }
 
-  // Desktop Grid Horizontal Scroll Handler
-  function scrollBoatGrid(sectionId, amount) {
-    const activeTab = document.querySelector('.boat-top-picks__tab-content:not([style*="display: none"]) .boat-top-picks__grid') || document.getElementById('BoatGrid-' + sectionId + '-default');
-    if (activeTab) {
-      activeTab.scrollBy({ left: amount, behavior: 'smooth' });
+  // Desktop Grid Horizontal Scroll Handler (Scoped to current section instance)
+  function scrollBoatGrid(btnOrSectionId, amount) {
+    let grid = null;
+
+    if (btnOrSectionId instanceof Element) {
+      const wrapper = btnOrSectionId.closest('.boat-top-picks__grid-wrapper') || btnOrSectionId.closest('.boat-top-picks');
+      if (wrapper) {
+        const activeTab = wrapper.querySelector('.boat-top-picks__tab-content:not([style*="display: none"]) .boat-top-picks__grid');
+        grid = activeTab || wrapper.querySelector('.boat-top-picks__grid');
+      }
+    } else if (typeof btnOrSectionId === 'string') {
+      const sec = document.getElementById('shopify-section-' + btnOrSectionId) || document.querySelector('[data-section-id="' + btnOrSectionId + '"]');
+      if (sec) {
+        const activeTab = sec.querySelector('.boat-top-picks__tab-content:not([style*="display: none"]) .boat-top-picks__grid');
+        grid = activeTab || sec.querySelector('.boat-top-picks__grid');
+      }
+      if (!grid) {
+        grid = document.getElementById('BoatGrid-' + btnOrSectionId + '-default');
+      }
+    }
+
+    if (!grid) {
+      grid = document.querySelector('.boat-top-picks__grid');
+    }
+
+    if (grid) {
+      const card = grid.querySelector('.boat-pick-card-wrapper') || grid.querySelector('.boat-pick-card');
+      const step = card && card.offsetWidth > 0 ? (card.offsetWidth + 16) : Math.abs(amount);
+      const scrollDistance = (amount < 0 ? -1 : 1) * step;
+      grid.scrollBy({ left: scrollDistance, behavior: 'smooth' });
     }
   }
 
