@@ -65,6 +65,14 @@
       const originalHTML = btn.innerHTML;
       btn.disabled = true;
 
+      const stickyBtn = document.querySelector('.boat-pdp-sticky-btn--atc');
+      let originalStickyHTML = '';
+      if (stickyBtn) {
+        originalStickyHTML = stickyBtn.innerHTML;
+        stickyBtn.disabled = true;
+        stickyBtn.innerHTML = '<span>Adding...</span>';
+      }
+
       if (isPdpBtn) {
         btn.innerHTML = '<span>Adding...</span>';
       } else {
@@ -121,6 +129,10 @@
             btn.innerHTML = '<span style="font-size:15px; font-weight:800; color:#fff;">✓</span>';
           }
 
+          if (stickyBtn) {
+            stickyBtn.innerHTML = '<span>✓ Added!</span>';
+          }
+
           // Extract or calculate total quantity immediately from section or badges
           let newTotalCount = itemCount;
           const currentBadge = document.querySelector('.cart-bubble__count') || document.querySelector('.theme-drawer__badge');
@@ -172,9 +184,11 @@
           // Trigger toast notification if active
           if (typeof window.showBoatCartToast === 'function') {
             const cardElem = formElement.closest('.boat-pick-card');
-            const toastTitle = responseData.product_title || responseData.title || cardElem?.querySelector('.boat-pick-card__title')?.innerText?.trim() || 'Product';
+            const pdpTitle = document.querySelector('.boat-pdp-title')?.innerText?.trim();
+            const pdpImg = document.querySelector('.boat-pdp-main-img')?.src;
+            const toastTitle = responseData.product_title || responseData.title || pdpTitle || cardElem?.querySelector('.boat-pick-card__title')?.innerText?.trim() || 'Product';
             const toastPrice = responseData.price ? ((typeof formatMoneyWithoutDecimals === 'function') ? formatMoneyWithoutDecimals(responseData.price) : 'Rs.' + (responseData.price/100)) : (cardElem?.querySelector('.boat-pick-card__price')?.innerText?.trim() || '');
-            const toastImg = responseData.image || responseData.featured_image?.url || cardElem?.querySelector('.boat-pick-card__image')?.src || '';
+            const toastImg = responseData.image || responseData.featured_image?.url || pdpImg || cardElem?.querySelector('.boat-pick-card__image')?.src || '';
 
             window.showBoatCartToast({
               title: toastTitle,
@@ -187,18 +201,33 @@
             btn.disabled = false;
             btn.style.background = '';
             btn.innerHTML = originalHTML;
+
+            if (stickyBtn && originalStickyHTML) {
+              stickyBtn.disabled = false;
+              stickyBtn.innerHTML = originalStickyHTML;
+            }
           }, 1200);
 
         } else {
           rejectUpdate(new Error(responseData.message || responseData.description || 'Add to cart failed'));
           btn.disabled = false;
           btn.innerHTML = originalHTML;
+
+          if (stickyBtn && originalStickyHTML) {
+            stickyBtn.disabled = false;
+            stickyBtn.innerHTML = originalStickyHTML;
+          }
         }
       } catch (err) {
         rejectUpdate(err);
         console.error('ATC Error:', err);
         btn.disabled = false;
         btn.innerHTML = originalHTML;
+
+        if (stickyBtn && originalStickyHTML) {
+          stickyBtn.disabled = false;
+          stickyBtn.innerHTML = originalStickyHTML;
+        }
       }
     };
   }
