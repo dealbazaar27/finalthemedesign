@@ -66,7 +66,8 @@ class CartDrawerComponent extends Component {
    * @param {import('@shopify/events').CartLinesUpdateEvent} event
    */
   #handleCartLinesUpdate = (event) => {
-    const shouldAutoOpen = this.hasAttribute('auto-open') && event.action === 'add' && !this.#themeDrawer?.isOpen;
+    const isAdd = event.action === 'add' || event.detail?.action === 'add';
+    const shouldAutoOpen = (this.hasAttribute('auto-open') || isAdd) && isAdd && !this.#themeDrawer?.isOpen;
 
     // When the event originates inside an open MODAL <dialog> (e.g. quick-add),
     // defer the auto-open until that dialog's native `close` fires so its focus
@@ -91,7 +92,10 @@ class CartDrawerComponent extends Component {
         }
 
         const openAndSettle = () => {
-          if (!this.#themeDrawer?.isOpen) this.#themeDrawer?.open();
+          const drawer = this.#themeDrawer || /** @type {any} */ (document.getElementById('cart-drawer'));
+          if (drawer && !drawer.isOpen) {
+            drawer.open();
+          }
           settle();
         };
 
@@ -107,7 +111,7 @@ class CartDrawerComponent extends Component {
   };
 
   #isCartEmpty() {
-    return Boolean(this.querySelector('.cart-drawer--empty'));
+    return Boolean(this.querySelector('.cart-drawer--empty') || this.querySelector('[data-cart-drawer-empty]'));
   }
 
   #updateStickyState() {

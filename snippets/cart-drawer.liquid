@@ -22,8 +22,10 @@
     fetchpriority="low"
   ></script>
 
-      {% capture empty_cart_drawer_content %}
-    {% render 'boat-empty-cart', is_drawer: true %}
+  {% capture empty_cart_drawer_content %}
+    <div class="cart-items__wrapper cart-items__wrapper--drawer-empty" data-cart-drawer-empty>
+      {% render 'boat-empty-cart', is_drawer: true %}
+    </div>
   {% endcapture %}
 
   <theme-drawer
@@ -37,7 +39,7 @@
       cart-summary-sticky="true"
     >
       <cart-drawer-component
-        {% if settings.auto_open_cart_drawer and template.name != 'cart' %}
+        {% if template.name != 'cart' %}
           auto-open
         {% endif %}
       >

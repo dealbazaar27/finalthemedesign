@@ -121,30 +121,53 @@
             btn.innerHTML = '<span style="font-size:15px; font-weight:800; color:#fff;">✓</span>';
           }
 
-          // Background fresh cart fetch for 100% accurate count
-          let cartData = null;
-          try {
-            const cartRes = await fetch('/cart.js');
-            cartData = await cartRes.json();
-          } catch(e) {
-            cartData = { item_count: itemCount, items: [] };
+          // Extract or calculate total quantity immediately from section or badges
+          let newTotalCount = itemCount;
+          const currentBadge = document.querySelector('.cart-bubble__count') || document.querySelector('.theme-drawer__badge');
+          if (currentBadge && currentBadge.textContent) {
+            const parsed = parseInt(currentBadge.textContent.trim(), 10);
+            if (!isNaN(parsed) && parsed > 0) newTotalCount = parsed + itemCount;
+          }
+          if (responseData.sections && responseData.sections['cart-drawer-section']) {
+            const match = responseData.sections['cart-drawer-section'].match(/theme-drawer__badge[^>]*>\s*(\d+)\s*</);
+            if (match && match[1]) {
+              newTotalCount = parseInt(match[1], 10);
+            }
           }
 
-          // Resolve promise so Theme's CartItemsComponent morphs drawer, HeaderActions & CartIcon update badges
+          // Resolve promise immediately so Theme's CartItemsComponent morphs drawer, HeaderActions & CartIcon update badges
           resolveUpdate({
             cart: {
-              totalQuantity: cartData.item_count,
-              lines: cartData.items,
-              cost: { totalAmount: { amount: String((cartData.total_price || 0) / 100), currencyCode: cartData.currency } }
+              totalQuantity: newTotalCount,
+              lines: [responseData]
             },
             detail: {
-              items: cartData.items,
-              itemCount: cartData.item_count,
+              items: [responseData],
+              itemCount: newTotalCount,
               sections: responseData.sections || {},
               didError: false,
               source: 'boat-product-card'
             }
           });
+
+          // Smoothly open cart drawer immediately
+          const drawer = document.getElementById('cart-drawer');
+          if (drawer && typeof drawer.open === 'function') {
+            drawer.open();
+          }
+
+          // Background sync with /cart.js to ensure 100% data sync across any custom listeners
+          fetch('/cart.js')
+            .then((r) => r.json())
+            .then((cartData) => {
+              if (cartData && typeof cartData.item_count === 'number') {
+                const cartIcon = document.querySelector('cart-icon');
+                if (cartIcon && typeof cartIcon.renderCartBubble === 'function') {
+                  cartIcon.renderCartBubble(cartData.item_count);
+                }
+              }
+            })
+            .catch(() => {});
 
           // Trigger toast notification if active
           if (typeof window.showBoatCartToast === 'function') {
