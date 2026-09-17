@@ -54,6 +54,28 @@
     };
   }
 
+  // Global fresh cart drawer HTML fetcher with retry mechanism
+  if (typeof window.getFreshCartDrawerHtml !== 'function') {
+    window.getFreshCartDrawerHtml = async function(retries = 5) {
+      const cartItemsComp = document.querySelector('cart-items-component');
+      const sectionId = cartItemsComp?.dataset?.sectionId || 'cart-drawer-section';
+      for (let i = 0; i < retries; i++) {
+        try {
+          const res = await fetch(`/?sections=${sectionId}&_=${Date.now()}`);
+          if (res.ok) {
+            const data = await res.json();
+            const html = data[sectionId];
+            if (html && !html.includes('boat-empty-cart-container') && !html.includes('cart-drawer--empty')) {
+              return html;
+            }
+          }
+        } catch(e) {}
+        await new Promise(r => setTimeout(r, 250));
+      }
+      return null;
+    };
+  }
+
   // Unified Theme-Native Add to Cart Handler (Powers Product Cards & Dispatches StandardEvents)
   if (typeof handleBoatAddToCart !== 'function') {
     window.handleBoatAddToCart = async function(event, formElement) {
@@ -142,6 +164,17 @@
 
           const trueItemCount = (cartData && typeof cartData.item_count === 'number') ? cartData.item_count : itemCount;
 
+          let sectionsData = responseData.sections || {};
+          const cartItemsComp = document.querySelector('cart-items-component');
+          const secId = cartItemsComp?.dataset?.sectionId || 'cart-drawer-section';
+
+          if (trueItemCount > 0 && (!sectionsData[secId] || sectionsData[secId].includes('boat-empty-cart-container') || sectionsData[secId].includes('cart-drawer--empty'))) {
+            const freshHTML = await window.getFreshCartDrawerHtml();
+            if (freshHTML) {
+              sectionsData[secId] = freshHTML;
+            }
+          }
+
           // Resolve promise immediately so Theme's CartItemsComponent morphs drawer, HeaderActions & CartIcon update badges
           resolveUpdate({
             cart: {
@@ -152,7 +185,7 @@
             detail: {
               items: cartData?.items || [responseData],
               itemCount: trueItemCount,
-              sections: responseData.sections || {},
+              sections: sectionsData,
               didError: false,
               source: 'boat-product-card'
             }

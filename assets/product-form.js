@@ -542,16 +542,28 @@ class ProductFormComponent extends Component {
 
           // Fetch the updated cart to get the actual total quantity for this variant
           const cart = await this.#refreshCart()
-            .then((ajaxCart) => {
+            .then(async (ajaxCart) => {
+              const totalItems = (ajaxCart && typeof ajaxCart.item_count === 'number') ? ajaxCart.item_count : itemCount;
+              let sectionsData = response.sections || {};
+              const cartItemsComp = document.querySelector('cart-items-component');
+              const secId = cartItemsComp?.dataset?.sectionId || this.cart?.sectionId;
+
+              if (totalItems > 0 && secId && (!sectionsData[secId] || sectionsData[secId].includes('boat-empty-cart-container') || sectionsData[secId].includes('cart-drawer--empty'))) {
+                if (typeof window.getFreshCartDrawerHtml === 'function') {
+                  const freshHTML = await window.getFreshCartDrawerHtml();
+                  if (freshHTML) sectionsData[secId] = freshHTML;
+                }
+              }
+
               deferredEventPromise.resolve({
                 cart: CartLinesUpdateEvent.createCartFromAjaxResponse(ajaxCart),
                 detail: {
                   items: ajaxCart.items,
                   source: 'product-form-component',
                   sourceId: this.id.toString(),
-                  itemCount,
+                  itemCount: totalItems,
                   productId: this.dataset.productId,
-                  sections: response.sections,
+                  sections: sectionsData,
                   didError: false,
                 },
               });
@@ -695,15 +707,27 @@ class ProductFormComponent extends Component {
         }
 
         const cart = await this.#refreshCart();
+        const totalItems = (cart && typeof cart.item_count === 'number') ? cart.item_count : totalQuantity;
+        let sectionsData = response.sections || {};
+        const cartItemsComp = document.querySelector('cart-items-component');
+        const secId = cartItemsComp?.dataset?.sectionId || this.cart?.sectionId;
+
+        if (totalItems > 0 && secId && (!sectionsData[secId] || sectionsData[secId].includes('boat-empty-cart-container') || sectionsData[secId].includes('cart-drawer--empty'))) {
+          if (typeof window.getFreshCartDrawerHtml === 'function') {
+            const freshHTML = await window.getFreshCartDrawerHtml();
+            if (freshHTML) sectionsData[secId] = freshHTML;
+          }
+        }
+
         deferredEventPromise.resolve({
           cart: CartLinesUpdateEvent.createCartFromAjaxResponse(cart),
           detail: {
             items: cart.items,
             source: 'product-form-component',
             sourceId: this.id.toString(),
-            itemCount: totalQuantity,
+            itemCount: totalItems,
             productId: this.dataset.productId,
-            sections: response.sections,
+            sections: sectionsData,
             didError: false,
           },
         });
