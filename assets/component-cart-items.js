@@ -263,9 +263,16 @@ export class CartItemsComponent extends createViewEventElement(Component) {
           'text/html'
         );
 
-        // Grab the new cart item count from a hidden element
-        const newCartHiddenItemCount = newSectionHTML.querySelector('[ref="cartItemCount"]')?.textContent;
-        const newCartItemCount = newCartHiddenItemCount ? parseInt(newCartHiddenItemCount, 10) : 0;
+        // Grab the new cart item count from the JSON response or a hidden element
+        let newCartItemCount = parsedResponseText.item_count;
+        if (typeof newCartItemCount !== 'number') {
+          const newCartHiddenItemCount = newSectionHTML.querySelector('[ref="cartItemCount"]')?.textContent;
+          newCartItemCount = newCartHiddenItemCount ? parseInt(newCartHiddenItemCount, 10) : 0;
+        }
+
+        if (typeof window.updateAllCartBadgesGlobally === 'function') {
+          window.updateAllCartBadgesGlobally(newCartItemCount);
+        }
 
         // Update data-cart-quantity for all matching variants
         this.#updateQuantitySelectors(parsedResponseText);
@@ -345,6 +352,10 @@ export class CartItemsComponent extends createViewEventElement(Component) {
 
     event.promise
       ?.then(async ({ detail }) => {
+        if (detail && typeof detail.itemCount === 'number' && typeof window.updateAllCartBadgesGlobally === 'function') {
+          window.updateAllCartBadgesGlobally(detail.itemCount);
+        }
+
         const sections = detail?.sections;
         const cartItemsHtml = sections?.[this.sectionId];
         // Animate empty → non-empty in the drawer (possible in squeeze mode

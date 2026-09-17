@@ -67,7 +67,7 @@ class CartDrawerComponent extends Component {
    */
   #handleCartLinesUpdate = (event) => {
     const isAdd = event.action === 'add' || event.detail?.action === 'add';
-    const shouldAutoOpen = (this.hasAttribute('auto-open') || isAdd) && isAdd && !this.#themeDrawer?.isOpen;
+    const shouldAutoOpen = false; // Disabled auto-open as requested
 
     // When the event originates inside an open MODAL <dialog> (e.g. quick-add),
     // defer the auto-open until that dialog's native `close` fires so its focus

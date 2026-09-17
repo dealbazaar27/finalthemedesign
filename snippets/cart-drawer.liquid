@@ -1264,52 +1264,7 @@
       let progressInterval = null;
 
       function startAutoCloseTimer() {
-        const drawer = document.getElementById('cart-drawer');
-        const emptyContainer = document.querySelector('.boat-empty-cart-container');
-        const autoCloseBar = document.getElementById('BoatEmptyAutoCloseBar');
-        const progressLine = document.getElementById('BoatEmptyProgressLine');
-        const countdownEl = document.getElementById('BoatEmptyCountdownSec');
-
-        if (!drawer || !emptyContainer || !autoCloseBar) return;
-        if (!drawer.hasAttribute('open') && !drawer.querySelector('dialog[open]')) return;
-
-        const desktopOnly = autoCloseBar.getAttribute('data-desktop-only') === 'true';
-        if (desktopOnly && window.innerWidth < 768) {
-          autoCloseBar.style.display = 'none';
-          return;
-        }
-
-        const durationSec = parseFloat(autoCloseBar.getAttribute('data-duration')) || 4;
-        const totalMs = durationSec * 1000;
-
-        cancelTimer(false);
-
-        const startTime = Date.now();
-        const endTime = startTime + totalMs;
-
-        progressInterval = setInterval(() => {
-          const now = Date.now();
-          const left = Math.max(0, endTime - now);
-          const sec = Math.ceil(left / 1000);
-          if (countdownEl) countdownEl.textContent = sec;
-          if (progressLine) {
-            const pct = (left / totalMs) * 100;
-            progressLine.style.width = pct + '%';
-          }
-
-          if (left <= 0) {
-            clearInterval(progressInterval);
-            progressInterval = null;
-            if (drawer && (drawer.hasAttribute('open') || drawer.querySelector('dialog[open]'))) {
-              if (typeof drawer.close === 'function') drawer.close();
-              else {
-                const dialog = drawer.querySelector('dialog');
-                if (dialog && typeof dialog.close === 'function') dialog.close();
-                drawer.removeAttribute('open');
-              }
-            }
-          }
-        }, 50);
+        return; // Auto-close removed as per request
       }
 
       function cancelTimer(permanent) {
